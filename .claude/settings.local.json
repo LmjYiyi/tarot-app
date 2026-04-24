@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"C:\\\\Users\\\\admin\\\\Desktop\\\\RPC\\\\tarot-app/public/tarot\")",
+      "Bash(curl -sSL -o \"/tmp/_test_fool.jpg\" -w \"HTTP %{http_code} | size %{size_download}\\\\n\" \"https://commons.wikimedia.org/wiki/Special:FilePath/RWS_Tarot_00_Fool.jpg?width=500\")",
+      "Bash(curl -sSL -o \"/tmp/_test_fool.jpg\" -w \"HTTP %{http_code} | size %{size_download}\\\\n\" \"https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg\")",
+      "Bash(curl -sSL -o /tmp/_gtest.html -w \"HTTP %{http_code}\\\\n\" https://www.google.com)",
+      "Bash(curl -sSL -o /tmp/_gh.html -w \"HTTP %{http_code}\\\\n\" https://github.com)",
+      "Bash(curl -sSL -o /tmp/_bing.html -w \"HTTP %{http_code}\\\\n\" https://www.bing.com)",
+      "Bash(curl -sSL -o /tmp/_baidu.html -w \"HTTP %{http_code}\\\\n\" https://www.baidu.com)",
+      "Bash(curl -sSL -o /tmp/_t1.jpg -w \"ekelen: HTTP %{http_code} size %{size_download}\\\\n\" \"https://raw.githubusercontent.com/ekelen/tarot-api/master/cards/m00.jpg\")",
+      "Bash(curl -sSL -o /tmp/_e.html -w \"HTTP %{http_code}\\\\n\" \"https://api.github.com/repos/ekelen/tarot-api/contents/cards\")",
+      "Bash(curl -sSL -w \"HTTP %{http_code}\\\\n\" \"https://api.github.com/repos/ekelen/tarot-api\")",
+      "Bash(curl -sSL \"https://api.github.com/repos/ekelen/tarot-api/git/trees/main?recursive=1\")",
+      "Bash(curl -sSL \"https://api.github.com/search/repositories?q=rider+waite+tarot+in:name,description&sort=stars&per_page=15\")",
+      "Bash(curl -sSL \"https://api.github.com/repos/Jangzor33/tarot-assets/git/trees/main?recursive=1\")",
+      "Bash(curl -sSL \"https://api.github.com/repos/wicker/Rider-Waite-Reader/git/trees/master?recursive=1\")",
+      "Bash(curl *)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Bash(npx next *)",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__click",
+      "WebFetch(domain:jasiyu.com)",
+      "WebFetch(domain:www.jasiyu.com)",
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__evaluate_script",
+      "Bash(sed 's/\\\\.txt$//')",
+      "Bash(node -e \"try { require\\('cheerio'\\); console.log\\('cheerio OK'\\); } catch\\(e\\) { console.log\\('no cheerio'\\); } try { require\\('jsdom'\\); console.log\\('jsdom OK'\\); } catch\\(e\\) { console.log\\('no jsdom'\\); }\")",
+      "Bash(npm install *)",
+      "Bash(node scrape.mjs \"../tarot-data\")",
+      "mcp__chrome-devtools__new_page",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+:root {
+  /* Parchment surface */
+  --vellum-0: #fbf3e1;
+  --vellum-1: #f4e7c9;
+  --vellum-2: #ecd9ae;
+  --vellum-3: #d9bf8c;
+
+  /* Ink / velvet night */
+  --ink: #1d140d;
+  --ink-soft: #5b4634;
+  --ink-muted: #8a7359;
+  --midnight: #121626;
+  --midnight-2: #1c223a;
+  --midnight-3: #2a2f4d;
+
+  /* Metallic accents */
+  --gold: #c59a4c;
+  --gold-soft: #e3c485;
+  --gold-deep: #8a6322;
+  --copper: #b35b30;
+  --copper-ink: #7e3816;
+  --rose: #a8566c;
+
+  /* Semantic mapping (kept for legacy components) */
+  --background: var(--vellum-0);
+  --foreground: var(--ink);
+  --sand: #e6d4b1;
+  --mist: rgba(255, 249, 237, 0.78);
+  --accent: var(--copper);
+  --accent-foreground: #fff6e6;
+  --border: rgba(115, 82, 47, 0.18);
+  --border-strong: rgba(88, 58, 25, 0.34);
+  --gilt: rgba(197, 154, 76, 0.45);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-manrope);
+  --font-serif-display: var(--font-cormorant);
+  --font-occult: var(--font-cinzel);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-manrope), sans-serif;
+  background-image:
+    radial-gradient(ellipse 60% 45% at 12% 8%, rgba(227, 196, 133, 0.55), transparent 60%),
+    radial-gradient(ellipse 55% 40% at 88% 14%, rgba(163, 111, 62, 0.22), transparent 65%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(58, 44, 25, 0.18), transparent 70%),
+    linear-gradient(180deg, #fbf3e1 0%, #f1e1c1 48%, #ecd9ae 100%);
+  background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.38 0 0 0 0 0.26 0 0 0 0 0.1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(1px 1px at 15% 22%, rgba(197, 154, 76, 0.7) 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 78% 18%, rgba(197, 154, 76, 0.55) 50%, transparent 52%),
+    radial-gradient(1px 1px at 33% 68%, rgba(197, 154, 76, 0.55) 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 62% 81%, rgba(197, 154, 76, 0.5) 50%, transparent 52%),
+    radial-gradient(1px 1px at 92% 55%, rgba(197, 154, 76, 0.45) 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 8% 88%, rgba(197, 154, 76, 0.5) 50%, transparent 52%);
+  opacity: 0.8;
+}
+
+main, header, footer {
+  position: relative;
+  z-index: 1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(197, 154, 76, 0.32);
+  color: var(--ink);
+}
+
+/* --- Type utilities --- */
+.font-serif-display {
+  font-family: var(--font-cormorant), serif;
+  letter-spacing: -0.01em;
+}
+
+.font-occult {
+  font-family: var(--font-cinzel), serif;
+}
+
+.eyebrow {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+.eyebrow-ink {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.eyebrow-gold {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.roman {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.gilt-text {
+  background: linear-gradient(135deg, #8a6322 0%, #d9b56c 30%, #f4e1a8 45%, #c49646 62%, #7d5518 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.drop-cap::first-letter {
+  float: left;
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 4.2rem;
+  line-height: 0.85;
+  padding: 0.35rem 0.5rem 0 0;
+  color: var(--copper);
+}
+
+/* --- Borders & frames --- */
+.hair-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gilt) 20%, var(--gilt) 80%, transparent 100%);
+}
+
+.inkwell-border {
+  border: 1px solid rgba(88, 58, 25, 0.32);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 249, 232, 0.55),
+    0 18px 38px rgba(50, 30, 12, 0.12);
+}
+
+.arched {
+  border-top-left-radius: 220px;
+  border-top-right-radius: 220px;
+}
+
+.prose p {
+  margin: 0 0 1rem;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Motion --- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.4; filter: blur(2px); }
+  50% { opacity: 0.8; filter: blur(4px); }
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-shimmer {
+  animation: shimmer 4s ease-in-out infinite;
+}
+
+.animate-orbit {
+  animation: orbit 60s linear infinite;
+}
+
+/* Cosmic Night Mode Overrides */
+.dark-ritual {
+  --background: var(--midnight);
+  --foreground: var(--vellum-0);
+  --ink: var(--vellum-1);
+  --ink-soft: var(--vellum-3);
+  --border: rgba(197, 154, 76, 0.2);
+}
+
+
+/* Staggered reveal helpers */
+.stagger > * { animation: rise 0.9s cubic-bezier(0.22, 0.65, 0.2, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger > *:nth-child(2) { animation-delay: 0.18s; }
+.stagger > *:nth-child(3) { animation-delay: 0.30s; }
+.stagger > *:nth-child(4) { animation-delay: 0.42s; }
+.stagger > *:nth-child(5) { animation-delay: 0.54s; }
+.stagger > *:nth-child(6) { animation-delay: 0.66s; }
+.stagger > *:nth-child(7) { animation-delay: 0.78s; }
+.stagger > *:nth-child(8) { animation-delay: 0.90s; }
