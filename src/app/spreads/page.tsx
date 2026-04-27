@@ -51,35 +51,39 @@ export default function SpreadsPage() {
       </div>
       <header className="mx-auto max-w-3xl space-y-6 text-center">
         <Ornament variant="quatrefoil" />
-        <p className="eyebrow">Spread Index</p>
-        <h1 className="font-serif-display text-[clamp(2.75rem,5vw,4.5rem)] leading-[1.02] text-[var(--text-primary)]">
+        <p className="eyebrow">Spread Index · 牌阵索引</p>
+        <h1 className="font-serif-display text-[clamp(2.5rem,4.5vw,4rem)] leading-[1.04] tracking-[-0.018em] text-[var(--ink)]">
           选择今天要使用的牌阵
         </h1>
-        <p className="text-[17px] leading-8 text-[var(--text-muted)]">
+        <p className="text-[16px] leading-8 text-[var(--ink-soft)]">
           问题越复杂，越适合用更多牌位拆开结构、关系张力和短期趋势。先选牌阵，再进入固定 seed 抽牌和直觉反馈流程。
         </p>
-        <Ornament variant="rule" className="mx-auto max-w-md" />
+        <div className="mx-auto flex max-w-md items-center gap-4">
+          <div className="h-px flex-1 bg-[var(--line)]" />
+          <Ornament variant="quatrefoil" />
+          <div className="h-px flex-1 bg-[var(--line)]" />
+        </div>
       </header>
 
       <div className="mt-16 grid gap-6 lg:grid-cols-3">
         {spreads.map((spread, index) => (
           <ScrollReveal key={spread.slug} delay={index * 0.06}>
-            <Panel className="group relative flex h-full flex-col gap-6 overflow-hidden border-[var(--gilt-dim)] bg-[var(--nebula)]/80 transition-all hover:border-[var(--glow-gold)]">
+            <Panel className="group relative flex h-full flex-col gap-6 overflow-hidden border-[var(--line)] bg-[var(--surface-tint)] transition-all hover:border-[var(--coral-edge)]">
               {/* Decorative Background Roman Numeral */}
-              <span className="pointer-events-none absolute -right-4 -top-6 select-none font-serif-display text-[120px] italic text-[var(--glow-gold-bright)] opacity-[0.04] transition-opacity group-hover:opacity-[0.08]">
+              <span className="pointer-events-none absolute -right-4 -top-6 select-none font-serif-display text-[120px] italic text-[var(--coral)] opacity-[0.06] transition-opacity group-hover:opacity-[0.10]">
                 {toRoman(index + 1)}
               </span>
 
               <div className="flex items-start justify-between gap-4">
-                <span className="font-occult text-[11px] tracking-[0.3em] uppercase text-[var(--glow-gold-dim)]">
-                  Locus {toRoman(index + 1)}
+                <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-[var(--ink-muted)]">
+                  {toRoman(index + 1)}
                 </span>
-                <span className="rounded-full border border-[var(--gilt-dim)] bg-[var(--cosmic)]/50 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-[var(--text-muted)] font-occult backdrop-blur-sm">
-                  {spread.cardCount} Cards
+                <span className="rounded-full border border-[var(--line)] bg-[var(--surface-raised)] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-[var(--ink-muted)] font-mono">
+                  {spread.cardCount} cards
                 </span>
               </div>
 
-              <div className="relative aspect-[16/9] overflow-hidden rounded-[12px] border border-[var(--gilt-dim)] bg-[var(--cosmic)] shadow-[0_12px_24px_rgba(8,8,16,0.3)]">
+              <div className="relative aspect-[16/9] overflow-hidden rounded-[12px] border border-[var(--line)] bg-[var(--surface-raised)] shadow-[0_4px_12px_rgba(26,26,25,0.08)]">
                 <Image
                   src={spreadThumbnails[spread.slug] ?? "/spreads/astrology-chart-background.png"}
                   alt=""
@@ -94,13 +98,13 @@ export default function SpreadsPage() {
               </div>
 
               <div className="space-y-2">
-                <p className="eyebrow-gold text-[11px] tracking-[0.2em]">{spread.hero}</p>
-                <h2 className="font-serif-display text-3xl text-[var(--text-primary)]">
+                <p className="eyebrow">{spread.hero}</p>
+                <h2 className="font-serif-display text-[26px] text-[var(--ink)]">
                   {spread.nameZh}
                 </h2>
               </div>
 
-              <p className="text-[14px] leading-7 text-[var(--text-muted)] line-clamp-3">
+              <p className="text-[14px] leading-7 text-[var(--ink-soft)] line-clamp-3">
                 {spread.summary}
               </p>
 
@@ -108,24 +112,24 @@ export default function SpreadsPage() {
                 {spread.suitableFor.slice(0, 3).map((item) => (
                   <span
                     key={item}
-                    className="rounded-full border border-[var(--glow-gold-dim)]/30 bg-[var(--glow-gold-dim)]/5 px-2.5 py-0.5 text-[11px] font-medium text-[var(--glow-gold-bright)]"
+                    className="rounded-full border border-[var(--coral-edge)] bg-[var(--coral-wash)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--coral-deep)]"
                   >
                     {item}
                   </span>
                 ))}
               </div>
 
-              <ul className="grid gap-2 border-t border-[var(--gilt-dim)] pt-4 text-[13px] text-[var(--text-muted)]">
+              <ul className="grid gap-2 border-t border-[var(--line)] pt-4 text-[13px] text-[var(--ink-soft)]">
                 {spread.positions.slice(0, 3).map((position) => (
                   <li
                     key={position.order}
                     className="flex items-center gap-3"
                   >
-                    <span className="font-mono text-[13px] text-[var(--glow-gold-bright)] opacity-70">
+                    <span className="font-mono text-[12px] text-[var(--coral-deep)]">
                       {toRoman(position.order)}
                     </span>
                     <span className="truncate">
-                      <span className="font-semibold text-[var(--text-primary)]">{position.name}</span>
+                      <span className="font-medium text-[var(--ink)]">{position.name}</span>
                     </span>
                   </li>
                 ))}
@@ -135,7 +139,7 @@ export default function SpreadsPage() {
               </ul>
 
               <div className="mt-auto flex items-center justify-between gap-4 pt-2">
-                <Ornament variant="rule" tone="gold" className="flex-1 opacity-40" />
+                <div className="h-px flex-1 bg-[var(--line)]" />
                 <Link
                   className={buttonStyles({})}
                   href={`/spreads/${spread.slug}`}

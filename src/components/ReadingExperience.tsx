@@ -7,7 +7,6 @@ import { MobileStickyDeck } from "@/components/MobileStickyDeck";
 import { SpreadLayout } from "@/components/SpreadLayout";
 import { StreamingInterpretation } from "@/components/StreamingInterpretation";
 import { Button } from "@/components/ui/button";
-import { toRoman } from "@/components/ui/ornament";
 import { Panel } from "@/components/ui/panel";
 import {
   getDefaultIntentForSpread,
@@ -49,14 +48,14 @@ type ReadingExperienceProps = {
 };
 
 const phaseLabel: Record<FlowPhase, string> = {
-  idle: "Ars I · 提问",
-  shuffling: "Ars II · 洗牌",
-  cutting: "Ars III · 切牌",
-  selecting: "Ars IV · 选牌",
-  revealing: "Ars V · 翻牌",
-  revealed: "Ars VI · 反馈",
-  reading: "Ars VII · 解读",
-  done: "Ars VIII · 沉淀",
+  idle: "01 · 提问",
+  shuffling: "02 · 洗牌",
+  cutting: "03 · 切牌",
+  selecting: "04 · 选牌",
+  revealing: "05 · 翻牌",
+  revealed: "06 · 反馈",
+  reading: "07 · 解读",
+  done: "08 · 沉淀",
 };
 
 const phaseToDeckPhase: Record<FlowPhase, RitualPhase> = {
@@ -389,35 +388,37 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const showRitualOnly = phase === "shuffling" || phase === "cutting" || phase === "selecting";
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <MobileStickyDeck
         visible={cardsRevealed && stickyDeckVisible}
         spread={spread}
         cards={resolvedCards}
       />
-      <div className="flex flex-col gap-4 border-b border-[var(--gilt)]/50 pb-6">
+
+      {/* Header — quiet, editorial */}
+      <header className="space-y-5 border-b border-[var(--line)] pb-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <p className="eyebrow">Sessio · {spread.hero}</p>
-          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.32em] text-[var(--ink-muted)] font-occult">
+          <p className="eyebrow">{spread.hero}</p>
+          <div className="flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
             <span
               className={cn(
                 "inline-block h-1.5 w-1.5 rounded-full",
-                busy ? "bg-[var(--copper)] animate-shimmer" : "bg-[var(--gold)]",
+                busy ? "bg-[var(--coral)] animate-shimmer" : "bg-[var(--ink-faint)]",
               )}
             />
             {phaseLabel[phase]}
           </div>
         </div>
-        <h1 className="font-serif-display text-[clamp(2.25rem,4.5vw,4rem)] leading-[0.98] text-[var(--text-primary)]">
+        <h1 className="font-serif-display text-[clamp(2.4rem,4.6vw,3.8rem)] leading-[1.02] text-[var(--ink)]">
           {spread.nameZh}
-          <span className="ml-3 font-serif-display italic text-3xl text-[var(--gold-deep)]">
-            · {toRoman(spread.cardCount)}
+          <span className="ml-3 text-[var(--ink-muted)] font-light">
+            · {spread.cardCount} 张
           </span>
         </h1>
-        <p className="max-w-3xl text-[15px] leading-8 text-[var(--ink-soft)]">
+        <p className="max-w-2xl text-[15.5px] leading-[1.75] text-[var(--ink-soft)]">
           {spread.detail}
         </p>
-      </div>
+      </header>
 
       {phase === "idle" ? (
         <IdleSetup
@@ -450,20 +451,20 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       {cardsRevealed ? (
         <div
           ref={ritualRef}
-          className="grid gap-6 scroll-mt-24 xl:grid-cols-[minmax(640px,1fr)_420px]"
+          className="grid gap-8 scroll-mt-24 xl:grid-cols-[minmax(640px,1fr)_440px]"
         >
           <div ref={mainSpreadRef} className="min-w-0">
             <RitualShell phase={phase}>
               <SpreadLayout spread={spread} cards={resolvedCards} />
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-5">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-950/35 px-3 py-1.5 text-[11px] uppercase tracking-[0.28em] text-emerald-200 font-occult">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-300" />
+                  <span className="inline-flex items-center gap-2 rounded-full bg-[var(--coral-wash)] px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--coral-deep)]">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--coral)]" />
                     已翻开 {resolvedCards.length} 张
                   </span>
                   {drawLog ? (
-                    <span className="rounded-full border border-[rgba(243,210,138,0.35)] bg-[rgba(12,16,36,0.5)] px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] text-[rgba(243,210,138,0.65)] font-occult">
-                      Seed {drawLog.seed.slice(0, 10)}
+                    <span className="rounded-full border border-[var(--line)] px-3 py-1 font-mono text-[10px] tracking-[0.16em] text-[var(--ink-muted)]">
+                      seed · {drawLog.seed.slice(0, 10)}
                     </span>
                   ) : null}
                 </div>
@@ -474,7 +475,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
             </RitualShell>
           </div>
 
-          <aside className="min-w-0 space-y-5 xl:sticky xl:top-24 xl:self-start">
+          <aside className="min-w-0 space-y-6 xl:sticky xl:top-24 xl:self-start">
             <FollowupPanel
               questionsLoading={questionsLoading}
               adaptiveQuestions={adaptiveQuestions}
@@ -493,7 +494,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
               adaptiveAnswers={adaptiveAnswers}
             />
             {error ? (
-              <div className="rounded-[14px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+              <div className="rounded-[12px] border border-[rgba(184,92,110,0.4)] bg-[rgba(184,92,110,0.06)] px-4 py-3 text-sm text-[#8a3447]">
                 {error}
               </div>
             ) : null}
@@ -503,6 +504,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     </div>
   );
 }
+
+/* ============================================================
+   Idle setup — editorial question form
+   ============================================================ */
 
 function IdleSetup({
   question,
@@ -523,75 +528,50 @@ function IdleSetup({
 }) {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <Panel className="space-y-4">
+      <Panel className="space-y-7">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="eyebrow">Intentio · 主题与目标</p>
-            <h2 className="mt-1 font-serif-display text-3xl italic text-[var(--text-primary)]">
-              先收束问题
+            <p className="eyebrow">主题与目标</p>
+            <h2 className="mt-2 font-serif-display text-[26px] leading-tight text-[var(--ink)]">
+              先把问题收束清楚
             </h2>
           </div>
-          <span className="text-[11px] uppercase tracking-[0.28em] text-[var(--ink-muted)] font-occult">
+          <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
             {questionLength} / 280
           </span>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-[180px_180px_minmax(0,1fr)]">
-          <label className="space-y-2">
-            <span className="block text-[12px] font-medium text-[var(--ink-soft)]">
-              占卜领域
-            </span>
-            <select
-              value={readingIntent.domain}
-              onChange={(event) =>
-                onIntentChange({ domain: event.target.value as ReadingDomain })
-              }
-              className="w-full rounded-[12px] border border-[var(--border-strong)] bg-[var(--parchment-base)]/60 px-3 py-2.5 text-sm text-[var(--ink-rich)] outline-none backdrop-blur-md transition-all focus:border-[var(--brass)] focus:bg-[var(--parchment-base)]"
-            >
-              {domainOptions.map((option) => (
-                <option key={option.value} value={option.value} className="bg-[var(--parchment-base)]">
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="space-y-2">
-            <span className="block text-[12px] font-medium text-[var(--ink-muted)]">
-              想看的方向
-            </span>
-            <select
-              value={readingIntent.goal}
-              onChange={(event) =>
-                onIntentChange({ goal: event.target.value as ReadingGoal })
-              }
-              className="w-full rounded-[12px] border border-[var(--border-strong)] bg-[var(--parchment-base)]/60 px-3 py-2.5 text-sm text-[var(--ink-rich)] outline-none backdrop-blur-md transition-all focus:border-[var(--brass)] focus:bg-[var(--parchment-base)]"
-            >
-              {goalOptions.map((option) => (
-                <option key={option.value} value={option.value} className="bg-[var(--parchment-base)]">
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="space-y-2">
-            <span className="block text-[12px] font-medium text-[var(--ink-muted)]">
-              你的问题
-            </span>
-            <textarea
-              value={question}
-              onChange={(event) => onQuestionChange(event.target.value.slice(0, 280))}
-              rows={2}
-              placeholder="例如：未来三个月事业发展怎么样？"
-              className="min-h-[78px] w-full resize-y rounded-[14px] border border-[var(--border-strong)] bg-[var(--parchment-base)]/60 px-4 py-3 font-serif-display text-[18px] italic leading-7 text-[var(--ink-rich)] outline-none backdrop-blur-md transition-all placeholder:text-[var(--ink-faint)]/60 focus:border-[var(--brass)] focus:bg-[var(--parchment-base)]"
-            />
-          </label>
+        <div className="grid gap-5 md:grid-cols-2">
+          <SegmentedField
+            label="占卜领域"
+            value={readingIntent.domain}
+            options={domainOptions}
+            onChange={(value) => onIntentChange({ domain: value as ReadingDomain })}
+          />
+          <SegmentedField
+            label="想看的方向"
+            value={readingIntent.goal}
+            options={goalOptions}
+            onChange={(value) => onIntentChange({ goal: value as ReadingGoal })}
+          />
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={onStart}>进入洗牌</Button>
-          <p className="text-[12px] leading-6 text-[var(--ink-muted)]">
+        <label className="block space-y-2">
+          <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+            你的问题
+          </span>
+          <textarea
+            value={question}
+            onChange={(event) => onQuestionChange(event.target.value.slice(0, 280))}
+            rows={3}
+            placeholder="例如：未来三个月事业发展会怎么样？"
+            className="w-full resize-y rounded-[12px] border border-[var(--line-strong)] bg-[var(--surface)] px-4 py-3.5 font-serif-display text-[19px] leading-[1.6] text-[var(--ink)] outline-none transition-all placeholder:text-[var(--ink-faint)] focus:border-[var(--coral)] focus:bg-[var(--surface-tint)] focus:shadow-[0_0_0_3px_var(--coral-wash)]"
+          />
+        </label>
+
+        <div className="flex flex-wrap items-center gap-4 border-t border-[var(--line)] pt-5">
+          <Button onClick={onStart}>进入洗牌 →</Button>
+          <p className="text-[13px] leading-6 text-[var(--ink-muted)]">
             不填写也可以，系统会按当前领域生成一个默认问题。
           </p>
         </div>
@@ -599,23 +579,25 @@ function IdleSetup({
 
       <Panel className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="eyebrow">Loci · 牌阵位</p>
-          <span className="rounded-full border border-[var(--border-strong)] px-3 py-1 text-[10px] uppercase tracking-[0.26em] text-[var(--ink-soft)] font-occult">
-            {spread.cardCount} Cards
+          <p className="eyebrow">牌位</p>
+          <span className="rounded-full border border-[var(--line)] px-2.5 py-0.5 font-mono text-[10px] tracking-[0.18em] text-[var(--ink-soft)]">
+            {spread.cardCount} cards
           </span>
         </div>
-        <ul className="max-h-[210px] space-y-2 overflow-y-auto pr-1">
+        <ul className="max-h-[260px] space-y-1 overflow-y-auto pr-1">
           {spread.positions.map((position) => (
             <li
               key={position.order}
-              className="flex items-start gap-3 rounded-[12px] border border-[var(--border)] bg-[var(--nebula)] px-3 py-2.5"
+              className="flex items-start gap-3 rounded-[10px] px-2 py-2 transition hover:bg-[var(--surface-raised)]"
             >
-              <span className="roman mt-0.5 text-[17px] text-[var(--gold-deep)]">
-                {toRoman(position.order)}
+              <span className="mt-[2px] inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--coral-wash)] font-mono text-[10px] text-[var(--coral-deep)]">
+                {position.order}
               </span>
-              <div>
-                <p className="font-semibold text-[var(--text-primary)]">{position.name}</p>
-                <p className="mt-0.5 text-[12px] leading-5 text-[var(--ink-soft)]">
+              <div className="min-w-0">
+                <p className="text-[14px] font-medium text-[var(--ink)]">
+                  {position.name}
+                </p>
+                <p className="mt-0.5 text-[12.5px] leading-5 text-[var(--ink-soft)]">
                   {position.focus}
                 </p>
               </div>
@@ -627,35 +609,73 @@ function IdleSetup({
   );
 }
 
-function RitualShell({ children, phase }: { children: React.ReactNode; phase: FlowPhase }) {
+function SegmentedField({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: Array<{ value: string; label: string }>;
+  onChange: (value: string) => void;
+}) {
   return (
-    <Panel variant="dark" className="overflow-hidden p-0">
-      <div className="relative min-h-[430px] p-5 lg:p-6">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-15"
-          style={{
-            backgroundImage: "url(/spreads/astrology-chart-background.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-        <div className="relative">
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <p className="font-occult text-[10px] tracking-[0.4em] uppercase text-[rgba(243,210,138,0.85)]">
-              Mensa Sacra · 仪式桌面
-            </p>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[rgba(243,210,138,0.35)] to-transparent" />
-            <p className="font-occult text-[10px] tracking-[0.4em] uppercase text-[rgba(243,210,138,0.55)]">
-              {phaseToDeckPhase[phase] === "revealed" ? "Revealed" : "In Ritu"}
-            </p>
-          </div>
-          {children}
+    <div className="space-y-2">
+      <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((option) => {
+          const active = option.value === value;
+          return (
+            <button
+              type="button"
+              key={option.value}
+              onClick={() => onChange(option.value)}
+              className={cn(
+                "rounded-[8px] border px-3 py-1.5 text-[13px] transition-all",
+                active
+                  ? "border-[var(--ink)] bg-[var(--ink)] text-[var(--surface)]"
+                  : "border-[var(--line-strong)] bg-transparent text-[var(--ink-soft)] hover:border-[var(--ink-soft)] hover:text-[var(--ink)]",
+              )}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   Ritual shell — calm cream stage, no Latin chrome
+   ============================================================ */
+
+function RitualShell({ children, phase }: { children: React.ReactNode; phase: FlowPhase }) {
+  const phaseTitle = phaseLabel[phase];
+  return (
+    <Panel className="overflow-hidden p-0">
+      <div className="relative min-h-[440px] p-6 lg:p-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)]">
+            仪式桌面
+          </p>
+          <div className="h-px flex-1 bg-[var(--line)]" />
+          <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-soft)]">
+            {phaseTitle}
+          </p>
         </div>
+        {children}
       </div>
     </Panel>
   );
 }
+
+/* ============================================================
+   Followup wizard
+   ============================================================ */
 
 function FollowupPanel({
   questionsLoading,
@@ -750,14 +770,14 @@ function FollowupPanel({
   const hasContext = Boolean(coreTension || questionStrategy);
 
   return (
-    <Panel className="space-y-4">
+    <Panel className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="eyebrow">Projectio · 牌面追问</p>
-          <h2 className="mt-1 font-serif-display text-2xl italic leading-7 text-[var(--text-primary)]">
+          <p className="eyebrow">牌面追问</p>
+          <h2 className="mt-1.5 font-serif-display text-[22px] leading-tight text-[var(--ink)]">
             塔罗的低语
           </h2>
-          <p className="mt-1 text-[12px] leading-6 text-[var(--ink-muted)]">
+          <p className="mt-1 text-[13px] leading-6 text-[var(--ink-muted)]">
             先回应几个直觉感受，解读会更贴你。
           </p>
         </div>
@@ -765,17 +785,17 @@ function FollowupPanel({
           <button
             type="button"
             onClick={handleSkipAll}
-            className="font-occult text-[11px] uppercase tracking-[0.22em] text-[var(--ink-muted)] underline-offset-4 transition hover:text-[var(--copper)] hover:underline"
+            className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)] underline-offset-4 transition hover:text-[var(--coral-deep)] hover:underline"
           >
-            暂时不答 ↦
+            暂不回答 →
           </button>
         ) : null}
       </div>
 
       {questionsLoading ? (
-        <div className="flex items-center gap-3 rounded-[14px] border border-[var(--gilt)]/45 bg-[var(--nebula)] px-4 py-4">
-          <span className="inline-block h-2 w-2 rounded-full bg-[var(--copper)] animate-shimmer" />
-          <p className="text-[13px] leading-6 text-[var(--ink-soft)]">
+        <div className="flex items-center gap-3 rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-4">
+          <span className="inline-block h-2 w-2 rounded-full bg-[var(--coral)] animate-shimmer" />
+          <p className="text-[13.5px] leading-6 text-[var(--ink-soft)]">
             塔罗正在感受这副牌面...
           </p>
         </div>
@@ -783,7 +803,7 @@ function FollowupPanel({
 
       {isEmpty ? (
         <>
-          <p className="rounded-[14px] border border-[var(--gilt)]/45 bg-[var(--nebula)] px-4 py-3 text-[13px] leading-7 text-[var(--ink-soft)]">
+          <p className="rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-[13.5px] leading-7 text-[var(--ink-soft)]">
             这次没有需要回答的牌面追问，可以直接生成解读。
           </p>
           <div className="flex justify-end pt-1">
@@ -831,7 +851,7 @@ function FollowupPanel({
             />
           ) : null}
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--gilt)]/45 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-4">
             {!isSummary ? (
               <>
                 <Button
@@ -839,12 +859,12 @@ function FollowupPanel({
                   onClick={goBack}
                   disabled={currentStep === 0}
                 >
-                  ← 回到上一题
+                  ← 上一题
                 </Button>
                 {currentQuestion?.answerType === "free_text" ? (
                   <div className="flex items-center gap-2">
                     <Button variant="ghost" onClick={handleSkipCurrent}>
-                      这题先空着
+                      空着
                     </Button>
                     <Button variant="secondary" onClick={goNext}>
                       继续 →
@@ -852,14 +872,14 @@ function FollowupPanel({
                   </div>
                 ) : (
                   <Button variant="ghost" onClick={handleSkipCurrent}>
-                    这题先空着 →
+                    空着 →
                   </Button>
                 )}
               </>
             ) : (
               <>
                 <Button variant="ghost" onClick={() => goTo(0)}>
-                  ← 回到第一题
+                  ← 回第一题
                 </Button>
                 <Button onClick={onSubmit} disabled={busy || phase === "reading"}>
                   {phase === "reading" ? "塔罗正在低语..." : "生成解读"}
@@ -892,11 +912,11 @@ function WizardProgress({
   return (
     <div className="space-y-2">
       <div className="flex items-end justify-between">
-        <p className="font-occult text-[10px] uppercase tracking-[0.32em] text-[var(--ink-muted)]">
-          Quaestio {toRoman(Math.max(displayIndex, 1))} · {displayIndex} / {totalCount}
+        <p className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+          Q{String(displayIndex).padStart(2, "0")} / {String(totalCount).padStart(2, "0")}
         </p>
-        <span className="font-occult text-[11px] text-[var(--ink-muted)]">
-          已记下 {answeredCount} 处回应
+        <span className="font-mono text-[10.5px] tracking-[0.16em] text-[var(--ink-muted)]">
+          已记下 {answeredCount}
         </span>
       </div>
       <div className="flex gap-1.5">
@@ -914,10 +934,10 @@ function WizardProgress({
               className={cn(
                 "h-[3px] flex-1 rounded-full transition-all duration-500",
                 isCurrent
-                  ? "bg-[var(--copper)] shadow-[0_0_8px_rgba(183,91,48,0.4)]"
+                  ? "bg-[var(--coral)]"
                   : isPast && isAnswered
-                    ? "bg-[var(--gold-deep)]"
-                    : "bg-[var(--gilt)]/40",
+                    ? "bg-[var(--coral-deep)]"
+                    : "bg-[var(--line-strong)]",
               )}
             />
           );
@@ -939,14 +959,14 @@ function ContextDisclosure({
   questionStrategy: string | null;
 }) {
   return (
-    <div className="rounded-[14px] border border-[var(--gilt)]/45 bg-[var(--nebula)]">
+    <div className="rounded-[12px] border border-[var(--line)] bg-[var(--surface)]">
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={expanded}
         className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left"
       >
-        <span className="font-occult text-[11px] uppercase tracking-[0.24em] text-[var(--ink-muted)]">
+        <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
           为什么问这些
         </span>
         <span
@@ -958,16 +978,16 @@ function ContextDisclosure({
         </span>
       </button>
       {expanded ? (
-        <div className="space-y-2 border-t border-[var(--gilt)]/30 px-4 py-3">
+        <div className="space-y-2 border-t border-[var(--line)] px-4 py-3">
           {coreTension ? (
             <p className="text-[13px] leading-6 text-[var(--ink-soft)]">
-              <span className="font-semibold text-[var(--text-primary)]">核心张力：</span>
+              <span className="font-medium text-[var(--ink)]">核心张力：</span>
               {coreTension}
             </p>
           ) : null}
           {questionStrategy ? (
             <p className="text-[13px] leading-6 text-[var(--ink-soft)]">
-              <span className="font-semibold text-[var(--text-primary)]">追问策略：</span>
+              <span className="font-medium text-[var(--ink)]">追问策略：</span>
               {questionStrategy}
             </p>
           ) : null}
@@ -991,12 +1011,12 @@ function WizardQuestionCard({
   onFreeTextSubmit: () => void;
 }) {
   return (
-    <div className="wizard-step-enter min-h-[220px] rounded-[14px] border border-[var(--gilt)]/45 bg-white/75 p-5">
-      <p className="font-serif-display text-[21px] italic leading-8 text-[var(--text-primary)]">
+    <div className="wizard-step-enter min-h-[220px] rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-5">
+      <p className="font-serif-display text-[20px] leading-[1.55] text-[var(--ink)]">
         {question.question}
       </p>
       {question.basis || question.purpose ? (
-        <p className="mt-2 text-[12px] leading-6 text-[var(--ink-muted)]">
+        <p className="mt-2 text-[12.5px] leading-6 text-[var(--ink-muted)]">
           {question.basis}
           {question.purpose ? ` 用于${question.purpose}。` : ""}
         </p>
@@ -1013,11 +1033,11 @@ function WizardQuestionCard({
               onFreeTextSubmit();
             }
           }}
-          placeholder="按直觉写一句就可以，可以留空。"
-          className="mt-4 w-full rounded-[12px] border border-[var(--border)] bg-white/85 px-3 py-2.5 text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-faint)]/70 focus:border-[var(--glow-gold)] focus:bg-[var(--velvet)]"
+          placeholder="按直觉写一句就好，可以留空。"
+          className="mt-4 w-full rounded-[10px] border border-[var(--line-strong)] bg-[var(--surface-tint)] px-3.5 py-2.5 text-[14px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-faint)] focus:border-[var(--coral)] focus:shadow-[0_0_0_3px_var(--coral-wash)]"
         />
       ) : (
-        <div className="mt-5 flex flex-wrap gap-2.5">
+        <div className="mt-5 flex flex-wrap gap-2">
           {question.options?.map((option) => {
             const selected = answer?.answer === option.value;
             return (
@@ -1026,10 +1046,10 @@ function WizardQuestionCard({
                 type="button"
                 onClick={() => onChoice(question.id, option.value, option.label)}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-[13px] transition-all duration-200",
+                  "rounded-[10px] border px-3.5 py-1.5 text-[13px] transition-all duration-150",
                   selected
-                    ? "border-[var(--copper)] bg-[rgba(183,91,48,0.18)] text-[var(--copper-ink)] shadow-[0_0_0_3px_rgba(183,91,48,0.12)]"
-                    : "border-[var(--gilt)]/60 bg-white/60 text-[var(--text-primary)] hover:-translate-y-[0.5px] hover:border-[var(--copper)] hover:bg-white hover:shadow-sm",
+                    ? "border-[var(--coral)] bg-[var(--coral)] text-white shadow-[0_2px_8px_rgba(168,85,62,0.25)]"
+                    : "border-[var(--line-strong)] bg-transparent text-[var(--ink)] hover:border-[var(--coral)] hover:bg-[var(--coral-wash)] hover:text-[var(--coral-deep)]",
                 )}
               >
                 {option.label}
@@ -1052,9 +1072,9 @@ function WizardSummary({
   onJumpTo: (index: number) => void;
 }) {
   return (
-    <div className="wizard-step-enter space-y-3 rounded-[14px] border border-[var(--gilt)]/45 bg-[var(--nebula)] p-4">
-      <p className="font-occult text-[10px] uppercase tracking-[0.28em] text-[var(--ink-muted)]">
-        Speculum · 答题概览
+    <div className="wizard-step-enter space-y-1 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-4">
+      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+        答题概览
       </p>
       <ul className="space-y-1">
         {questions.map((question, index) => {
@@ -1066,19 +1086,19 @@ function WizardSummary({
               <button
                 type="button"
                 onClick={() => onJumpTo(index)}
-                className="flex w-full items-start gap-3 rounded-[10px] px-2 py-2 text-left transition hover:bg-white/70"
+                className="flex w-full items-start gap-3 rounded-[8px] px-2 py-2 text-left transition hover:bg-[var(--surface-raised)]"
               >
-                <span className="roman mt-0.5 text-[15px] text-[var(--gold-deep)]">
-                  {toRoman(index + 1)}
+                <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--coral-wash)] font-mono text-[10px] text-[var(--coral-deep)]">
+                  {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="line-clamp-2 text-[13px] leading-6 text-[var(--text-primary)]">
+                  <p className="line-clamp-2 text-[13px] leading-6 text-[var(--ink)]">
                     {question.question}
                   </p>
                   <p
                     className={cn(
-                      "mt-0.5 text-[12px]",
-                      empty ? "italic text-[var(--ink-muted)]" : "text-[var(--copper-ink)]",
+                      "mt-0.5 text-[12.5px]",
+                      empty ? "italic text-[var(--ink-muted)]" : "text-[var(--coral-deep)]",
                     )}
                   >
                     {empty ? "未作答 · 点击补答" : `你的回应：${label}`}

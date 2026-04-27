@@ -56,34 +56,34 @@ export function AnnotatedInterpretation({
         parts.push(
           <span
             key={annotationKey}
-            className="annotated-phrase group relative inline-block cursor-help transition-all"
+            className="group relative inline-block cursor-help"
             onMouseEnter={() => setHoveredId(annotationKey)}
             onMouseLeave={() => setHoveredId(null)}
           >
-            <span className="relative z-10 border-b-2 border-dashed border-[var(--copper)]/60 bg-[var(--copper)]/5 px-0.5 group-hover:border-[var(--copper)] group-hover:bg-[var(--copper)]/15">
+            <span className="relative z-10 border-b border-dashed border-[var(--coral-edge)] bg-[var(--coral-wash)] px-0.5 transition-colors group-hover:border-[var(--coral)] group-hover:bg-[rgba(204,120,92,0.14)]">
               {phrase}
             </span>
 
             <AnimatePresence>
               {hoveredId === annotationKey ? (
                 <motion.div
-                  initial={{ opacity: 0, y: 5, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                  className="absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 rounded-lg bg-zinc-900/95 p-3 text-sm shadow-xl ring-1 ring-white/10 backdrop-blur-md"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  className="absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 rounded-[10px] border border-[var(--line-strong)] bg-[var(--surface)] p-3 text-[13px] shadow-[0_8px_24px_rgba(26,26,25,0.10)]"
                 >
-                  <div className="mb-1 flex items-center gap-2 font-occult text-[10px] uppercase tracking-wider text-[var(--gilt)]/80">
-                    <span className="h-px flex-1 bg-[var(--gilt)]/20" />
-                    Echo from Response {id}
-                    <span className="h-px flex-1 bg-[var(--gilt)]/20" />
+                  <div className="mb-1.5 flex items-center gap-2 font-mono text-[9.5px] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                    <span className="h-px flex-1 bg-[var(--line)]" />
+                    回应 {id}
+                    <span className="h-px flex-1 bg-[var(--line)]" />
                   </div>
-                  <div className="mb-2 italic text-[var(--gilt)]/60">
+                  <div className="mb-1.5 italic text-[var(--ink-soft)]">
                     &ldquo;{answer.question}&rdquo;
                   </div>
-                  <div className="font-medium text-[var(--gold-soft)]">
+                  <div className="font-medium text-[var(--coral-deep)]">
                     {answer.answerLabel || answer.answer}
                   </div>
-                  <div className="absolute left-1/2 top-full -ml-1 border-4 border-transparent border-t-zinc-900/95" />
+                  <div className="absolute left-1/2 top-full -ml-1 border-4 border-transparent border-t-[var(--surface)]" />
                 </motion.div>
               ) : null}
             </AnimatePresence>
@@ -105,7 +105,7 @@ export function AnnotatedInterpretation({
 
   if (isStreaming) {
     return (
-      <div className="interpretation-content whitespace-pre-wrap leading-relaxed tracking-wide text-[var(--ink-soft)]">
+      <div className="interpretation-content whitespace-pre-wrap text-[15px] leading-[1.85] tracking-[0.005em] text-[var(--ink)]">
         {renderAnnotatedText(safeText, "stream")}
       </div>
     );
@@ -116,7 +116,7 @@ export function AnnotatedInterpretation({
   }
 
   return (
-    <div className="interpretation-content space-y-5 leading-relaxed tracking-wide text-[var(--ink-soft)]">
+    <div className="interpretation-content space-y-5 text-[15px] leading-[1.85] tracking-[0.005em] text-[var(--ink)]">
       {paragraphs.map((paragraph, index) => (
         <motion.p
           key={`${paragraph.slice(0, 32)}-${index}`}

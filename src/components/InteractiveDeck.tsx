@@ -47,10 +47,10 @@ export function InteractiveDeck({
         {phase === "idle" || phase === "shuffling" ? (
           <motion.div
             key="shuffle"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.4 }}
           >
             <ShuffleStage
               active={phase === "shuffling"}
@@ -63,10 +63,10 @@ export function InteractiveDeck({
         {phase === "cutting" ? (
           <motion.div
             key="cut"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.4 }}
           >
             <CutStage onCutDone={onCutDone} />
           </motion.div>
@@ -75,10 +75,10 @@ export function InteractiveDeck({
         {phase === "selecting" ? (
           <motion.div
             key="select"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.4 }}
           >
             <SelectStage
               cardCount={cardCount}
@@ -94,7 +94,26 @@ export function InteractiveDeck({
 }
 
 /* ============================================================
-   Shuffle stage — auto-runs, then signals done
+   Shared label primitives
+   ============================================================ */
+function StageLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)]">
+      {children}
+    </p>
+  );
+}
+
+function StageHelper({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="max-w-md text-center text-[15px] leading-7 text-[var(--ink-soft)]">
+      {children}
+    </p>
+  );
+}
+
+/* ============================================================
+   Shuffle stage — quiet vertical card drift
    ============================================================ */
 
 function ShuffleStage({
@@ -113,16 +132,22 @@ function ShuffleStage({
   }, [active, durationMs, onDone]);
 
   return (
-    <div className="flex flex-col items-center gap-6 py-6">
-      <p className="font-occult text-[10px] tracking-[0.4em] uppercase text-[rgba(243,210,138,0.7)]">
-        {active ? "Mensa I · Shuffling" : "Mensa I · Awaiting"}
-      </p>
+    <div className="flex flex-col items-center gap-7 py-8">
+      <div className="flex items-center gap-2.5">
+        <span
+          className={cn(
+            "inline-block h-1.5 w-1.5 rounded-full transition-colors",
+            active ? "bg-[var(--coral)] animate-shimmer" : "bg-[var(--ink-faint)]",
+          )}
+        />
+        <StageLabel>{active ? "Shuffling · 洗牌中" : "Awaiting · 待洗"}</StageLabel>
+      </div>
       <ShuffleAura active={active} />
-      <p className="max-w-md text-center text-[14px] leading-7 italic text-[var(--text-primary)] font-serif-display">
+      <StageHelper>
         {active
-          ? "牌面朝下，闭上眼，让你的问题从胸口升到指尖。"
-          : "深呼吸三次，把问题在心里默念一遍，然后开始。"}
-      </p>
+          ? "把问题在心里默念一遍，让它从胸口落到指尖。"
+          : "深呼吸三次，再开始。"}
+      </StageHelper>
     </div>
   );
 }
@@ -133,19 +158,19 @@ function ShuffleAura({ active }: { active: boolean }) {
       className="relative flex items-center justify-center"
       style={{ perspective: "1400px", height: 280 }}
     >
-      {/* outer rotating glyph */}
+      {/* hairline framing circles — far quieter than before */}
       <motion.div
-        className="absolute h-72 w-72 rounded-full border border-[rgba(243,210,138,0.18)]"
+        className="absolute h-72 w-72 rounded-full border border-[var(--coral-edge)]"
         animate={active ? { rotate: 360 } : { rotate: 0 }}
-        transition={{ duration: 28, ease: "linear", repeat: active ? Infinity : 0 }}
+        transition={{ duration: 40, ease: "linear", repeat: active ? Infinity : 0 }}
+        style={{ opacity: 0.4 }}
       />
       <motion.div
-        className="absolute h-56 w-56 rounded-full border border-[rgba(243,210,138,0.28)]"
+        className="absolute h-56 w-56 rounded-full border border-[var(--line-strong)]"
         animate={active ? { rotate: -360 } : { rotate: 0 }}
-        transition={{ duration: 18, ease: "linear", repeat: active ? Infinity : 0 }}
+        transition={{ duration: 28, ease: "linear", repeat: active ? Infinity : 0 }}
+        style={{ opacity: 0.5 }}
       />
-      <div className="absolute h-[2px] w-72 bg-gradient-to-r from-transparent via-[rgba(243,210,138,0.4)] to-transparent" />
-      <div className="absolute h-72 w-[2px] bg-gradient-to-b from-transparent via-[rgba(243,210,138,0.4)] to-transparent" />
 
       {/* card stack with arcing motion */}
       <div className="relative h-56 w-40">
@@ -162,17 +187,14 @@ function ShuffleAura({ active }: { active: boolean }) {
             <motion.div
               key={index}
               className="absolute inset-0 mx-auto h-52 w-32"
-              style={{
-                zIndex: index,
-                transformStyle: "preserve-3d",
-              }}
+              style={{ zIndex: index, transformStyle: "preserve-3d" }}
               animate={
                 active
                   ? {
                       x: [restX, arcX, -arcX * 0.7, restX],
                       y: [restY, arcY, arcY * 0.5, restY],
                       rotate: [restRotate, arcRotate, -arcRotate * 0.85, restRotate],
-                      rotateY: [0, 16, -14, 0],
+                      rotateY: [0, 14, -12, 0],
                     }
                   : { x: restX, y: restY, rotate: restRotate, rotateY: 0 }
               }
@@ -193,7 +215,7 @@ function ShuffleAura({ active }: { active: boolean }) {
 }
 
 /* ============================================================
-   Cut stage — user drags a glowing line to cut the deck
+   Cut stage — drag a coral line on a calm cream rail
    ============================================================ */
 
 function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
@@ -230,17 +252,18 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
   }, [dragging]);
 
   return (
-    <div className="flex flex-col items-center gap-6 py-2">
-      <p className="font-occult text-[10px] tracking-[0.4em] uppercase text-[rgba(243,210,138,0.75)]">
-        Mensa II · Cut the Deck
-      </p>
-      <p className="max-w-lg text-center text-[14px] leading-7 italic text-[var(--text-primary)] font-serif-display">
-        把一叠牌切开 —— 拖动金线，决定你的能量从哪里介入。
-      </p>
+    <div className="flex flex-col items-center gap-7 py-3">
+      <div className="flex items-center gap-2.5">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--coral)]" />
+        <StageLabel>Cut · 切牌</StageLabel>
+      </div>
+      <StageHelper>
+        把一叠牌切开 — 拖动这条线，决定能量从哪里介入。
+      </StageHelper>
 
       <div
         ref={trackRef}
-        className="relative h-44 w-full max-w-2xl select-none group/track"
+        className="relative h-44 w-full max-w-2xl select-none"
         onMouseDown={() => {
           triggerHaptic(8);
           setDragging(true);
@@ -250,49 +273,43 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
           setDragging(true);
         }}
       >
-        {/* deck visualization: long horizontal strip representing the deck edge */}
-        <div className="absolute inset-x-0 top-1/2 h-24 -translate-y-1/2 overflow-hidden rounded-[12px] border border-[rgba(243,210,138,0.35)] bg-[linear-gradient(155deg,#1a1f3a_0%,#241a44_50%,#3a1f3f_100%)] shadow-inner">
-          {/* fake card edges */}
+        {/* deck rail — cream with subtle paper striations */}
+        <div className="absolute inset-x-0 top-1/2 h-24 -translate-y-1/2 overflow-hidden rounded-[14px] border border-[var(--line-strong)] bg-[linear-gradient(170deg,#f6f1e3_0%,#e9dec4_100%)] shadow-[inset_0_1px_2px_rgba(26,26,25,0.05)]">
           <div
-            className="absolute inset-0 opacity-40"
+            className="absolute inset-0 opacity-60"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(90deg, rgba(243,210,138,0.2) 0 1px, transparent 1px 4px), repeating-linear-gradient(90deg, rgba(0,0,0,0.3) 0 1px, transparent 1px 8px)",
+                "repeating-linear-gradient(90deg, rgba(168,85,62,0.18) 0 1px, transparent 1px 4px), repeating-linear-gradient(90deg, rgba(26,26,25,0.06) 0 1px, transparent 1px 8px)",
             }}
           />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(0,0,0,0.5)] via-transparent to-[rgba(0,0,0,0.5)]" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(26,26,25,0.06)] via-transparent to-[rgba(26,26,25,0.06)]" />
         </div>
 
-        {/* glow trail behind cut line */}
+        {/* coral wash behind cut line */}
         <div
-          className="absolute top-1/2 h-40 w-[160px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl transition-opacity duration-500 group-hover/track:opacity-80"
+          className="absolute top-1/2 h-40 w-[160px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-50 blur-3xl transition-opacity duration-500"
           style={{
             left: `${position * 100}%`,
             background:
-              "radial-gradient(closest-side, rgba(255,215,120,0.5), transparent)",
+              "radial-gradient(closest-side, rgba(204,120,92,0.35), transparent)",
           }}
         />
 
-        {/* cut line with enlarged hit area */}
+        {/* cut line */}
         <motion.div
-          className={cn(
-            "absolute top-1/2 z-10 h-44 w-12 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize flex items-center justify-center",
-          )}
+          className="absolute top-1/2 z-10 h-44 w-12 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize flex items-center justify-center"
           style={{ left: `${position * 100}%` }}
           animate={{ scale: dragging ? 1.05 : 1 }}
         >
           <div className="relative flex h-full w-[2px] flex-col items-center">
-            {/* The actual visible line */}
-            <div className="h-full w-full bg-[linear-gradient(180deg,transparent_0%,rgba(243,210,138,0.8)_15%,rgba(255,235,180,1)_50%,rgba(243,210,138,0.8)_85%,transparent_100%)] shadow-[0_0_15px_rgba(243,210,138,0.7)]" />
-            
-            {/* The handle with pulse animation */}
-            <motion.div 
-              className="absolute top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(243,210,138,0.8)] bg-[#0c1024] shadow-[0_0_20px_rgba(243,210,138,0.4)]"
-              animate={dragging ? { scale: 1.1 } : { scale: [1, 1.05, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            <div className="h-full w-full bg-[linear-gradient(180deg,transparent_0%,rgba(204,120,92,0.7)_15%,rgba(168,85,62,1)_50%,rgba(204,120,92,0.7)_85%,transparent_100%)]" />
+            <motion.div
+              className="absolute top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--coral)] bg-[var(--surface)] shadow-[0_2px_10px_rgba(168,85,62,0.18)]"
+              animate={dragging ? { scale: 1.1 } : { scale: [1, 1.04, 1] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
             >
-              <div className="absolute inset-0 rounded-full animate-pulse-slow bg-[rgba(243,210,138,0.15)]" />
-              <svg viewBox="0 0 24 24" className="relative h-5 w-5 text-[rgba(255,235,180,1)]" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <div className="absolute inset-0 rounded-full animate-pulse-slow bg-[var(--coral-wash)]" />
+              <svg viewBox="0 0 24 24" className="relative h-5 w-5 text-[var(--coral-deep)]" fill="none" stroke="currentColor" strokeWidth="1.6">
                 <path d="M6 12 L18 12" strokeLinecap="round" />
                 <path d="M9 8 L6 12 L9 16" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M15 8 L18 12 L15 16" strokeLinecap="round" strokeLinejoin="round" />
@@ -302,7 +319,7 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
         </motion.div>
 
         {/* tick marks */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-between px-1 text-[9px] tracking-[0.3em] uppercase text-[rgba(243,210,138,0.45)] font-occult">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-between px-1 font-mono text-[9.5px] tracking-[0.22em] uppercase text-[var(--ink-faint)]">
           <span>顶</span>
           <span>1/3</span>
           <span>1/2</span>
@@ -312,11 +329,10 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="font-occult text-[11px] tracking-[0.3em] uppercase text-[rgba(243,210,138,0.7)]">
+        <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--ink-soft)]">
           切于第 {Math.round(position * TOTAL_CARDS)} 张
         </span>
         <Button
-          variant="crest"
           onClick={() => {
             triggerHaptic([10, 20, 14]);
             onCutDone(position);
@@ -330,7 +346,7 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
 }
 
 /* ============================================================
-   Selection stage — three modes
+   Selection stage
    ============================================================ */
 
 function SelectStage({
@@ -345,8 +361,8 @@ function SelectStage({
   onSelectionDone: (indices: number[]) => void;
 }) {
   return (
-    <div className="flex flex-col gap-5 pb-2">
-      <div className="flex flex-wrap items-center justify-center gap-2">
+    <div className="flex flex-col gap-6 pb-2">
+      <div className="flex flex-wrap items-center justify-center gap-1.5">
         <ModeTab active={mode === "fan"} onClick={() => onModeChange("fan")}>
           扇形挑牌
         </ModeTab>
@@ -362,10 +378,10 @@ function SelectStage({
         {mode === "fan" ? (
           <motion.div
             key="fan"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.4 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.35 }}
           >
             <FanPicker cardCount={cardCount} onDone={onSelectionDone} />
           </motion.div>
@@ -373,10 +389,10 @@ function SelectStage({
         {mode === "piles" ? (
           <motion.div
             key="piles"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.4 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.35 }}
           >
             <PilePicker cardCount={cardCount} onDone={onSelectionDone} />
           </motion.div>
@@ -384,10 +400,10 @@ function SelectStage({
         {mode === "number" ? (
           <motion.div
             key="number"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.4 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.35 }}
           >
             <NumberPicker cardCount={cardCount} onDone={onSelectionDone} />
           </motion.div>
@@ -414,10 +430,10 @@ function ModeTab({
         onClick();
       }}
       className={cn(
-        "rounded-full border px-4 py-1.5 text-[11px] tracking-[0.32em] uppercase font-occult transition-all",
+        "rounded-[8px] px-3.5 py-1.5 text-[12px] font-medium tracking-[0.02em] transition-all",
         active
-          ? "border-[rgba(243,210,138,0.8)] bg-[rgba(243,210,138,0.12)] text-[#fce7b4] shadow-[0_0_18px_rgba(243,210,138,0.25)]"
-          : "border-[rgba(243,210,138,0.25)] text-[rgba(243,210,138,0.6)] hover:border-[rgba(243,210,138,0.55)] hover:text-[#fce7b4]",
+          ? "bg-[var(--ink)] text-[var(--surface)]"
+          : "text-[var(--ink-soft)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]",
       )}
     >
       {children}
@@ -486,9 +502,10 @@ function FanPicker({
 
   return (
     <div className="flex flex-col items-center gap-5">
-      <p className="max-w-xl text-center text-[13px] leading-7 italic text-[var(--text-primary)] font-serif-display">
-        扇形铺开了 78 张牌，凭直觉点击其中 <span className="text-[#fce7b4]">{cardCount}</span> 张，
-        被选中的会浮起、镶上金边。可以再次点击取消。
+      <p className="max-w-xl text-center text-[14px] leading-7 text-[var(--ink-soft)]">
+        78 张牌摊开成一道弧 — 凭直觉点击其中{" "}
+        <span className="font-medium text-[var(--coral-deep)]">{cardCount}</span> 张。
+        被选中的牌会浮起、镶上铜边，再次点击可以取消。
       </p>
 
       <div
@@ -498,11 +515,11 @@ function FanPicker({
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 z-20 w-16 bg-gradient-to-r from-[#0d1126] to-transparent"
+          className="pointer-events-none absolute inset-y-0 left-0 z-20 w-16 bg-gradient-to-r from-[var(--surface-raised)] to-transparent"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 bg-gradient-to-l from-[#0d1126] to-transparent"
+          className="pointer-events-none absolute inset-y-0 right-0 z-20 w-16 bg-gradient-to-l from-[var(--surface-raised)] to-transparent"
         />
         <div
           ref={fanRef}
@@ -513,9 +530,9 @@ function FanPicker({
           }}
         >
           {cards.map((cardIndex) => {
-            const t = cardIndex / (total - 1) - 0.5; // -0.5 .. 0.5
-            const angle = t * totalArcDeg; // tilt
-            const lift = -Math.cos(t * Math.PI) * verticalCurve; // peak in center
+            const t = cardIndex / (total - 1) - 0.5;
+            const angle = t * totalArcDeg;
+            const lift = -Math.cos(t * Math.PI) * verticalCurve;
             const isPicked = picks.includes(cardIndex);
             const pickOrder = picks.indexOf(cardIndex);
 
@@ -546,14 +563,14 @@ function FanPicker({
                     className={cn(
                       "absolute inset-0 rounded-[10px] border transition-all",
                       isPicked
-                        ? "border-[rgba(255,222,150,0.95)] shadow-[0_0_28px_rgba(255,210,140,0.55)]"
-                        : "border-[rgba(243,210,138,0.45)] group-hover:border-[rgba(255,222,150,0.95)] group-hover:shadow-[0_0_18px_rgba(255,210,140,0.4)]",
+                        ? "border-[var(--coral)] shadow-[0_4px_16px_rgba(204,120,92,0.25)]"
+                        : "border-[var(--line-strong)] group-hover:border-[var(--coral)] group-hover:shadow-[0_2px_10px_rgba(204,120,92,0.18)]",
                     )}
                   >
                     <CardBack className="rounded-[10px]" />
                   </div>
                   {isPicked ? (
-                    <div className="absolute -top-3 left-1/2 z-10 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border border-[rgba(255,222,150,0.95)] bg-[#0c1024] font-occult text-[10px] text-[#fce7b4]">
+                    <div className="absolute -top-3 left-1/2 z-10 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border border-[var(--coral)] bg-[var(--coral)] font-mono text-[10px] text-white">
                       {pickOrder + 1}
                     </div>
                   ) : null}
@@ -564,16 +581,16 @@ function FanPicker({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 font-occult text-[9px] uppercase tracking-[0.32em] text-[rgba(243,210,138,0.45)]">
-        <span>左侧</span>
-        <span className="h-px w-14 bg-[rgba(243,210,138,0.25)]" />
-        <span>移动鼠标浏览牌面</span>
-        <span className="h-px w-14 bg-[rgba(243,210,138,0.25)]" />
-        <span>右侧</span>
+      <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--ink-faint)]">
+        <span>左</span>
+        <span className="h-px w-12 bg-[var(--line-strong)]" />
+        <span>左右移动鼠标浏览</span>
+        <span className="h-px w-12 bg-[var(--line-strong)]" />
+        <span>右</span>
       </div>
 
       <PickProgress picks={picks.length} total={cardCount} />
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           onClick={() => {
@@ -585,7 +602,6 @@ function FanPicker({
           重选
         </Button>
         <Button
-          variant="crest"
           onClick={() => {
             triggerHaptic([10, 20, 14]);
             onDone(picks);
@@ -627,9 +643,10 @@ function PilePicker({
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <p className="max-w-xl text-center text-[13px] leading-7 italic text-[var(--text-primary)] font-serif-display">
-        牌堆已分作三叠 —— 不要思考，凭第一感觉选一叠。我会从那叠由上往下抽出 {cardCount} 张。
+    <div className="flex flex-col items-center gap-7">
+      <p className="max-w-xl text-center text-[14px] leading-7 text-[var(--ink-soft)]">
+        牌堆已分作三叠 — 不要思考，凭第一感觉选一叠。
+        我会从那叠由上往下抽出 {cardCount} 张。
       </p>
 
       <div className="flex items-center justify-center gap-10">
@@ -650,7 +667,9 @@ function PilePicker({
               <div
                 className={cn(
                   "relative h-[180px] w-[120px] rounded-[12px] transition-all",
-                  isChosen ? "drop-shadow-[0_0_28px_rgba(255,210,140,0.55)]" : "drop-shadow-[0_8px_18px_rgba(0,0,0,0.5)]",
+                  isChosen
+                    ? "drop-shadow-[0_8px_22px_rgba(204,120,92,0.28)]"
+                    : "drop-shadow-[0_4px_12px_rgba(26,26,25,0.10)]",
                 )}
               >
                 {[0, 1, 2, 3].map((layer) => (
@@ -659,8 +678,8 @@ function PilePicker({
                     className={cn(
                       "absolute h-full w-full rounded-[12px] border",
                       isChosen
-                        ? "border-[rgba(255,222,150,0.95)]"
-                        : "border-[rgba(243,210,138,0.4)] group-hover:border-[rgba(255,222,150,0.95)]",
+                        ? "border-[var(--coral)]"
+                        : "border-[var(--line-strong)] group-hover:border-[var(--coral)]",
                     )}
                     style={{
                       transform: `translate(${layer * 1.5}px, ${-layer * 1.5}px)`,
@@ -671,14 +690,16 @@ function PilePicker({
                   </div>
                 ))}
               </div>
-              <span className={cn(
-                "font-occult text-[11px] tracking-[0.3em] uppercase",
-                isChosen ? "text-[#fce7b4]" : "text-[rgba(243,210,138,0.7)]",
-              )}>
+              <span
+                className={cn(
+                  "font-mono text-[11px] tracking-[0.16em] uppercase",
+                  isChosen ? "text-[var(--coral-deep)]" : "text-[var(--ink-soft)]",
+                )}
+              >
                 {pile.label}
               </span>
               {isChosen ? (
-                <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full border border-[rgba(255,222,150,0.95)] bg-[#0c1024] px-3 py-0.5 font-occult text-[9px] tracking-[0.3em] uppercase text-[#fce7b4]">
+                <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-[var(--coral)] px-2.5 py-0.5 font-mono text-[9px] tracking-[0.2em] uppercase text-white">
                   选中
                 </span>
               ) : null}
@@ -687,7 +708,7 @@ function PilePicker({
         })}
       </div>
 
-      <Button variant="crest" onClick={confirm} disabled={chosenPile === null}>
+      <Button onClick={confirm} disabled={chosenPile === null}>
         从这叠抽 {cardCount} 张
       </Button>
     </div>
@@ -707,8 +728,6 @@ function NumberPicker({
 
   function confirm() {
     triggerHaptic([10, 20, 14]);
-    // anchor at the chosen number, take cardCount sequential cards
-    // wrap if near the end of the deck
     const indices: number[] = [];
     const start = Math.max(0, Math.min(TOTAL_CARDS - cardCount, value - 1));
     for (let i = 0; i < cardCount; i += 1) {
@@ -718,27 +737,27 @@ function NumberPicker({
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <p className="max-w-xl text-center text-[13px] leading-7 italic text-[var(--text-primary)] font-serif-display">
-        在心里默念问题，浮现的第一个数字 —— 1 到 78 之间，不需要解释。
+    <div className="flex flex-col items-center gap-7">
+      <p className="max-w-xl text-center text-[14px] leading-7 text-[var(--ink-soft)]">
+        在心里默念问题，浮现的第一个数字 — 1 到 78 之间，不需要解释。
       </p>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-5">
         <button
           type="button"
           onClick={() => {
             triggerHaptic(6);
             setValue((v) => Math.max(1, v - 1));
           }}
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(243,210,138,0.5)] text-[rgba(243,210,138,0.85)] transition hover:border-[rgba(255,222,150,0.95)] hover:text-[#fce7b4]"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line-strong)] text-[var(--ink-soft)] transition hover:border-[var(--coral)] hover:text-[var(--coral-deep)]"
         >
           <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M3 8 L13 8" strokeLinecap="round" />
           </svg>
         </button>
 
-        <div className="flex h-28 w-28 items-center justify-center rounded-[16px] border border-[rgba(243,210,138,0.55)] bg-[rgba(255,210,140,0.06)] shadow-[inset_0_0_24px_rgba(243,210,138,0.18)]">
-          <span className="font-serif-display text-[64px] italic leading-none text-[#fce7b4]">
+        <div className="flex h-28 w-28 items-center justify-center rounded-[18px] border border-[var(--coral-edge)] bg-[var(--coral-wash)]">
+          <span className="font-serif-display text-[60px] leading-none text-[var(--coral-deep)]">
             {value}
           </span>
         </div>
@@ -749,7 +768,7 @@ function NumberPicker({
             triggerHaptic(6);
             setValue((v) => Math.min(TOTAL_CARDS, v + 1));
           }}
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-[rgba(243,210,138,0.5)] text-[rgba(243,210,138,0.85)] transition hover:border-[rgba(255,222,150,0.95)] hover:text-[#fce7b4]"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--line-strong)] text-[var(--ink-soft)] transition hover:border-[var(--coral)] hover:text-[var(--coral-deep)]"
         >
           <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M8 3 L8 13 M3 8 L13 8" strokeLinecap="round" />
@@ -766,10 +785,10 @@ function NumberPicker({
           triggerHaptic(4);
           setValue(Number(event.target.value));
         }}
-        className="w-full max-w-md accent-[#fce7b4]"
+        className="w-full max-w-md accent-[var(--coral)]"
       />
 
-      <Button variant="crest" onClick={confirm}>
+      <Button onClick={confirm}>
         从第 {value} 张起，抽 {cardCount} 张
       </Button>
     </div>
@@ -784,11 +803,11 @@ function PickProgress({ picks, total }: { picks: number; total: number }) {
           key={index}
           className={cn(
             "h-1.5 w-6 rounded-full transition-all",
-            index < picks ? "bg-[rgba(255,222,150,0.95)]" : "bg-[rgba(243,210,138,0.18)]",
+            index < picks ? "bg-[var(--coral)]" : "bg-[var(--line-strong)]",
           )}
         />
       ))}
-      <span className="ml-3 font-occult text-[10px] tracking-[0.32em] uppercase text-[rgba(243,210,138,0.7)]">
+      <span className="ml-3 font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--ink-soft)]">
         {picks} / {total}
       </span>
     </div>

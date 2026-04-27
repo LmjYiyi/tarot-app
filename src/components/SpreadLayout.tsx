@@ -41,10 +41,10 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
               transition={{ delay: index * 0.1 }}
             >
               <div className="flex flex-col items-center">
-                <span className="font-occult text-[10px] tracking-[0.36em] uppercase text-[rgba(243,210,138,0.85)] bg-[rgba(12,16,36,0.8)] px-3 py-1 rounded-full border border-[rgba(243,210,138,0.45)] backdrop-blur-md shadow-md">
+                <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--ink-soft)] bg-[var(--surface)] px-3 py-1 rounded-full border border-[var(--line-strong)]">
                   {position.name}
                 </span>
-                <div className="h-3 w-px bg-[rgba(243,210,138,0.4)] mt-1" />
+                <div className="h-3 w-px bg-[var(--line-strong)] mt-1" />
               </div>
 
               <div className="w-full aspect-[2/3.5]">
@@ -57,10 +57,12 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
               </div>
 
               <div className="flex flex-col items-center mt-2">
-                <p className="font-serif-display text-[16px] italic text-[#f1e1c1] leading-tight">{card.nameZh}</p>
+                <p className="font-serif-display text-[17px] text-[var(--ink)] leading-tight">{card.nameZh}</p>
                 <span className={cn(
-                  "mt-1 font-occult text-[9px] tracking-[0.28em] px-1.5 py-0.5 rounded border backdrop-blur-sm",
-                  reversed ? "border-rose-400/60 text-rose-200 bg-rose-950/40" : "border-emerald-400/60 text-emerald-200 bg-emerald-950/40"
+                  "mt-1 font-mono text-[9px] tracking-[0.18em] px-2 py-0.5 rounded-full border",
+                  reversed
+                    ? "border-[rgba(184,92,110,0.45)] text-[#8a3447] bg-[rgba(184,92,110,0.08)]"
+                    : "border-[var(--coral-edge)] text-[var(--coral-deep)] bg-[var(--coral-wash)]"
                 )}>
                   {reversed ? "REVERSED" : "UPRIGHT"}
                 </span>
@@ -73,33 +75,37 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
       {/* --- Desktop chart canvas --- */}
       <div
         className={cn(
-          "hidden md:block relative mx-auto w-full overflow-hidden rounded-[20px] border border-[rgba(243,210,138,0.35)] shadow-[0_30px_80px_rgba(8,10,28,0.55)]",
+          "hidden md:block relative mx-auto w-full overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--surface-tint)]",
           preset.aspectRatio,
         )}
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(204,120,92,0.05) 0%, transparent 70%)",
+        }}
       >
-        {/* astrology chart background */}
+        {/* faint astrological chart, dialed way back so the cards lead */}
         <Image
           src="/spreads/astrology-chart-background.png"
           alt=""
           fill
           priority
           sizes="(max-width: 1280px) 100vw, 1024px"
-          className="object-cover"
+          className="object-cover opacity-[0.10] mix-blend-multiply"
           aria-hidden
         />
 
-        {/* depth wash to ensure card legibility */}
+        {/* gentle vignette that warms the center */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at center, rgba(8,10,28,0) 0%, rgba(8,10,28,0.35) 70%, rgba(8,10,28,0.55) 100%)",
+              "radial-gradient(ellipse at center, rgba(250,249,245,0) 0%, rgba(236,231,216,0.35) 100%)",
           }}
         />
 
-        {/* corner ornaments */}
-        <div className="pointer-events-none absolute inset-3 rounded-[14px] border border-[rgba(243,210,138,0.18)]" />
+        {/* hairline interior frame */}
+        <div className="pointer-events-none absolute inset-3 rounded-[14px] border border-[var(--line)]" />
 
         {cards.map(({ card, reversed, positionOrder }, index) => {
           const position = spread.positions.find((item) => item.order === positionOrder);
@@ -139,32 +145,23 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
               style={{ zIndex }}
             >
               <div className="group relative h-full w-full">
-                {/* base ambient halo, always faintly visible to lift card off the dark table */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -inset-2 rounded-[16px]"
-                  style={{
-                    background:
-                      "radial-gradient(closest-side, rgba(255,210,140,0.22), transparent 75%)",
-                  }}
-                />
-                {/* hover halo, intensifies on interaction */}
+                {/* hover halo only — no base halo needed on the cream table */}
                 <div
                   aria-hidden
                   className="pointer-events-none absolute -inset-3 rounded-[18px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                   style={{
                     background:
-                      "radial-gradient(closest-side, rgba(255,210,140,0.5), transparent)",
+                      "radial-gradient(closest-side, rgba(204,120,92,0.18), transparent)",
                   }}
                 />
 
                 {/* position label */}
                 <div className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap z-40">
                   <div className="flex flex-col items-center">
-                    <span className="font-occult text-[9px] tracking-[0.36em] uppercase text-[rgba(243,210,138,0.95)] bg-[rgba(12,16,36,0.85)] px-2.5 py-0.5 rounded-full border border-[rgba(243,210,138,0.5)] backdrop-blur-md shadow-md">
+                    <span className="font-mono text-[9px] tracking-[0.18em] uppercase text-[var(--ink-soft)] bg-[var(--surface)] px-2.5 py-0.5 rounded-full border border-[var(--line-strong)]">
                       {position.name}
                     </span>
-                    <div className="h-2 w-px bg-[rgba(243,210,138,0.55)] mt-0.5" />
+                    <div className="h-2 w-px bg-[var(--line-strong)] mt-0.5" />
                   </div>
                 </div>
 
@@ -176,15 +173,15 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
                 />
 
                 {/* card name */}
-                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap z-40 flex flex-col items-center pointer-events-none transition-opacity duration-300 opacity-80 group-hover:opacity-100">
-                  <p className="font-serif-display italic text-[14px] text-[#f1e1c1] drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
+                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap z-40 flex flex-col items-center pointer-events-none transition-opacity duration-300 opacity-90 group-hover:opacity-100">
+                  <p className="font-serif-display text-[15px] text-[var(--ink)]">
                     {card.nameZh}
                   </p>
                   <span className={cn(
-                    "font-occult text-[8px] tracking-[0.28em] mt-0.5 px-1.5 py-0.5 rounded border backdrop-blur-sm",
+                    "font-mono text-[8.5px] tracking-[0.18em] mt-0.5 px-2 py-0.5 rounded-full border",
                     reversed
-                      ? "border-rose-400/60 text-rose-200 bg-rose-950/50"
-                      : "border-emerald-400/60 text-emerald-200 bg-emerald-950/50",
+                      ? "border-[rgba(184,92,110,0.45)] text-[#8a3447] bg-[rgba(184,92,110,0.08)]"
+                      : "border-[var(--coral-edge)] text-[var(--coral-deep)] bg-[var(--coral-wash)]",
                   )}>
                     {reversed ? "REV" : "UP"}
                   </span>
@@ -195,10 +192,10 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
         })}
       </div>
 
-      <div className="hidden md:flex mt-10 flex-col items-center justify-center text-center space-y-1">
-        <div className="h-px w-20 bg-gradient-to-r from-transparent via-[rgba(243,210,138,0.5)] to-transparent" />
-        <p className="font-occult text-[9px] tracking-[0.4em] uppercase opacity-50">
-          Configured Layout · {spread.cardCount} Cards
+      <div className="hidden md:flex mt-12 flex-col items-center justify-center text-center space-y-2">
+        <div className="h-px w-16 bg-[var(--line-strong)]" />
+        <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--ink-muted)]">
+          {spread.cardCount} cards · 已布局
         </p>
       </div>
     </div>

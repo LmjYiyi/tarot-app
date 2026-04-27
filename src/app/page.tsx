@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { buttonStyles } from "@/components/ui/button";
-import { toRoman } from "@/components/ui/ornament";
 import { CardSlider } from "@/components/CardSlider";
 import { getAllCards } from "@/lib/tarot/catalog";
 
@@ -25,57 +24,60 @@ export default function HomePage() {
 
   return (
     <div className="overflow-hidden">
-      <section className="relative mx-auto grid min-h-[500px] w-full max-w-[1320px] grid-cols-1 px-5 pb-4 pt-12 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-12 lg:pb-0 lg:pt-10">
-        <div className="relative z-10 flex flex-col justify-center lg:justify-start">
-          <h1 className="font-serif-display text-[clamp(4rem,7.2vw,5.8rem)] leading-[0.9] tracking-normal text-[var(--ink-rich)] lg:w-[660px]">
-            为你翻开
-            <br />
-            <span className="text-[var(--brass-soft)]">今天的牌。</span>
+      {/* HERO */}
+      <section className="relative mx-auto grid w-full max-w-[1320px] grid-cols-1 gap-10 px-5 pb-12 pt-16 sm:px-8 lg:grid-cols-[1fr_1fr] lg:gap-16 lg:px-12 lg:pb-20 lg:pt-24">
+        <div className="relative z-10 flex flex-col justify-center">
+          <p className="eyebrow mb-5">Tarot · 中文塔罗</p>
+          <h1 className="font-serif-display text-[clamp(2.8rem,5.6vw,4.6rem)] leading-[1.04] tracking-[-0.018em] text-[var(--ink)]">
+            为你翻开<br />
+            <span className="text-[var(--coral)]">今天的牌。</span>
           </h1>
 
-          <p className="mt-6 max-w-[610px] text-[15px] leading-8 text-[var(--ink-soft)] sm:text-[16px]">
-            Arcana Flow 是一本能自己翻页的塔罗手札。你提问、洗牌、翻牌，AI 以中文把整局牌面读给你听。不占卜命运，只帮你把问题看得更清。
+          <p className="mt-6 max-w-[560px] text-[16.5px] leading-[1.75] text-[var(--ink-soft)]">
+            Arcana Flow 是一本能自己翻页的塔罗手札。
+            你提问、洗牌、翻牌，AI 以中文把整局牌面读给你听 ——
+            不占卜命运，只帮你把问题看得更清。
           </p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-4">
-            <Link className={buttonStyles({ className: "bg-[#a65b2c] px-7 shadow-[0_14px_28px_rgba(112,61,28,0.18)] hover:bg-[#8f4923]" })} href="/spreads/career-five">
-              ★ 开始今日抽牌
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link className={buttonStyles({ className: "px-5 py-3 text-[14px]" })} href="/spreads/career-five">
+              开始今日抽牌 →
             </Link>
-            <Link className={buttonStyles({ variant: "secondary", className: "bg-[rgba(255,252,244,0.58)] px-7" })} href="/spreads">
+            <Link className={buttonStyles({ variant: "secondary", className: "px-5 py-3 text-[14px]" })} href="/spreads">
               翻阅牌义图册
             </Link>
-            <span className="eyebrow-ink text-[10px]">
-              · 免费 · 中文 · 流式解读
-            </span>
           </div>
 
-          <div className="mt-7 grid max-w-[575px] grid-cols-3 border-t border-[var(--border)] pt-5">
-            <div>
-              <p className="font-serif-display text-3xl italic leading-none text-[var(--ink-rich)]">LXXVIII</p>
-              <p className="mt-2 text-[11px] tracking-[0.2em] text-[var(--ink-muted)]">张 Rider-Waite 真实牌面</p>
-            </div>
-            <div>
-              <p className="font-serif-display text-3xl italic leading-none text-[var(--ink-rich)]">V</p>
-              <p className="mt-2 text-[11px] tracking-[0.2em] text-[var(--ink-muted)]">种高频牌阵</p>
-            </div>
-            <div>
-              <p className="font-serif-display text-3xl italic leading-none text-[var(--ink-rich)]">∞</p>
-              <p className="mt-2 text-[11px] tracking-[0.2em] text-[var(--ink-muted)]">次匿名翻牌</p>
-            </div>
+          <div className="mt-12 grid max-w-[540px] grid-cols-3 gap-6 border-t border-[var(--line)] pt-6">
+            <Stat figure="78" caption="Rider-Waite 牌面" />
+            <Stat figure="9" caption="高频牌阵" />
+            <Stat figure="∞" caption="匿名翻牌" />
           </div>
         </div>
 
-        <div className="relative min-h-[390px] lg:min-h-[480px]">
-          <div className="home-compass absolute left-1/2 top-[42%] h-[470px] w-[470px] -translate-x-1/2 -translate-y-1/2 opacity-70 sm:h-[520px] sm:w-[520px]" />
-          <div className="absolute left-1/2 top-[40%] h-[290px] w-[300px] -translate-x-1/2 -translate-y-1/2 sm:h-[330px] sm:w-[360px]">
+        <div className="relative min-h-[440px] lg:min-h-[580px]">
+          {/* stronger, more visible compass background */}
+          <div className="home-compass absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 opacity-[0.70] sm:h-[620px] sm:w-[620px]" />
+          {/* warm radial wash to give depth behind the cards */}
+          <div
+            aria-hidden
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              width: 480,
+              height: 480,
+              background: "radial-gradient(ellipse at center, rgba(204,120,92,0.08) 0%, transparent 70%)",
+            }}
+          />
+          <div className="absolute left-1/2 top-1/2 h-[320px] w-[340px] -translate-x-1/2 -translate-y-1/2 sm:h-[380px] sm:w-[420px]">
             {heroCards.map((card, index) => {
               const offset = index - (heroCards.length - 1) / 2;
               return (
                 <div
                   key={card.id}
-                  className="absolute left-1/2 top-1/2 aspect-[300/524] w-[128px] overflow-hidden rounded-[11px] border border-[#d9c98f] bg-[var(--parchment-base)] shadow-[0_20px_35px_rgba(78,55,29,0.22)] sm:w-[150px]"
+                  className="absolute left-1/2 top-1/2 aspect-[300/524] overflow-hidden rounded-[14px] border border-[var(--line-strong)] bg-[var(--surface)] shadow-[0_16px_48px_rgba(26,26,25,0.14),0_4px_12px_rgba(26,26,25,0.08)]"
                   style={{
-                    transform: `translate(calc(-50% + ${offset * 42}px), calc(-50% + ${Math.abs(offset) * 12}px)) rotate(${offset * 8}deg)`,
+                    width: 158,
+                    transform: `translate(calc(-50% + ${offset * 52}px), calc(-50% + ${Math.abs(offset) * 14}px)) rotate(${offset * 9}deg)`,
                     zIndex: index + 1,
                   }}
                 >
@@ -84,7 +86,7 @@ export default function HomePage() {
                       src={card.imageUrl}
                       alt={`${card.nameZh} ${card.nameEn}`}
                       fill
-                      sizes="160px"
+                      sizes="180px"
                       className="object-cover"
                       priority
                     />
@@ -93,32 +95,24 @@ export default function HomePage() {
               );
             })}
           </div>
-          <div className="absolute bottom-[24%] left-[16%] hidden text-[10px] uppercase tracking-[0.28em] text-[var(--brass)] lg:block">
-            W
-          </div>
-          <div className="absolute bottom-[24%] right-[12%] hidden text-[10px] uppercase tracking-[0.28em] text-[var(--brass)] lg:block">
-            S
-          </div>
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-[1320px] pb-20">
+      {/* MAJORS */}
+      <section className="mx-auto w-full max-w-[1320px] pb-24">
         <div className="px-5 sm:px-8 lg:px-12">
-          <div className="mb-8 flex items-center gap-4 text-[var(--brass)]">
-            <span className="h-px w-28 bg-[var(--border-strong)]" />
-            <span className="text-xl leading-none">☆</span>
-            <span className="h-px w-28 bg-[var(--border-strong)]" />
-          </div>
-
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <p className="eyebrow-gold">Arcana Majora · 愚者的旅程</p>
-              <h2 className="mt-3 font-serif-display text-[clamp(3rem,4.6vw,4.4rem)] italic leading-[0.98] text-[var(--ink-rich)] lg:whitespace-nowrap">
-                二十二张大阿卡那，
-                <span className="whitespace-nowrap">一条课题地图。</span>
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-6 border-t border-[var(--line)] pt-10">
+            <div className="max-w-2xl">
+              <p className="eyebrow">Arcana Majora · 大阿卡那</p>
+              <h2 className="mt-3 font-serif-display text-[clamp(2.4rem,4vw,3.6rem)] leading-[1.05] tracking-[-0.018em] text-[var(--ink)]">
+                二十二张大阿卡那，<br />
+                一条课题地图。
               </h2>
             </div>
-            <Link className="font-occult text-[11px] uppercase tracking-[0.3em] text-[var(--ink-soft)] hover:text-[var(--brass)]" href="/cards/the-fool">
+            <Link
+              className="inline-flex items-center gap-2 rounded-[10px] border border-[var(--line-strong)] px-4 py-2 text-[13px] text-[var(--ink-soft)] transition hover:border-[var(--ink-soft)] hover:text-[var(--ink)]"
+              href="/cards/the-fool"
+            >
               读全部 22 张 →
             </Link>
           </div>
@@ -126,6 +120,19 @@ export default function HomePage() {
 
         <CardSlider cards={majorCards} />
       </section>
+    </div>
+  );
+}
+
+function Stat({ figure, caption }: { figure: string; caption: string }) {
+  return (
+    <div>
+      <p className="font-serif-display text-[34px] leading-none tracking-[-0.02em] text-[var(--ink)]">
+        {figure}
+      </p>
+      <p className="mt-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+        {caption}
+      </p>
     </div>
   );
 }

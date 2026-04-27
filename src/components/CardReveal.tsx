@@ -71,9 +71,9 @@ export function CardReveal({
         {/* 卡片正面 */}
         <div
           className={cn(
-            "absolute inset-0 overflow-hidden rounded-[10px] md:rounded-[14px] border border-[rgba(197,154,76,0.6)] shadow-[0_0_20px_rgba(197,154,76,0.2)] transition-all duration-300",
-            "group-hover:shadow-[0_0_40px_rgba(197,154,76,0.45),0_0_80px_rgba(197,154,76,0.15)] group-hover:border-[rgba(232,200,122,0.85)]",
-            "bg-gradient-to-br from-[var(--nebula)] to-[var(--velvet)]",
+            "absolute inset-0 overflow-hidden rounded-[10px] md:rounded-[14px] border border-[var(--line-strong)] shadow-[0_2px_8px_rgba(26,26,25,0.08)] transition-all duration-300",
+            "group-hover:shadow-[0_8px_24px_rgba(204,120,92,0.18),0_2px_8px_rgba(26,26,25,0.08)] group-hover:border-[var(--coral)]",
+            "bg-[var(--surface-tint)]",
           )}
           style={{
             backfaceVisibility: "hidden",
@@ -91,13 +91,13 @@ export function CardReveal({
                 className="object-cover"
                 priority={index < 5}
               />
-              {/* 精致的卡片覆盖层 */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/10 pointer-events-none" />
+              {/* subtle bottom shade so card name labels read against any image */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none" />
               <div
-                className="pointer-events-none absolute inset-0 opacity-70 mix-blend-screen transition-opacity duration-200 group-hover:opacity-100"
+                className="pointer-events-none absolute inset-0 opacity-50 mix-blend-screen transition-opacity duration-200 group-hover:opacity-80"
                 style={{
                   background:
-                    `linear-gradient(${118 + tilt.y * 4}deg, transparent 14%, rgba(255,238,180,0.2) 42%, rgba(255,255,255,0.3) 50%, transparent 64%), radial-gradient(circle at ${sheenX}% ${sheenY}%, rgba(255,255,255,0.24), transparent 34%)`,
+                    `linear-gradient(${118 + tilt.y * 4}deg, transparent 18%, rgba(255,255,255,0.18) 50%, transparent 70%), radial-gradient(circle at ${sheenX}% ${sheenY}%, rgba(255,255,255,0.16), transparent 38%)`,
                 }}
               />
             </div>

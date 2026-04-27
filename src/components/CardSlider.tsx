@@ -44,9 +44,9 @@ export function CardSlider({ cards, speed = 40 }: CardSliderProps) {
           <Link
             key={`${card.id}-${index}`}
             href={`/cards/${card.slug}`}
-            className="group relative aspect-[300/524] w-[140px] shrink-0 overflow-hidden rounded-[8px] border border-[#e5dcae] bg-[var(--parchment-deep)] shadow-[0_12px_24px_rgba(72,51,27,0.14)] sm:w-[160px] transition-transform duration-300 hover:scale-[1.05] hover:z-10"
+            className="group relative aspect-[300/524] w-[140px] shrink-0 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--surface-raised)] shadow-[0_4px_12px_rgba(26,26,25,0.08)] sm:w-[160px] transition-all duration-300 hover:scale-[1.04] hover:z-10 hover:shadow-[0_8px_24px_rgba(204,120,92,0.15)]"
           >
-            <span className="absolute left-2.5 top-2.5 z-10 rounded-[4px] bg-[rgba(255,250,226,0.92)] px-2.5 py-1 font-occult text-[11px] tracking-[0.16em] text-[var(--brass)] shadow-sm">
+            <span className="absolute left-2.5 top-2.5 z-10 rounded-[4px] bg-[var(--surface)] px-2.5 py-1 font-mono text-[10.5px] tracking-[0.14em] text-[var(--coral-deep)] shadow-[0_1px_3px_rgba(26,26,25,0.08)]">
               {toRoman(card.number)}
             </span>
             {card.imageUrl ? (
@@ -59,7 +59,7 @@ export function CardSlider({ cards, speed = 40 }: CardSliderProps) {
                 draggable={false}
               />
             ) : null}
-            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(42,36,30,0.15)] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(26,26,25,0.12)] to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           </Link>
         ))}
       </motion.div>

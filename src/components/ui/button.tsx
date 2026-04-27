@@ -16,27 +16,25 @@ export function buttonStyles({
   className?: string;
 }) {
   return cn(
-    "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[13px] font-semibold tracking-[0.18em] uppercase font-occult transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50",
+    "inline-flex items-center justify-center gap-2 rounded-[10px] px-5 py-2.5 text-[13.5px] font-medium tracking-[0] transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral-edge)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
     variant === "primary" &&
       [
-        "relative overflow-hidden text-[var(--parchment-base)]",
-        "bg-[var(--ink-rich)] shadow-[0_8px_24px_rgba(42,36,30,0.15)]",
-        "hover:bg-[var(--oxblood)] hover:shadow-[0_12px_28px_rgba(140,58,43,0.2)]",
-        "hover:-translate-y-[1.5px]",
-        "active:translate-y-[0px] active:shadow-inner",
+        "bg-[var(--coral)] text-white",
+        "shadow-[0_1px_2px_rgba(168,85,62,0.18)]",
+        "hover:bg-[var(--coral-deep)]",
+        "active:translate-y-[0.5px]",
       ].join(" "),
     variant === "secondary" &&
       [
-        "border border-[var(--border-strong)] bg-transparent text-[var(--ink-rich)]",
-        "hover:border-[var(--brass)] hover:bg-[var(--parchment-deep)] hover:text-[var(--brass)]",
+        "border border-[var(--line-strong)] bg-transparent text-[var(--ink)]",
+        "hover:bg-[var(--surface-raised)] hover:border-[var(--ink-soft)]",
       ].join(" "),
     variant === "ghost" &&
-      "text-[var(--ink-muted)] hover:text-[var(--brass)]",
+      "px-3 py-2 text-[var(--ink-soft)] hover:text-[var(--ink)] hover:bg-[var(--surface-raised)]",
     variant === "crest" &&
       [
-        "border-2 border-[var(--brass)] bg-[var(--parchment-base)] text-[var(--brass)]",
-        "shadow-[0_4px_12px_rgba(166,124,82,0.12)]",
-        "hover:bg-[var(--brass)] hover:text-[var(--parchment-base)]",
+        "border border-[var(--coral)] bg-transparent text-[var(--coral-deep)]",
+        "hover:bg-[var(--coral)] hover:text-white",
       ].join(" "),
     className,
   );

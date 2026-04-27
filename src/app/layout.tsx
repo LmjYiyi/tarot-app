@@ -71,30 +71,32 @@ function StarGlyph({ className }: { className?: string }) {
 
 function SiteHeader() {
   return (
-    <header className="absolute inset-x-0 top-0 z-40">
-      <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-6 px-5 py-5 text-[10px] uppercase tracking-[0.34em] text-[var(--ink-soft)] sm:px-8 lg:px-12">
-        <nav className="flex items-center gap-5 font-occult">
-          <Link className="hover:text-[var(--brass)]" href="/spreads">
-            Spreads · 牌阵
+    <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[rgba(250,249,245,0.82)] backdrop-blur-md">
+      <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-6 px-5 py-3.5 sm:px-8 lg:px-12">
+        <Link href="/" className="flex items-center gap-2.5 text-[var(--ink)]">
+          <StarGlyph className="h-3.5 w-3.5 text-[var(--coral)]" />
+          <span className="font-serif-display text-[19px] tracking-[-0.01em]">Arcana Flow</span>
+        </Link>
+
+        <nav className="flex items-center gap-1 text-[13.5px] text-[var(--ink-soft)]">
+          <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]" href="/spreads">
+            牌阵
           </Link>
-          <Link className="hidden hover:text-[var(--brass)] sm:inline-flex" href="/cards/the-fool">
-            Arcana · 牌义
+          <Link className="hidden rounded-[8px] px-3 py-1.5 transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)] sm:inline-flex" href="/cards/the-fool">
+            牌义
           </Link>
         </nav>
 
-        <Link href="/" className="hidden items-center gap-3 text-[var(--ink-rich)] sm:flex">
-          <StarGlyph className="h-3 w-3 text-[var(--brass)] opacity-60" />
-          <span className="font-serif-display text-lg italic normal-case tracking-wide">Arcana Flow</span>
-          <StarGlyph className="h-3 w-3 text-[var(--brass)] opacity-60" />
-        </Link>
-
-        <div className="flex items-center justify-end gap-5 font-occult">
-          <span className="hidden items-center gap-2 md:inline-flex">
-            <span className="inline-block h-1 w-1 rounded-full bg-[var(--brass)]" />
-            固定抽牌 · 反馈解读
+        <div className="flex items-center gap-3">
+          <span className="hidden items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)] md:inline-flex">
+            <span className="inline-block h-1 w-1 rounded-full bg-[var(--coral)]" />
+            中文 · 流式解读
           </span>
-          <Link className="hover:text-[var(--brass)]" href="/spreads">
-            开始
+          <Link
+            className="inline-flex items-center justify-center rounded-[10px] bg-[var(--coral)] px-4 py-1.5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(168,85,62,0.18)] transition hover:bg-[var(--coral-deep)]"
+            href="/spreads"
+          >
+            开始抽牌
           </Link>
         </div>
       </div>
@@ -104,41 +106,38 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="relative border-t border-[var(--border)] bg-[var(--parchment-deep)]/45 text-[var(--ink-muted)]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--border-strong)] to-transparent" />
-      <div className="mx-auto grid w-full max-w-[1320px] gap-10 px-6 py-12 lg:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-12">
-        <div className="space-y-3">
-          <p className="eyebrow-gold">Arcana Flow · MMXXVI</p>
-          <p className="font-serif-display text-3xl italic text-[var(--ink-rich)]">
-            &ldquo;The cards whisper; you answer.&rdquo;
+    <footer className="relative mt-20 border-t border-[var(--line)] bg-[var(--surface-tint)] text-[var(--ink-soft)]">
+      <div className="mx-auto grid w-full max-w-[1320px] gap-10 px-6 py-14 lg:grid-cols-[1.4fr_0.6fr_0.6fr] lg:px-12">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2.5 text-[var(--ink)]">
+            <StarGlyph className="h-3.5 w-3.5 text-[var(--coral)]" />
+            <span className="font-serif-display text-[20px]">Arcana Flow</span>
+          </div>
+          <p className="font-serif-display text-[26px] leading-[1.25] text-[var(--ink)]">
+            The cards whisper; you answer.
           </p>
-          <p className="text-sm leading-7">
+          <p className="max-w-md text-[13.5px] leading-[1.7]">
             牌面、文字与生成内容仅用于自我观察与灵感整理，不替代医疗、法律、投资及任何专业建议。
           </p>
         </div>
-        <div className="space-y-3 text-sm">
-          <p className="eyebrow-gold">Navigate</p>
+        <div className="space-y-3 text-[13.5px]">
+          <p className="eyebrow-ink">导览 · Navigate</p>
           <ul className="space-y-2">
-            <li>
-              <Link className="hover:text-[var(--brass)]" href="/spreads">
-                牌阵索引
-              </Link>
-            </li>
-            <li>
-              <Link className="hover:text-[var(--brass)]" href="/cards/the-fool">
-                牌义图册
-              </Link>
-            </li>
+            <li><Link className="transition hover:text-[var(--coral-deep)]" href="/spreads">牌阵索引</Link></li>
+            <li><Link className="transition hover:text-[var(--coral-deep)]" href="/cards/the-fool">牌义图册</Link></li>
           </ul>
         </div>
-        <div className="space-y-3 text-sm">
-          <p className="eyebrow-gold">Phase</p>
-          <p className="leading-7 text-[var(--text-faint)]">
-            I · 固定规则抽牌、牌面展示、直觉反馈与证据链解读。
+        <div className="space-y-3 text-[13.5px]">
+          <p className="eyebrow-ink">进度 · Phase</p>
+          <p className="leading-[1.75]">
+            I · 抽牌、展示、直觉反馈与证据链解读。
             <br />
-            II · 塔罗师工作台、客户会话与报告导出。
+            II · 塔罗师工作台、客户会话与导出。
           </p>
         </div>
+      </div>
+      <div className="border-t border-[var(--line)] py-5 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)]">
+        Arcana Flow · 2026 · Made with care
       </div>
     </footer>
   );
