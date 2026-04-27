@@ -81,3 +81,58 @@ export function drawCards(cardCount: number, options: DrawCardsOptions = {}): Dr
     reversed: randomFloat() < reversedRate,
   }));
 }
+
+export type ShuffledDeck = {
+  /** ordered card ids after shuffle (0-indexed). length = 78. */
+  order: string[];
+  seed: string;
+  reversedRate: number;
+  /** offset where the user "cut" the deck — virtual rotation. */
+  cutAt: number;
+};
+
+export function shuffleDeck(options: DrawCardsOptions = {}): ShuffledDeck {
+  const deck = [...getAllCards()];
+  const reversedRate = resolveReversedRate(options.reversedRate);
+  const seed = options.seed ?? createDrawSeed();
+  const randomFloat = createSeededRandom(seed);
+
+  for (let i = deck.length - 1; i > 0; i -= 1) {
+    const j = randomInt(i + 1, randomFloat);
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+
+  return {
+    order: deck.map((card) => card.id),
+    seed,
+    reversedRate,
+    cutAt: 0,
+  };
+}
+
+/**
+ * Apply a "cut" to a shuffled deck by rotating it.
+ * cutPosition is normalized 0..1 (where in the deck the user cut).
+ */
+export function applyCut(deck: ShuffledDeck, cutPosition: number): ShuffledDeck {
+  const total = deck.order.length;
+  const cutIndex = Math.max(1, Math.min(total - 1, Math.round(cutPosition * total)));
+  const rotated = [...deck.order.slice(cutIndex), ...deck.order.slice(0, cutIndex)];
+  return { ...deck, order: rotated, cutAt: cutIndex };
+}
+
+/**
+ * Draw cards from a (possibly cut) shuffled deck given an array of indices the
+ * user picked. Uses the deck's seed to deterministically assign reversed orientation.
+ */
+export function drawFromIndices(
+  deck: ShuffledDeck,
+  indices: number[],
+): DrawnCard[] {
+  const orientationRandom = createSeededRandom(`${deck.seed}::orient`);
+  return indices.map((indexInDeck, drawOrder) => ({
+    cardId: deck.order[indexInDeck],
+    positionOrder: drawOrder + 1,
+    reversed: orientationRandom() < deck.reversedRate,
+  }));
+}

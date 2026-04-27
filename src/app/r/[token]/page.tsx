@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import { AnnotatedInterpretation } from "@/components/AnnotatedInterpretation";
 import { Ornament, toRoman } from "@/components/ui/ornament";
 import { Panel } from "@/components/ui/panel";
 import { getReadingByToken } from "@/lib/readings/store";
@@ -60,22 +61,38 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
   const spread = getSpreadBySlug(reading.spreadSlug);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-16 lg:px-10 lg:py-24">
+    <div className="editorial-parchment mx-auto w-full max-w-5xl px-6 py-16 lg:px-10 lg:py-24">
+      <div className="relative mb-10 aspect-[16/9] w-full overflow-hidden rounded-[20px] border border-[var(--gold-foil)]/40 shadow-[0_30px_80px_rgba(40,30,12,0.15)]">
+        <Image
+          src="/visuals/reading-result-cover.png"
+          alt="塔罗解读封面"
+          fill
+          sizes="(max-width: 1280px) 100vw, 960px"
+          priority
+          className="object-cover"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-[20px] ring-1 ring-inset ring-[rgba(184,134,11,0.3)]"
+        />
+      </div>
       <header className="space-y-6 text-center">
         <Ornament variant="quatrefoil" />
-        <p className="eyebrow">Reading Share · Anno MMXXVI</p>
+        <p className="eyebrow-ink">Reading Share · Anno MMXXVI</p>
         <h1 className="font-serif-display text-[clamp(2.75rem,5vw,4.5rem)] leading-[1] text-[var(--ink)]">
           {spread?.nameZh ?? "塔罗解读"}
         </h1>
-        <p className="mx-auto max-w-3xl font-serif-display text-[22px] italic leading-9 text-[var(--ink-soft)]">
+        <p className="mx-auto max-w-3xl font-fraunces text-[22px] italic leading-9 text-[var(--ink-soft)]">
           &ldquo;{reading.question || "我想看清自己当前最需要面对的课题。"}&rdquo;
         </p>
         <Ornament variant="rule" className="mx-auto max-w-xs" />
       </header>
 
-      <div className="mt-14 grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-        <Panel className="space-y-5">
-          <p className="eyebrow">Cartae · 抽到的牌</p>
+      <div className="mt-14 grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+        {/* Cards column */}
+        <div className="space-y-5">
+          <p className="eyebrow-ink">Cartae · 抽到的牌</p>
+          <Ornament variant="rule" className="max-w-[160px]" />
           <ul className="space-y-3">
             {reading.cards.map((drawnCard) => {
               const card = getCardById(drawnCard.cardId);
@@ -86,9 +103,9 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
               return (
                 <li
                   key={`${drawnCard.cardId}-${drawnCard.positionOrder}`}
-                  className="flex items-start gap-4 rounded-[16px] border border-[var(--gilt)]/40 bg-[rgba(255,249,232,0.55)] p-3"
+                  className="flex items-start gap-4 rounded-[16px] border border-[var(--gilt)]/40 bg-[rgba(255,249,232,0.4)] p-3"
                 >
-                  <div className="relative h-[98px] w-[56px] shrink-0 overflow-hidden rounded-[8px] border border-[rgba(197,154,76,0.5)] bg-white">
+                  <div className="relative h-[98px] w-[56px] shrink-0 overflow-hidden rounded-[8px] border border-[var(--gilt)]/50 bg-[var(--vellum-1)]">
                     {card?.imageUrl ? (
                       <Image
                         src={card.imageUrl}
@@ -115,16 +132,18 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
             })}
           </ul>
 
+          <Ornament variant="rule" className="max-w-[120px]" />
+
           {reading.readingIntent ? (
-            <div className="rounded-[14px] border border-[var(--gilt)]/40 bg-[rgba(255,249,232,0.6)] px-4 py-3 text-[12px] leading-6 text-[var(--ink-muted)]">
-              <p className="eyebrow mb-1">Intent</p>
+            <div className="rounded-[14px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.3)] px-4 py-3 text-[12px] leading-6 text-[var(--ink-muted)]">
+              <p className="eyebrow-ink mb-1">Intent</p>
               {domainLabels[reading.readingIntent.domain]} · {goalLabels[reading.readingIntent.goal]}
             </div>
           ) : null}
 
           {reading.drawLog ? (
-            <div className="rounded-[14px] border border-[var(--gilt)]/40 bg-[rgba(255,249,232,0.6)] px-4 py-3 text-[12px] leading-6 text-[var(--ink-muted)]">
-              <p className="eyebrow mb-1">Draw Log</p>
+            <div className="rounded-[14px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.3)] px-4 py-3 text-[12px] leading-6 text-[var(--ink-muted)]">
+              <p className="eyebrow-ink mb-1">Draw Log</p>
               Seed：{reading.drawLog.seed}
               <br />
               规则：{reading.drawLog.drawRule}
@@ -132,8 +151,8 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
           ) : null}
 
           {reading.userFeedback ? (
-            <div className="rounded-[14px] border border-[var(--gilt)]/40 bg-[rgba(255,249,232,0.6)] px-4 py-3 text-[12px] leading-6 text-[var(--ink-muted)]">
-              <p className="eyebrow mb-1">Feedback</p>
+            <div className="rounded-[14px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.3)] px-4 py-3 text-[12px] leading-6 text-[var(--ink-muted)]">
+              <p className="eyebrow-ink mb-1">Feedback</p>
               整体感受：{reading.userFeedback.overallFeeling || "未填写"}
               {reading.userFeedback.overallFeelingNote ? (
                 <>
@@ -145,8 +164,8 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
           ) : null}
 
           {reading.adaptiveAnswers?.length ? (
-            <div className="rounded-[14px] border border-[var(--gilt)]/40 bg-[rgba(255,249,232,0.6)] px-4 py-3 text-[12px] leading-6 text-[var(--ink-muted)]">
-              <p className="eyebrow mb-1">Adaptive</p>
+            <div className="rounded-[14px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.3)] px-4 py-3 text-[12px] leading-6 text-[var(--ink-muted)]">
+              <p className="eyebrow-ink mb-1">Adaptive</p>
               {reading.adaptiveAnswers.map((answer) => (
                 <p key={answer.questionId}>
                   {answer.question}：{answer.answerLabel || answer.answer}
@@ -154,15 +173,17 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
               ))}
             </div>
           ) : null}
-        </Panel>
+        </div>
 
-        <Panel className="space-y-4">
-          <p className="eyebrow">Lectio Integra · 完整解读</p>
+        {/* Interpretation column */}
+        <div className="space-y-4">
+          <p className="eyebrow-ink">Lectio Integra · 完整解读</p>
           <Ornament variant="rule" className="max-w-[220px]" />
-          <div className="prose prose-neutral max-w-none whitespace-pre-wrap font-serif-display text-[16px] leading-8 text-[var(--ink-soft)]">
-            {reading.aiInterpretation}
-          </div>
-        </Panel>
+          <AnnotatedInterpretation
+            text={reading.aiInterpretation}
+            adaptiveAnswers={reading.adaptiveAnswers}
+          />
+        </div>
       </div>
     </div>
   );

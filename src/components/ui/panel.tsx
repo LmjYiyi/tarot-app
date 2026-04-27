@@ -12,13 +12,13 @@ type PanelProps = PropsWithChildren<{
 
 const baseClasses: Record<PanelVariant, string> = {
   default:
-    "relative rounded-[28px] border border-[var(--gilt)]/50 bg-[linear-gradient(180deg,rgba(255,249,233,0.92)_0%,rgba(244,227,193,0.78)_100%)] p-6 shadow-[0_30px_80px_rgba(60,36,12,0.10)] backdrop-blur-sm",
+    "relative rounded-[28px] border border-[var(--border-strong)] bg-[var(--parchment-deep)]/80 p-6 shadow-[0_12px_44px_rgba(50,30,12,0.06)] backdrop-blur-sm",
   dark:
-    "relative overflow-hidden rounded-[28px] border border-[rgba(197,154,76,0.35)] bg-[linear-gradient(160deg,#121626_0%,#1d2540_55%,#2a2148_100%)] p-6 text-[rgba(246,232,206,0.88)] shadow-[0_30px_80px_rgba(10,12,24,0.45)]",
+    "relative overflow-hidden rounded-[28px] border border-[var(--brass)] bg-[linear-gradient(160deg,#2a241e_0%,#3d342d_55%,#1a1612_100%)] p-6 text-[rgba(244,241,234,0.92)] shadow-[0_22px_60px_rgba(30,12,4,0.22)]",
   arched:
-    "relative overflow-hidden rounded-t-[220px] rounded-b-[28px] border border-[var(--gilt)]/55 bg-[linear-gradient(180deg,rgba(255,249,233,0.95)_0%,rgba(238,218,177,0.78)_100%)] p-8 shadow-[0_30px_70px_rgba(60,36,12,0.12)]",
+    "relative overflow-hidden rounded-t-[220px] rounded-b-[28px] border border-[var(--border-strong)] bg-[var(--parchment-deep)]/80 p-8 shadow-[0_14px_48px_rgba(50,30,12,0.06)] backdrop-blur-sm",
   ghost:
-    "relative rounded-[24px] border border-[var(--border)]/70 bg-transparent p-5",
+    "relative rounded-[24px] border border-[var(--border)] bg-transparent p-5",
 };
 
 export function Panel({
@@ -32,7 +32,7 @@ export function Panel({
       {variant === "default" ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-[6px] rounded-[22px] border border-[var(--gilt)]/30"
+          className="pointer-events-none absolute inset-[6px] rounded-[22px] border border-[var(--gilt-dim)]"
         />
       ) : null}
       {variant === "dark" ? (
@@ -44,7 +44,7 @@ export function Panel({
       {variant === "arched" ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-[8px] rounded-t-[200px] rounded-b-[22px] border border-[var(--gilt)]/35"
+          className="pointer-events-none absolute inset-[8px] rounded-t-[200px] rounded-b-[22px] border border-[var(--gilt-dim)]"
         />
       ) : null}
       <div className="relative">{children}</div>

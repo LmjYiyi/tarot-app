@@ -48,19 +48,58 @@ function buildSpreadBlocks(): KnowledgeBlock[] {
 
 function buildCardBlocks() {
   return getAllCards().map<KnowledgeBlock>((card) => {
+    const metadataLines = [
+      card.element ? `元素：${card.element}` : null,
+      card.planetary ? `行星：${card.planetary}` : null,
+      card.astrology ? `星象/星座：${card.astrology}` : null,
+      card.date ? `时间对应：${card.date}` : null,
+      card.isYesNo ? `是/否倾向：${card.isYesNo}` : null,
+    ].filter((line): line is string => Boolean(line));
+
+    const symbolismLines = card.symbolism?.length
+      ? [
+          "牌面象征：",
+          ...card.symbolism
+            .slice(0, 6)
+            .map((item) => `- ${item.symbol}：${item.meaning}`),
+        ]
+      : [];
+
+    const combinationLines = card.combinations?.length
+      ? [
+          "组合意义：",
+          ...card.combinations.map(
+            (combination) => `- 与${combination.cardName}：${combination.meaning}`,
+          ),
+        ]
+      : [];
+
     return {
       id: `card:${card.id}`,
       kind: "card",
       title: card.nameZh,
       text: [
         `${card.nameZh} (${card.nameEn})`,
+        ...metadataLines,
+        card.summary ? `摘要：${card.summary}` : null,
+        card.fullMeaning ? `深层含义：${card.fullMeaning}` : null,
         `正位关键词：${card.keywordsUpright.join("、")}`,
         `逆位关键词：${card.keywordsReversed.join("、")}`,
         `正位：${card.meaningUpright}`,
         `逆位：${card.meaningReversed}`,
-        `爱情：${card.loveMeaning}`,
-        `事业：${card.careerMeaning}`,
-      ].join("\n"),
+        card.loveMeaningUpright ? `感情正位：${card.loveMeaningUpright}` : null,
+        card.loveMeaningReversed ? `感情逆位：${card.loveMeaningReversed}` : null,
+        card.careerMeaningUpright ? `事业正位：${card.careerMeaningUpright}` : null,
+        card.careerMeaningReversed ? `事业逆位：${card.careerMeaningReversed}` : null,
+        card.financeMeaningUpright ? `财务正位：${card.financeMeaningUpright}` : null,
+        card.financeMeaningReversed ? `财务逆位：${card.financeMeaningReversed}` : null,
+        card.healthMeaningUpright ? `健康正位：${card.healthMeaningUpright}` : null,
+        card.healthMeaningReversed ? `健康逆位：${card.healthMeaningReversed}` : null,
+        ...symbolismLines,
+        ...combinationLines,
+      ]
+        .filter((line): line is string => Boolean(line))
+        .join("\n"),
       tags: [card.arcana, card.suit ?? "major", card.slug],
       metadata: {
         card_id: card.id,

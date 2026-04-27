@@ -27,6 +27,7 @@ type ResolvedSelectedCard = {
   orientation: "正位" | "逆位";
   keywords: string[];
   primaryMeaning: string;
+  domainMeaning: string | null;
 };
 
 type ResponseBlueprint = {
@@ -138,9 +139,29 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
   }
 }
 
+function getDomainMeaning(
+  card: TarotCard,
+  reversed: boolean,
+  intent: ReadingIntent | undefined,
+) {
+  const suffix = reversed ? "Reversed" : "Upright";
+
+  switch (intent?.domain) {
+    case "love":
+    case "relationship":
+      return card[`loveMeaning${suffix}` as const] ?? null;
+    case "career":
+    case "study":
+      return card[`careerMeaning${suffix}` as const] ?? null;
+    default:
+      return null;
+  }
+}
+
 function resolveSelectedCards(
   spread: SpreadDefinition | null,
   cards: DrawnCard[],
+  intent?: ReadingIntent,
 ): ResolvedSelectedCard[] {
   return cards
     .map((drawnCard) => {
@@ -159,9 +180,39 @@ function resolveSelectedCards(
         orientation,
         keywords: drawnCard.reversed ? card.keywordsReversed : card.keywordsUpright,
         primaryMeaning: drawnCard.reversed ? card.meaningReversed : card.meaningUpright,
+        domainMeaning: getDomainMeaning(card, drawnCard.reversed, intent),
       };
     })
     .filter((value): value is ResolvedSelectedCard => Boolean(value));
+}
+
+function normalizeCombinationSlug(slug: string) {
+  return slug.replace(/^the-(justice|judgement|wheel-of-fortune)$/, "$1");
+}
+
+function buildCombinationSummary(selectedCards: ResolvedSelectedCard[]) {
+  const lines: string[] = [];
+
+  selectedCards.forEach(({ card, position }) => {
+    card.combinations?.forEach((combination) => {
+      const matchedCard = selectedCards.find(
+        (candidate) =>
+          candidate.card.id !== card.id &&
+          normalizeCombinationSlug(candidate.card.slug) ===
+            normalizeCombinationSlug(combination.cardSlug),
+      );
+
+      if (!matchedCard) {
+        return;
+      }
+
+      lines.push(
+        `- ${card.nameZh}（位置${position.order}「${position.name}」） + ${matchedCard.card.nameZh}（位置${matchedCard.position.order}「${matchedCard.position.name}」）：${combination.meaning}`,
+      );
+    });
+  });
+
+  return lines.length ? lines.join("\n") : "本次抽到的牌之间暂无结构化组合意义，请只按牌阵位置和单牌含义整合。";
 }
 
 function summarizeIntent(intent: ReadingIntent | undefined) {
@@ -204,24 +255,47 @@ function summarizeAdaptiveAnswers(answers: AdaptiveAnswer[] | undefined) {
   }
 
   return answers
-    .map((answer) => `- ${answer.question}\n  用户感受：${answer.answerLabel || answer.answer}`)
+    .map(
+      (answer, index) =>
+        `- A${index + 1}：${answer.question}\n  用户感受：${answer.answerLabel || answer.answer}`,
+    )
     .join("\n");
+}
+
+function buildAnnotationRule(answers: AdaptiveAnswer[] | undefined) {
+  if (!answers?.length) {
+    return null;
+  }
+
+  const ids = answers.map((_, index) => `A${index + 1}`).join("、");
+  return [
+    "回指标记（重要指令）：",
+    `- 本次解读包含用户的具体回应（编号 ${ids}）。`,
+    `- 当你的某段分析是直接基于某个回答（如 A1）推导出来时，请务必将该判断相关的「关键短语」用特定的标记包起来。`,
+    `- 格式示例：[[a:A1]]你提到的事业转折[[/a]]。其中 A1 对应具体的回答编号。`,
+    "- 标记要求：短语长度 4-20 字，必须是自然语句的一部分。严禁包裹整段文字或仅包裹一两个词。",
+    "- 数量限制：全篇总计标记 3-5 处即可，不要过度标记。同一自然段最多 2 处。",
+    "- 作用：这些标记将用于前端高亮展示，并允许用户悬停查看对应的原始回答。请确保被包裹的短语确实与该回答逻辑相关。",
+  ].join("\n");
 }
 
 export async function buildInterpretationPayload(input: BuildContextInput) {
   const provider = getKnowledgeProvider();
   const spread = getSpreadBySlug(input.spreadSlug);
   const responseBlueprint = getResponseBlueprint(spread);
-  const selectedCards = resolveSelectedCards(spread, input.cards);
+  const selectedCards = resolveSelectedCards(spread, input.cards, input.readingIntent);
   const feedbackSummary = summarizeFeedback(selectedCards, input.userFeedback);
   const adaptiveSummary = summarizeAdaptiveAnswers(input.adaptiveAnswers);
   const intentSummary = summarizeIntent(input.readingIntent);
+  const combinationSummary = buildCombinationSummary(selectedCards);
   const context = await provider.getContext({
     question: input.question,
     spreadSlug: input.spreadSlug,
     cardIds: input.cards.map((card) => card.cardId),
     locale: input.locale,
   });
+
+  const annotationRule = buildAnnotationRule(input.adaptiveAnswers);
 
   const userPrompt = [
     `用户问题：${input.question || "我想看清自己当前最需要面对的课题。"}`,
@@ -233,9 +307,28 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     `解读重点：${responseBlueprint.instruction}`,
     "抽牌结果：",
     ...selectedCards.map(
-      ({ card, position, orientation, keywords, primaryMeaning }) =>
-        `- 位置 ${position.order}「${position.name}」：${card.nameZh}（${orientation}）\n  位置任务：${position.focus}；${position.promptHint}\n  关键词：${keywords.join("、")}\n  牌义摘要：${primaryMeaning}`,
+      ({ card, position, orientation, keywords, primaryMeaning, domainMeaning }) =>
+        [
+          `- 位置 ${position.order}「${position.name}」：${card.nameZh}（${orientation}）`,
+          `  位置任务：${position.focus}；${position.promptHint}`,
+          `  关键词：${keywords.join("、")}`,
+          `  牌义摘要：${primaryMeaning}`,
+          domainMeaning ? `  领域牌义：${domainMeaning}` : null,
+          card.element || card.planetary || card.astrology
+            ? `  元数据：${[
+                card.element ? `元素=${card.element}` : null,
+                card.planetary ? `行星=${card.planetary}` : null,
+                card.astrology ? `星象=${card.astrology}` : null,
+              ]
+                .filter(Boolean)
+                .join("；")}`
+            : null,
+        ]
+          .filter((line): line is string => Boolean(line))
+          .join("\n"),
     ),
+    "本次牌组组合意义：",
+    combinationSummary,
     "用户直觉反馈：",
     feedbackSummary,
     "适配追问反馈：",
@@ -243,17 +336,23 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     "推理规则：",
     "1. 每个关键判断都必须绑定至少一个依据：牌名、牌阵位置、正逆位、用户反馈或适配追问答案。",
     "2. 先说明牌面事实，再整合用户反馈，再提炼心理状态、核心矛盾、趋势与建议。",
-    "3. 用户的适配追问答案只代表看牌后的感受，不要把它当作客观事实。",
-    "4. 不要使用“必然、一定、命中注定”等绝对预言。用“更像是、倾向于、需要注意”的表达。",
-    "5. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
-    "6. 输出要克制精炼，不要写 Markdown 表格，不要逐项复制所有关键词。",
+    "3. 若某张牌提供了「领域牌义」，优先用它回应用户选择的领域；基础牌义只作为背景补充，不要反客为主。",
+    "4. 权重指令：若提供了「本次牌组组合意义」，应将其作为解读局势结构或核心矛盾的优先依据，而不是只平铺单牌解析。",
+    "5. 元素、行星、星象和数字只作为辅助线索：当它们能解释重复模式（多张同号牌）、显著冲突、互补或趋势时再使用。禁止为了显得神秘而硬凑或堆砌这些术语。",
+    "6. 用户的适配追问答案只代表看牌后的感受，不要把它当作客观事实。",
+    "7. 不要使用绝对预言（必然、一定、命中注定），用更像是、倾向于、需要注意的表达。",
+    "8. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
+    "9. 输出要克制精炼，不要写 Markdown 表格，不要逐项复制所有关键词。",
+    annotationRule,
     selectedCards.length <= 5
       ? "长度要求：700 到 1000 个中文字符，优先保留核心矛盾和行动建议。"
       : "长度要求：1000 到 1400 个中文字符，复杂牌阵也要整合，不要平铺所有牌。",
     "必须完整结束，不要在句子中间截断；如果篇幅不够，优先压缩分位置解读，保留行动建议和一句总结。",
     "请严格按以下结构输出：",
     ...responseBlueprint.sections,
-  ].join("\n");
+  ]
+    .filter((line): line is string => Boolean(line))
+    .join("\n");
 
   const knowledgeText = context.contextBlocks
     .map(

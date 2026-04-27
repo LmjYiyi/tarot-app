@@ -10,6 +10,17 @@ export type ReadingDomain =
   | "decision";
 export type ReadingGoal = "trend" | "obstacle" | "advice" | "decision" | "other_view";
 
+export type CardCombination = {
+  cardSlug: string;
+  cardName: string;
+  meaning: string;
+};
+
+export type SymbolismItem = {
+  symbol: string;
+  meaning: string;
+};
+
 export type TarotCard = {
   id: string;
   slug: string;
@@ -18,12 +29,44 @@ export type TarotCard = {
   arcana: Arcana;
   suit: Suit | null;
   number: number;
+  
+  // 核心关键字
   keywordsUpright: string[];
   keywordsReversed: string[];
+  
+  // 基础信息
+  element?: string;
+  astrology?: string;
+  planetary?: string;
+  date?: string;
+  
+  // 详细文本
+  summary?: string;
+  description?: string;
+  symbolism?: SymbolismItem[];
+  fullMeaning?: string;
+  
+  // 分领域含义 (正位)
   meaningUpright: string;
+  loveMeaning?: string;
+  careerMeaning?: string;
+  loveMeaningUpright?: string;
+  careerMeaningUpright?: string;
+  financeMeaningUpright?: string;
+  healthMeaningUpright?: string;
+  
+  // 分领域含义 (逆位)
   meaningReversed: string;
-  loveMeaning: string;
-  careerMeaning: string;
+  loveMeaningReversed?: string;
+  careerMeaningReversed?: string;
+  financeMeaningReversed?: string;
+  healthMeaningReversed?: string;
+
+  // 组合意义
+  combinations?: CardCombination[];
+
+  // 其他辅助
+  isYesNo?: "yes" | "no" | "maybe";
   imageUrl?: string;
 };
 

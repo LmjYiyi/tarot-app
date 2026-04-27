@@ -3,149 +3,128 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { buttonStyles } from "@/components/ui/button";
-import { Ornament, toRoman } from "@/components/ui/ornament";
-import { Panel } from "@/components/ui/panel";
-import { getAllCards, getAllSpreads } from "@/lib/tarot/catalog";
+import { toRoman } from "@/components/ui/ornament";
+import { CardSlider } from "@/components/CardSlider";
+import { getAllCards } from "@/lib/tarot/catalog";
 
 export const metadata: Metadata = {
-  title: "Arcana Flow | 在线塔罗解读",
-  description: "固定规则抽牌、牌面展示、用户直觉反馈与 AI 证据链塔罗解读。",
+  title: "Arcana Flow | 免费在线塔罗占卜",
+  description: "固定规则洗牌、抽牌、牌面展示与 AI 证据链塔罗解读。",
 };
 
+const heroCardSlugs = ["the-star", "the-moon", "the-sun", "the-world"];
+
 export default function HomePage() {
-  const spreads = getAllSpreads().slice(0, 6);
-  const heroCards = ["the-star", "the-emperor", "four-of-swords", "king-of-wands"]
-    .map((slug) => getAllCards().find((card) => card.slug === slug))
+  const allCards = getAllCards();
+  const heroCards = heroCardSlugs
+    .map((slug) => allCards.find((card) => card.slug === slug))
     .filter((card): card is NonNullable<typeof card> => Boolean(card));
+  const majorCards = allCards
+    .filter((card) => card.arcana === "major")
+    .sort((a, b) => a.number - b.number);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-6 py-14 lg:px-10 lg:py-20">
-      <section className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="space-y-8">
-          <div className="space-y-5">
-            <div className="flex items-center gap-3">
-              <span className="h-px w-16 bg-[var(--gilt)]" />
-              <span className="eyebrow">Evidence-based Tarot</span>
+    <div className="overflow-hidden">
+      <section className="relative mx-auto grid min-h-[500px] w-full max-w-[1320px] grid-cols-1 px-5 pb-4 pt-12 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-12 lg:pb-0 lg:pt-10">
+        <div className="relative z-10 flex flex-col justify-center lg:justify-start">
+          <h1 className="font-serif-display text-[clamp(4rem,7.2vw,5.8rem)] leading-[0.9] tracking-normal text-[var(--ink-rich)] lg:w-[660px]">
+            为你翻开
+            <br />
+            <span className="text-[var(--brass-soft)]">今天的牌。</span>
+          </h1>
+
+          <p className="mt-6 max-w-[610px] text-[15px] leading-8 text-[var(--ink-soft)] sm:text-[16px]">
+            Arcana Flow 是一本能自己翻页的塔罗手札。你提问、洗牌、翻牌，AI 以中文把整局牌面读给你听。不占卜命运，只帮你把问题看得更清。
+          </p>
+
+          <div className="mt-7 flex flex-wrap items-center gap-4">
+            <Link className={buttonStyles({ className: "bg-[#a65b2c] px-7 shadow-[0_14px_28px_rgba(112,61,28,0.18)] hover:bg-[#8f4923]" })} href="/spreads/career-five">
+              ★ 开始今日抽牌
+            </Link>
+            <Link className={buttonStyles({ variant: "secondary", className: "bg-[rgba(255,252,244,0.58)] px-7" })} href="/spreads">
+              翻阅牌义图册
+            </Link>
+            <span className="eyebrow-ink text-[10px]">
+              · 免费 · 中文 · 流式解读
+            </span>
+          </div>
+
+          <div className="mt-7 grid max-w-[575px] grid-cols-3 border-t border-[var(--border)] pt-5">
+            <div>
+              <p className="font-serif-display text-3xl italic leading-none text-[var(--ink-rich)]">LXXVIII</p>
+              <p className="mt-2 text-[11px] tracking-[0.2em] text-[var(--ink-muted)]">张 Rider-Waite 真实牌面</p>
             </div>
-            <h1 className="font-serif-display text-[clamp(2.8rem,6vw,5.25rem)] leading-[0.96] text-[var(--ink)]">
-              用牌面和反馈，
-              <br />
-              看清当下的结构。
-            </h1>
-            <p className="max-w-2xl text-[17px] leading-8 text-[var(--ink-soft)]">
-              Arcana Flow 不让模型随机编牌。系统先用固定 seed 洗牌和抽牌，再展示牌面、收集你的直觉反馈，最后把牌义、牌位、正逆位和反馈整合成结构化解读。
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <Link className={buttonStyles({})} href="/spreads/career-five">
-              开始五张事业牌阵
-            </Link>
-            <Link className={buttonStyles({ variant: "secondary" })} href="/spreads">
-              选择其他牌阵
-            </Link>
-          </div>
-
-          <div className="grid max-w-2xl gap-3 sm:grid-cols-4">
-            {["明确问题", "固定抽牌", "直觉反馈", "证据链解读"].map((item, index) => (
-              <div
-                key={item}
-                className="rounded-[8px] border border-[var(--gilt)]/45 bg-[rgba(255,249,232,0.62)] px-4 py-3"
-              >
-                <p className="roman text-xl text-[var(--gold-deep)]">{toRoman(index + 1)}</p>
-                <p className="mt-1 text-[12px] tracking-[0.08em] text-[var(--ink-soft)]">
-                  {item}
-                </p>
-              </div>
-            ))}
+            <div>
+              <p className="font-serif-display text-3xl italic leading-none text-[var(--ink-rich)]">V</p>
+              <p className="mt-2 text-[11px] tracking-[0.2em] text-[var(--ink-muted)]">种高频牌阵</p>
+            </div>
+            <div>
+              <p className="font-serif-display text-3xl italic leading-none text-[var(--ink-rich)]">∞</p>
+              <p className="mt-2 text-[11px] tracking-[0.2em] text-[var(--ink-muted)]">次匿名翻牌</p>
+            </div>
           </div>
         </div>
 
-        <div className="relative min-h-[430px]">
-          <div className="absolute inset-0 rounded-[8px] border border-[var(--gilt)]/40 bg-[linear-gradient(160deg,#121626_0%,#1d2540_100%)] shadow-[0_28px_80px_rgba(50,31,12,0.22)]" />
-          <div className="absolute inset-[10px] rounded-[6px] border border-[rgba(197,154,76,0.22)]" />
-          <div className="relative flex h-full min-h-[430px] items-center justify-center overflow-hidden p-8">
+        <div className="relative min-h-[390px] lg:min-h-[480px]">
+          <div className="home-compass absolute left-1/2 top-[42%] h-[470px] w-[470px] -translate-x-1/2 -translate-y-1/2 opacity-70 sm:h-[520px] sm:w-[520px]" />
+          <div className="absolute left-1/2 top-[40%] h-[290px] w-[300px] -translate-x-1/2 -translate-y-1/2 sm:h-[330px] sm:w-[360px]">
             {heroCards.map((card, index) => {
               const offset = index - (heroCards.length - 1) / 2;
               return (
                 <div
                   key={card.id}
-                  className="absolute"
+                  className="absolute left-1/2 top-1/2 aspect-[300/524] w-[128px] overflow-hidden rounded-[11px] border border-[#d9c98f] bg-[var(--parchment-base)] shadow-[0_20px_35px_rgba(78,55,29,0.22)] sm:w-[150px]"
                   style={{
-                    transform: `translate(${offset * 56}px, ${Math.abs(offset) * 10}px) rotate(${offset * 8}deg)`,
-                    zIndex: 10 + index,
+                    transform: `translate(calc(-50% + ${offset * 42}px), calc(-50% + ${Math.abs(offset) * 12}px)) rotate(${offset * 8}deg)`,
+                    zIndex: index + 1,
                   }}
                 >
-                  <div className="relative aspect-[300/524] w-[150px] overflow-hidden rounded-[12px] border border-[rgba(197,154,76,0.65)] bg-white shadow-[0_24px_44px_rgba(0,0,0,0.32)] sm:w-[172px]">
-                    {card.imageUrl ? (
-                      <Image
-                        src={card.imageUrl}
-                        alt={card.nameZh}
-                        fill
-                        sizes="180px"
-                        className="object-cover"
-                        priority={index < 2}
-                      />
-                    ) : null}
-                  </div>
+                  {card.imageUrl ? (
+                    <Image
+                      src={card.imageUrl}
+                      alt={`${card.nameZh} ${card.nameEn}`}
+                      fill
+                      sizes="160px"
+                      className="object-cover"
+                      priority
+                    />
+                  ) : null}
                 </div>
               );
             })}
-            <div className="absolute bottom-8 left-8 right-8 flex items-center justify-between gap-4 text-[11px] uppercase tracking-[0.28em] text-[var(--gold-soft)] font-occult">
-              <span>Seeded Draw</span>
-              <span>78 Cards</span>
-            </div>
+          </div>
+          <div className="absolute bottom-[24%] left-[16%] hidden text-[10px] uppercase tracking-[0.28em] text-[var(--brass)] lg:block">
+            W
+          </div>
+          <div className="absolute bottom-[24%] right-[12%] hidden text-[10px] uppercase tracking-[0.28em] text-[var(--brass)] lg:block">
+            S
           </div>
         </div>
       </section>
 
-      <section className="mt-20 space-y-8">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <Ornament variant="rule" className="mb-6 max-w-[260px]" />
-            <p className="eyebrow">Spreads</p>
-            <h2 className="mt-3 font-serif-display text-5xl italic text-[var(--ink)]">
-              从一个清楚的问题开始
-            </h2>
+      <section className="mx-auto w-full max-w-[1320px] pb-20">
+        <div className="px-5 sm:px-8 lg:px-12">
+          <div className="mb-8 flex items-center gap-4 text-[var(--brass)]">
+            <span className="h-px w-28 bg-[var(--border-strong)]" />
+            <span className="text-xl leading-none">☆</span>
+            <span className="h-px w-28 bg-[var(--border-strong)]" />
           </div>
-          <Link
-            className="text-[11px] uppercase tracking-[0.32em] text-[var(--ink-soft)] hover:text-[var(--copper)] font-occult"
-            href="/spreads"
-          >
-            查看全部牌阵
-          </Link>
+
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow-gold">Arcana Majora · 愚者的旅程</p>
+              <h2 className="mt-3 font-serif-display text-[clamp(3rem,4.6vw,4.4rem)] italic leading-[0.98] text-[var(--ink-rich)] lg:whitespace-nowrap">
+                二十二张大阿卡那，
+                <span className="whitespace-nowrap">一条课题地图。</span>
+              </h2>
+            </div>
+            <Link className="font-occult text-[11px] uppercase tracking-[0.3em] text-[var(--ink-soft)] hover:text-[var(--brass)]" href="/cards/the-fool">
+              读全部 22 张 →
+            </Link>
+          </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {spreads.map((spread, index) => (
-            <Panel key={spread.slug} className="flex h-full flex-col gap-5">
-              <div className="flex items-start justify-between">
-                <span className="font-serif-display text-5xl italic text-[var(--gold-deep)]">
-                  {toRoman(index + 1)}
-                </span>
-                <span className="rounded-full border border-[var(--border-strong)] px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-[var(--ink-soft)] font-occult">
-                  {spread.cardCount} Cards
-                </span>
-              </div>
-              <div className="space-y-2">
-                <p className="eyebrow-ink">{spread.hero}</p>
-                <h3 className="font-serif-display text-4xl text-[var(--ink)]">
-                  {spread.nameZh}
-                </h3>
-              </div>
-              <p className="flex-1 text-[14px] leading-7 text-[var(--ink-soft)]">
-                {spread.summary}
-              </p>
-              <Ornament variant="rule" tone="gold" />
-              <Link
-                className={buttonStyles({ variant: "secondary", className: "self-start" })}
-                href={`/spreads/${spread.slug}`}
-              >
-                进入牌阵
-              </Link>
-            </Panel>
-          ))}
-        </div>
+        <CardSlider cards={majorCards} />
       </section>
     </div>
   );
