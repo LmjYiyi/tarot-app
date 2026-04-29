@@ -152,10 +152,10 @@ export default async function CardDetailPage({ params }: CardPageProps) {
           fill
           sizes="100vw"
           priority
-          className="scale-[1.01] object-cover opacity-[0.66] blur-[0.7px]"
+          className="scale-[1.01] object-cover opacity-[0.68] blur-[0.7px]"
         />
-        <div className="absolute inset-0 bg-[rgba(251,240,200,0.24)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(251,240,200,0.08)_0%,rgba(251,240,200,0.18)_46%,rgba(251,240,200,0.52)_100%)]" />
+        <div className="absolute inset-0 bg-[rgba(251,240,200,0.22)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(251,240,200,0.06)_0%,rgba(251,240,200,0.16)_56%,rgba(251,240,200,0.44)_100%)]" />
       </div>
 
       <div className="mx-auto w-full max-w-[1320px] px-5 py-14 sm:px-8 lg:px-12 lg:py-24">
@@ -177,59 +177,55 @@ export default async function CardDetailPage({ params }: CardPageProps) {
         <div className="grid gap-12 lg:grid-cols-[360px_minmax(0,1fr)] xl:grid-cols-[410px_minmax(0,1fr)]">
           <div className="space-y-8 lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:pr-3 lg:pb-8 lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden">
             <div className="relative mx-auto max-w-[340px]">
-              <div className="relative overflow-hidden rounded-[16px] border border-[rgba(200,90,60,0.24)] bg-[rgba(251,240,200,0.28)] p-[10px] shadow-[0_30px_70px_rgba(74,59,50,0.16)]">
-                <div className="pointer-events-none absolute inset-[10px] rounded-[10px] border border-[rgba(253,248,225,0.46)]" />
-                <div className="relative aspect-[300/524] overflow-hidden rounded-[8px]">
-                  {card.imageUrl ? (
-                    <Image
-                      src={card.imageUrl}
-                      alt={`${card.nameZh} ${card.nameEn}`}
-                      fill
-                      sizes="(max-width: 768px) 80vw, 340px"
-                      className="object-cover"
-                      priority
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-[var(--surface-tint)] text-[var(--ink)]">
-                      {card.nameZh}
-                    </div>
-                  )}
-                </div>
+              <div className="relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[rgba(74,59,50,0.18)] shadow-[0_18px_36px_rgba(74,59,50,0.10)]">
+                {card.imageUrl ? (
+                  <Image
+                    src={card.imageUrl}
+                    alt={`${card.nameZh} ${card.nameEn}`}
+                    fill
+                    sizes="(max-width: 768px) 80vw, 340px"
+                    className="object-cover"
+                    priority
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-[var(--ink)]">
+                    {card.nameZh}
+                  </div>
+                )}
               </div>
-              <span className="absolute -top-3 left-4 rounded-sm border border-[rgba(200,90,60,0.32)] bg-[rgba(253,248,225,0.86)] px-3 py-1 text-[11px] tracking-[0.24em] text-[var(--coral-deep)] font-occult">
+              <span className="absolute -top-3 left-4 px-1 text-[11px] tracking-[0.24em] text-[var(--coral-deep)] font-occult">
                 {toRoman(card.number)}
               </span>
             </div>
 
-            <div className="mx-auto max-w-[340px] border-y border-[rgba(74,59,50,0.10)] bg-[rgba(251,240,200,0.18)]">
+            <div className="mx-auto max-w-[340px]">
               <div className="px-1 pb-5 pt-6">
-              <Ornament variant="rule" className="mb-5 opacity-55" />
-              <p className="eyebrow">{arcanaLabel}</p>
-              <p className="mt-2 text-[14px] leading-7 text-[var(--ink-soft)]">
-                {card.arcana === "major"
-                  ? "大阿卡那 · 一段原型旅程里的门槛"
-                  : `小阿卡那 · ${suitLabel(card.suit)}`}
-              </p>
-            </div>
-
-            <nav className="border-t border-[rgba(74,59,50,0.08)] px-1 pb-5 pt-4">
-              <p className="eyebrow-ink mb-3">牌面目录 · Cards</p>
-              <div className="grid max-h-[42vh] grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto pr-2 text-[13px] leading-6 text-[var(--ink-soft)]">
-                {allCards.map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`/cards/${item.slug}`}
-                    className={`transition hover:text-[var(--coral-deep)] ${
-                      item.slug === card.slug ? "text-[var(--coral-deep)]" : ""
-                    }`}
-                  >
-                    {toRoman(item.number)} · {item.nameZh}
-                  </Link>
-                ))}
+                <Ornament variant="rule" className="mb-5 opacity-55" />
+                <p className="eyebrow">{arcanaLabel}</p>
+                <p className="mt-2 text-[14px] leading-7 text-[var(--ink-soft)]">
+                  {card.arcana === "major"
+                    ? "大阿卡那 · 一段原型旅程里的门槛"
+                    : `小阿卡那 · ${suitLabel(card.suit)}`}
+                </p>
               </div>
-            </nav>
-          </div>
 
+              <nav className="px-1 pb-5 pt-2">
+                <p className="eyebrow-ink mb-3">牌面目录 · Cards</p>
+                <div className="grid max-h-[42vh] grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto pr-2 text-[13px] leading-6 text-[var(--ink-soft)]">
+                  {allCards.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/cards/${item.slug}`}
+                      className={`transition hover:text-[var(--coral-deep)] ${
+                        item.slug === card.slug ? "text-[var(--coral-deep)]" : ""
+                      }`}
+                    >
+                      {toRoman(item.number)} · {item.nameZh}
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+            </div>
           </div>
 
           <div className="min-w-0">
@@ -253,40 +249,55 @@ export default async function CardDetailPage({ params }: CardPageProps) {
             </header>
 
             <div className="grid gap-x-12 gap-y-12 xl:grid-cols-[minmax(0,1fr)_240px]">
-              <article className="min-w-0 space-y-12">
+              <article className="min-w-0 space-y-14">
                 {contentSections.map((section, index) => (
                   <section
                     id={getSectionId(index)}
                     key={`${section.title}-${index}`}
-                    className="relative scroll-mt-24 border-t border-[rgba(74,59,50,0.10)] pt-7"
+                    className="relative scroll-mt-24"
                   >
-                    <div className="absolute -top-3 left-0 flex items-center gap-3 bg-[rgba(251,240,200,0.72)] pr-4 text-[11px] uppercase tracking-[0.22em] text-[var(--coral)] font-occult">
-                      <span>{String(index + 1).padStart(2, "0")}</span>
-                      <span className="h-1 w-1 rotate-45 bg-[var(--coral)]" />
+                    <div
+                      aria-hidden
+                      className="mb-5 flex items-center gap-3 text-[var(--coral)]"
+                    >
+                      <Ornament variant="rose" className="opacity-80" />
+                      <span className="h-px flex-1 bg-gradient-to-r from-[var(--coral-edge)] via-[var(--coral-edge)] to-transparent" />
+                      <span className="font-occult text-[10px] tracking-[0.32em] text-[var(--ink-muted)]">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
                     </div>
-                    <h2 className="font-serif-display text-[clamp(2rem,4vw,3.2rem)] leading-tight text-[var(--ink)]">
+                    <h2 className="font-serif-display text-[clamp(2rem,4vw,3.2rem)] leading-[1.05] tracking-[-0.012em] text-[var(--ink)]">
                       {section.title}
                     </h2>
-                    <div className="mt-5 space-y-4 text-[15.5px] leading-8 text-[var(--ink-soft)]">
+                    <div className="mt-6 space-y-4 pl-[14px] text-[15.5px] leading-8 text-[var(--ink-soft)]">
                       {section.body.map((paragraph, paragraphIndex) =>
                         paragraph.startsWith("- ") ? (
                           <p
                             key={paragraphIndex}
-                            className="pl-5 text-[15px] before:mr-3 before:text-[var(--coral)] before:content-['✦']"
+                            className="-ml-1 pl-5 text-[15px] before:mr-3 before:text-[var(--coral)] before:content-['✦']"
                           >
                             {paragraph.slice(2)}
                           </p>
                         ) : (
-                          <p key={paragraphIndex}>{paragraph}</p>
+                          <p key={paragraphIndex} className="indent-[1.4em]">
+                            {paragraph}
+                          </p>
                         ),
                       )}
                     </div>
                   </section>
                 ))}
+
+                <div className="flex flex-col items-center gap-3 pt-12">
+                  <Ornament variant="sun" className="opacity-25" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-[var(--ink-muted)] opacity-60">
+                    Fin · 牌义已止
+                  </span>
+                </div>
               </article>
 
               <aside className="hidden xl:block">
-                <div className="space-y-4 border-l border-[rgba(74,59,50,0.14)] bg-[rgba(251,240,200,0.16)] py-1 pl-6 pr-2 text-[12px] leading-5 text-[var(--ink-muted)] xl:sticky xl:top-16 xl:max-h-[calc(100vh-4rem)] xl:overflow-y-auto xl:overscroll-contain xl:[scrollbar-width:none] xl:[&::-webkit-scrollbar]:hidden">
+                <div className="space-y-4 border-l border-[rgba(74,59,50,0.14)] py-1 pl-6 pr-2 text-[12px] leading-5 text-[var(--ink-muted)] xl:sticky xl:top-16 xl:max-h-[calc(100vh-4rem)] xl:overflow-y-auto xl:overscroll-contain xl:[scrollbar-width:none] xl:[&::-webkit-scrollbar]:hidden">
                   <p className="eyebrow-ink">本页章节</p>
                   {contentSections.map((section, index) => (
                     <Link

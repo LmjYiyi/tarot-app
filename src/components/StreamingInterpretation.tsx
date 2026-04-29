@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { AnnotatedInterpretation } from "@/components/AnnotatedInterpretation";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { AdaptiveAnswer, TarotCard } from "@/lib/tarot/types";
 
 type ResultCard = {
@@ -24,6 +26,7 @@ type StreamingInterpretationProps = {
   spreadName: string;
   question: string;
   cards: ResultCard[];
+  onShareNavigate?: () => void;
 };
 
 export function StreamingInterpretation({
@@ -36,10 +39,13 @@ export function StreamingInterpretation({
   spreadName,
   question,
   cards,
+  onShareNavigate,
 }: StreamingInterpretationProps) {
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const hasContent = Boolean(text.trim());
   const progress = isStreaming ? Math.min(94, 18 + Math.floor(text.length / 42)) : 100;
+  const singleCard = cards.length === 1;
 
   const shareUrl = useMemo(() => {
     if (!sharePath) return null;
@@ -52,6 +58,10 @@ export function StreamingInterpretation({
     () => buildPlainText({ spreadName, question, cards, text: displayText, shareUrl }),
     [cards, displayText, question, shareUrl, spreadName],
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -68,7 +78,7 @@ export function StreamingInterpretation({
     return () => window.clearTimeout(timeoutId);
   }, [copied]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   async function handleCopy() {
     try {
@@ -79,14 +89,14 @@ export function StreamingInterpretation({
     }
   }
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Reading result"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(32,24,18,0.45)] px-4 py-5 backdrop-blur-sm"
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(32,24,18,0.45)] px-3 py-3 backdrop-blur-sm sm:px-4 sm:py-5"
     >
-      <div className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-[24px] border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.94)] shadow-[0_30px_110px_rgba(32,24,18,0.30)]">
+      <div className="relative flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-[24px] border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.94)] shadow-[0_30px_110px_rgba(32,24,18,0.30)]">
         <header className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--gilt)]/25 px-5 py-4 sm:px-7">
           <div>
             <p className="eyebrow-ink">Reading Share · 结果解读</p>
@@ -98,6 +108,7 @@ export function StreamingInterpretation({
             {sharePath && !isStreaming ? (
               <Link
                 href={sharePath}
+                onClick={onShareNavigate}
                 className="rounded-[10px] border border-[var(--line-strong)] px-4 py-2 text-[13px] text-[var(--ink-soft)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]"
               >
                 打开分享页
@@ -140,7 +151,7 @@ export function StreamingInterpretation({
           {!hasContent ? (
             <LoadingState />
           ) : (
-            <div className="grid gap-7 xl:grid-cols-[360px_minmax(0,1fr)]">
+            <div className="grid gap-7 xl:grid-cols-[400px_minmax(0,1fr)]">
               <aside className="space-y-4">
                 <section className="rounded-[18px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.70)] p-4">
                   <p className="eyebrow-ink">你的问题</p>
@@ -154,13 +165,23 @@ export function StreamingInterpretation({
                     <p className="eyebrow-ink">抽到的牌</p>
                     <span className="text-[12px] text-[var(--ink-muted)]">{cards.length} 张</span>
                   </div>
-                  <div className="grid gap-3">
+                  <div className={singleCard ? "flex justify-center" : "grid grid-cols-2 gap-3"}>
                     {cards.map(({ card, reversed, positionOrder, positionName }) => (
                       <article
                         key={`${card.id}-${positionOrder}`}
-                        className="grid grid-cols-[90px_minmax(0,1fr)] gap-4 rounded-[16px] border border-[var(--gilt)]/25 bg-[rgba(255,255,255,0.28)] p-2.5"
+                        className={cn(
+                          "rounded-[16px] border border-[var(--gilt)]/25 bg-[rgba(255,255,255,0.28)] p-2.5",
+                          singleCard
+                            ? "flex w-full max-w-[250px] flex-col items-center gap-3 text-center"
+                            : "flex min-w-0 flex-col items-center gap-2.5 text-center",
+                        )}
                       >
-                        <div className="relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[var(--gilt)]/35 bg-[var(--vellum-1)] shadow-[0_8px_20px_rgba(42,32,18,0.12)]">
+                        <div
+                          className={cn(
+                            "relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[var(--gilt)]/35 bg-[var(--vellum-1)] shadow-[0_8px_20px_rgba(42,32,18,0.12)]",
+                            singleCard ? "w-[132px] max-w-full" : "w-full max-w-[116px]",
+                          )}
+                        >
                           {card.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -171,13 +192,16 @@ export function StreamingInterpretation({
                           ) : null}
                         </div>
                         <div className="min-w-0 self-center">
-                          <p className="text-[10px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+                          <p className="truncate text-[10px] uppercase tracking-[0.12em] text-[var(--ink-muted)]" title={positionName ?? `牌位 ${positionOrder}`}>
                             {positionName ?? `牌位 ${positionOrder}`}
                           </p>
-                          <p className="mt-1.5 font-serif-display text-[20px] leading-tight text-[var(--ink)]">
+                          <p className={cn(
+                            "mt-1 font-serif-display leading-tight text-[var(--ink)]",
+                            singleCard ? "text-[20px]" : "text-[18px]",
+                          )}>
                             {card.nameZh}
                           </p>
-                          <p className="mt-1 text-[12.5px] text-[var(--ink-muted)]">
+                          <p className="mt-0.5 text-[12px] text-[var(--ink-muted)]">
                             {reversed ? "逆位" : "正位"}
                           </p>
                         </div>
@@ -209,7 +233,8 @@ export function StreamingInterpretation({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

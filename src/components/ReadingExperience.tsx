@@ -50,6 +50,19 @@ type ReadingExperienceProps = {
   spread: SpreadDefinition;
 };
 
+type ReturnDialogSnapshot = {
+  spreadSlug: string;
+  question: string;
+  readingIntent: ReadingIntent;
+  cards: DrawnCard[];
+  drawLog: DrawLog | null;
+  adaptiveAnswers: AdaptiveAnswer[];
+  interpretation: string;
+  sharePath: string | null;
+};
+
+const returnDialogStorageKey = "arcana-flow:return-result-dialog";
+
 const phaseLabel: Record<FlowPhase, string> = {
   idle: "01 · 提问",
   shuffling: "02 · 洗牌",
@@ -198,6 +211,36 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       cards: focusCards,
     };
   }, [cardsRevealed, resolvedCards, spread.positions]);
+
+  useEffect(() => {
+    const rawSnapshot = window.sessionStorage.getItem(returnDialogStorageKey);
+    if (!rawSnapshot) return;
+
+    try {
+      const snapshot = JSON.parse(rawSnapshot) as Partial<ReturnDialogSnapshot>;
+      window.sessionStorage.removeItem(returnDialogStorageKey);
+
+      if (
+        snapshot.spreadSlug !== spread.slug ||
+        !Array.isArray(snapshot.cards) ||
+        typeof snapshot.interpretation !== "string"
+      ) {
+        return;
+      }
+
+      setQuestion(typeof snapshot.question === "string" ? snapshot.question : "");
+      if (snapshot.readingIntent) setReadingIntent(snapshot.readingIntent);
+      setCards(snapshot.cards);
+      setDrawLog(snapshot.drawLog ?? null);
+      setAdaptiveAnswers(snapshot.adaptiveAnswers ?? []);
+      setInterpretation(snapshot.interpretation);
+      setSharePath(snapshot.sharePath ?? null);
+      setPhase("done");
+      setResultDialogOpen(true);
+    } catch {
+      window.sessionStorage.removeItem(returnDialogStorageKey);
+    }
+  }, [spread.slug]);
 
   useEffect(() => {
     if (!cardsRevealed) return;
@@ -422,6 +465,23 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     }
   }
 
+  function preserveResultDialogForBackNavigation() {
+    if (!interpretation.trim()) return;
+
+    const snapshot: ReturnDialogSnapshot = {
+      spreadSlug: spread.slug,
+      question,
+      readingIntent,
+      cards,
+      drawLog,
+      adaptiveAnswers,
+      interpretation,
+      sharePath,
+    };
+
+    window.sessionStorage.setItem(returnDialogStorageKey, JSON.stringify(snapshot));
+  }
+
   const interactionBusy =
     phase === "shuffling" ||
     phase === "cutting" ||
@@ -470,6 +530,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         adaptiveAnswers={adaptiveAnswers}
         spreadName={spread.nameZh}
         question={question}
+        onShareNavigate={preserveResultDialogForBackNavigation}
         cards={resolvedCards.map(({ card, reversed, positionOrder }) => ({
           card,
           reversed,

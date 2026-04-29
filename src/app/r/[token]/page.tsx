@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AnnotatedInterpretation } from "@/components/AnnotatedInterpretation";
 import { ReadingShareActions } from "@/components/ReadingShareActions";
-import { Ornament, toRoman } from "@/components/ui/ornament";
+import { Ornament } from "@/components/ui/ornament";
 import { getReadingByToken } from "@/lib/readings/store";
 import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
 import type { ReadingDomain, ReadingGoal } from "@/lib/tarot/types";
@@ -89,28 +89,28 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
 
   return (
     <div className="relative isolate overflow-hidden">
+      {/* Background matching Homepage */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-20"
+        className="pointer-events-none fixed inset-0 -z-10"
       >
         <Image
-          src="/visuals/reading-result-background-clean.jpg"
+          src="/spreads/site-edge-background-clean.jpg"
           alt=""
           fill
           sizes="100vw"
           priority
-          className="scale-[1.01] object-cover opacity-[0.72] blur-[0.5px]"
+          className="scale-[1.01] object-cover opacity-[0.68] blur-[0.7px]"
         />
+        <div className="absolute inset-0 bg-[rgba(251,240,200,0.22)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(251,240,200,0.06)_0%,rgba(251,240,200,0.16)_56%,rgba(251,240,200,0.44)_100%)]" />
       </div>
-        <div
-          aria-hidden
-          className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(90deg,rgba(252,244,207,0.90)_0%,rgba(252,244,207,0.68)_48%,rgba(252,244,207,0.86)_100%)]"
-        />
-      <div className="editorial-parchment relative z-10 mx-auto w-full max-w-7xl px-5 py-12 lg:px-10 lg:py-18">
+
+      <div className="relative z-10 mx-auto w-full max-w-[1320px] px-5 py-12 lg:px-12 lg:py-24">
         <header className="mx-auto max-w-4xl space-y-6 text-center">
           <Ornament variant="quatrefoil" />
-          <p className="eyebrow-ink">Reading Share · 牌面留存</p>
-          <h1 className="font-serif-display text-[clamp(2.75rem,5vw,4.8rem)] leading-[1] text-[var(--ink)]">
+          <p className="eyebrow">Reading Share · 牌面留存</p>
+          <h1 className="font-serif-display text-[clamp(2.75rem,5vw,4.8rem)] leading-[1.04] tracking-[-0.018em] text-[var(--ink)]">
             {spread?.nameZh ?? "塔罗解读"}
           </h1>
           <p className="mx-auto max-w-3xl font-fraunces text-[22px] italic leading-9 text-[var(--ink-soft)]">
@@ -125,145 +125,81 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
             intentLabel={readingIntentLabel}
             drawModeLabel={readingDrawModeLabel}
           />
-          <Ornament variant="rule" className="mx-auto max-w-xs" />
+          <Ornament variant="rule" className="mx-auto max-w-xs opacity-90 [--gilt:rgba(200,90,60,0.42)]" />
         </header>
 
-        <div className="mx-auto mt-12 max-w-4xl space-y-8">
-          <aside className="hidden">
-            <section className="rounded-[22px] border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.72)] p-5 shadow-[0_24px_70px_rgba(42,32,18,0.12)] backdrop-blur-md">
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <p className="eyebrow-ink">抽到的牌</p>
-                <span className="rounded-full border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.55)] px-3 py-1 text-[11px] text-[var(--ink-muted)]">
-                  {reading.cards.length} 张
-                </span>
-              </div>
-              <div className="grid gap-4">
-                {reading.cards.map((drawnCard) => {
-                  const card = getCardById(drawnCard.cardId);
-                  const position = spread?.positions.find(
-                    (item) => item.order === drawnCard.positionOrder,
-                  );
+        <div className="mx-auto mt-20 max-w-4xl">
+          <div className="mb-14 text-center">
+            <p className="eyebrow">完整解读</p>
+            <h2 className="mt-4 font-serif-display text-[clamp(2.1rem,4vw,3.3rem)] leading-tight text-[var(--ink)]">
+              这副牌想说的话
+            </h2>
+          </div>
 
-                  return (
-                    <article
-                      key={`${drawnCard.cardId}-${drawnCard.positionOrder}`}
-                      className="grid grid-cols-[140px_minmax(0,1fr)] gap-5 rounded-[18px] border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.62)] p-3"
-                    >
-                      <div className="relative aspect-[300/524] w-full overflow-hidden rounded-[12px] border border-[var(--gilt)]/55 bg-[var(--vellum-1)] shadow-[0_12px_28px_rgba(42,32,18,0.16)]">
-                        {card?.imageUrl ? (
-                          <Image
-                            src={card.imageUrl}
-                            alt={card.nameZh}
-                            fill
-                            sizes="150px"
-                            className={`object-cover ${drawnCard.reversed ? "rotate-180" : ""}`}
-                          />
-                        ) : null}
-                      </div>
-                      <div className="min-w-0 self-center">
-                        <p className="eyebrow-ink">
-                          {toRoman(drawnCard.positionOrder)} · {position?.name ?? "牌位"}
-                        </p>
-                        <p className="mt-2 font-serif-display text-[25px] leading-tight text-[var(--ink)]">
-                          {card?.nameZh ?? drawnCard.cardId}
-                        </p>
-                        <p className="mt-1 text-[12.5px] text-[var(--ink-muted)]">
-                          {drawnCard.reversed ? "逆位" : "正位"}
-                        </p>
-                        {position?.focus ? (
-                          <p className="mt-3 line-clamp-3 text-[13px] leading-6 text-[var(--ink-soft)]">
-                            {position.focus}
-                          </p>
-                        ) : null}
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-
-            <section className="rounded-[20px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.68)] p-5 text-[13px] leading-7 text-[var(--ink-soft)] shadow-[0_16px_45px_rgba(42,32,18,0.10)] backdrop-blur-md">
-              {reading.readingIntent ? (
+          <div className="mb-16">
+            <div className="mb-10 flex flex-wrap justify-center gap-x-12 gap-y-4 text-[14px] leading-7 text-[var(--ink-soft)]">
+              {readingIntentLabel ? (
                 <p>
                   <span className="font-medium text-[var(--ink)]">提问方向：</span>
-                  {domainLabels[reading.readingIntent.domain]} · {goalLabels[reading.readingIntent.goal]}
+                  {readingIntentLabel}
                 </p>
               ) : null}
               <p>
                 <span className="font-medium text-[var(--ink)]">抽牌方式：</span>
-                {drawModeLabel(reading.drawLog?.drawRule)}
+                {readingDrawModeLabel}
               </p>
-              {reading.adaptiveAnswers?.length ? (
-                <div className="mt-3 border-t border-[var(--gilt)]/25 pt-3">
-                  <p className="font-medium text-[var(--ink)]">当时补充的直觉：</p>
-                  {reading.adaptiveAnswers.map((answer, index) => (
-                    <p key={answer.questionId} className="mt-1">
-                      {index + 1}. {answer.answerLabel || answer.answer}
-                    </p>
-                  ))}
-                </div>
-              ) : null}
-            </section>
-          </aside>
+            </div>
 
-          <article className="rounded-[24px] border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.78)] px-5 py-7 shadow-[0_30px_90px_rgba(42,32,18,0.14)] backdrop-blur-md sm:px-8 lg:px-10">
-            <div className="mb-8">
-              <p className="eyebrow-ink">完整解读</p>
-              <h2 className="mt-2 font-serif-display text-[clamp(2.1rem,4vw,3.3rem)] leading-tight text-[var(--ink)]">
-                这副牌想说的话
-              </h2>
-              <Ornament variant="rule" className="mt-5 max-w-[220px]" />
+            <div className="flex flex-wrap justify-center gap-8 sm:gap-12">
+              {shareActionCards.map((card) => (
+                <div
+                  key={`${card.cardId}-${card.positionOrder}`}
+                  className="group flex w-[140px] flex-col items-center gap-5 text-center transition duration-300 hover:-translate-y-1 sm:w-[160px]"
+                >
+                  <div className="relative aspect-[300/524] w-full overflow-hidden rounded-[12px] border border-[rgba(74,59,50,0.20)] shadow-[0_18px_34px_rgba(74,59,50,0.11)]">
+                    {card.imageUrl ? (
+                      <Image
+                        src={card.imageUrl}
+                        alt={card.cardName}
+                        fill
+                        sizes="160px"
+                        className={`object-cover transition duration-500 group-hover:scale-105 ${card.reversed ? "rotate-180" : ""}`}
+                      />
+                    ) : null}
+                  </div>
+                  <div>
+                    <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+                      {card.positionName ?? `牌位 ${card.positionOrder}`}
+                    </p>
+                    <p className="mt-2 font-serif-display text-[24px] leading-tight text-[var(--ink)]">
+                      {card.cardName}
+                    </p>
+                    <p className="mt-1 text-[13px] text-[var(--ink-soft)]">
+                      {card.reversed ? "逆位" : "正位"}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="mb-8 space-y-5 rounded-[20px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.62)] p-4 sm:p-5">
-              <div className="grid gap-3 text-[13.5px] leading-7 text-[var(--ink-soft)] sm:grid-cols-2">
-                {readingIntentLabel ? (
-                  <p>
-                    <span className="font-medium text-[var(--ink)]">提问方向：</span>
-                    {readingIntentLabel}
-                  </p>
-                ) : null}
-                <p>
-                  <span className="font-medium text-[var(--ink)]">抽牌方式：</span>
-                  {readingDrawModeLabel}
-                </p>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-3">
-                {shareActionCards.map((card) => (
-                  <article
-                    key={`${card.cardId}-${card.positionOrder}`}
-                    className="flex flex-col items-center gap-3 rounded-[18px] border border-[var(--gilt)]/25 bg-[rgba(255,255,255,0.28)] p-3 text-center transition-transform hover:scale-[1.02]"
-                  >
-                    <div className="relative aspect-[300/524] w-[130px] overflow-hidden rounded-[10px] border border-[var(--gilt)]/35 bg-[var(--vellum-1)] shadow-[0_12px_35px_rgba(42,32,18,0.18)]">
-                      {card.imageUrl ? (
-                        <Image
-                          src={card.imageUrl}
-                          alt={card.cardName}
-                          fill
-                          sizes="160px"
-                          className={`object-cover ${card.reversed ? "rotate-180" : ""}`}
-                        />
-                      ) : null}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
-                        {card.positionName ?? `牌位 ${card.positionOrder}`}
-                      </p>
-                      <p className="mt-1.5 font-serif-display text-[21px] leading-tight text-[var(--ink)]">
-                        {card.cardName}
-                      </p>
-                      <p className="mt-1 text-[13px] text-[var(--ink-muted)]">
-                        {card.reversed ? "逆位" : "正位"}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
+          </div>
+
+          <Ornament
+            variant="rule"
+            className="mx-auto mb-14 max-w-md opacity-60 [--gilt:rgba(200,90,60,0.32)]"
+          />
+
+          <div className="mx-auto max-w-[720px]">
             <AnnotatedInterpretation
               text={reading.aiInterpretation}
               adaptiveAnswers={reading.adaptiveAnswers}
             />
-          </article>
+            <div className="mt-20 flex flex-col items-center gap-3">
+              <Ornament variant="sun" className="opacity-25" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-[var(--ink-muted)] opacity-60">
+                Fin · 牌面已止
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -116,10 +116,10 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="relative isolate mt-16 overflow-hidden text-[var(--ink-soft)]">
+    <footer className="relative isolate mt-8 overflow-hidden text-[var(--ink-soft)]">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-32 h-32 bg-[linear-gradient(180deg,rgba(251,240,200,0)_0%,rgba(251,240,200,0.28)_58%,rgba(251,240,200,0.48)_100%)]"
+        className="pointer-events-none absolute inset-x-0 -top-16 h-16 bg-[linear-gradient(180deg,rgba(251,240,200,0)_0%,rgba(251,240,200,0.28)_58%,rgba(251,240,200,0.48)_100%)]"
       />
       <div
         aria-hidden
@@ -133,13 +133,13 @@ function SiteFooter() {
         aria-hidden
         className="pointer-events-none absolute inset-x-[8%] top-0 h-36 bg-[radial-gradient(ellipse_at_center,rgba(200,90,60,0.07)_0%,rgba(251,240,200,0.18)_48%,transparent_74%)]"
       />
-      <div className="relative z-10 mx-auto grid w-full max-w-[1320px] gap-10 px-6 py-16 [text-shadow:0_1px_0_rgba(253,248,225,0.72)] lg:grid-cols-[1.4fr_0.6fr_0.6fr] lg:px-12">
-        <div className="space-y-4">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1320px] gap-7 px-6 py-9 [text-shadow:0_1px_0_rgba(253,248,225,0.72)] lg:grid-cols-[1.4fr_0.6fr_0.6fr] lg:px-12">
+        <div className="space-y-3">
           <div className="flex items-center gap-2.5 text-[var(--ink)]">
             <StarGlyph className="h-3.5 w-3.5 text-[var(--coral)]" />
             <span className="font-serif-display text-[20px]">Arcana Flow</span>
           </div>
-          <p className="font-serif-display text-[26px] leading-[1.25] text-[var(--ink)]">
+          <p className="font-serif-display text-[22px] leading-[1.25] text-[var(--ink)]">
             The cards whisper; you answer.
           </p>
           <p className="max-w-md text-[13.5px] leading-[1.7]">
@@ -162,7 +162,7 @@ function SiteFooter() {
           </p>
         </div>
       </div>
-      <div className="relative z-10 border-t border-[rgba(74,59,50,0.08)] py-5 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)] [text-shadow:0_1px_0_rgba(253,248,225,0.68)]">
+      <div className="relative z-10 border-t border-[rgba(74,59,50,0.08)] py-3 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)] [text-shadow:0_1px_0_rgba(253,248,225,0.68)]">
         Arcana Flow · 2026 · Made with care
       </div>
     </footer>
