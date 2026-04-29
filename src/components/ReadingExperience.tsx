@@ -53,7 +53,7 @@ const phaseLabel: Record<FlowPhase, string> = {
   cutting: "03 · 切牌",
   selecting: "04 · 选牌",
   revealing: "05 · 翻牌",
-  revealed: "06 · 反馈",
+  revealed: "06 · 补充",
   reading: "07 · 解读",
   done: "08 · 沉淀",
 };
@@ -156,6 +156,32 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   );
 
   const cardsRevealed = resolvedCards.length > 0;
+  const preliminaryOverview = useMemo(() => {
+    if (!cardsRevealed) return null;
+
+    const focusCards = resolvedCards.slice(0, Math.min(3, resolvedCards.length));
+    const themes = focusCards
+      .flatMap(({ card, reversed }) =>
+        (reversed ? card.keywordsReversed : card.keywordsUpright).slice(0, 2),
+      )
+      .slice(0, 5);
+    const lead = focusCards[0];
+    const leadPosition = lead
+      ? spread.positions.find((position) => position.order === lead.positionOrder)
+      : undefined;
+    const tone = resolvedCards.filter((item) => item.reversed).length > resolvedCards.length / 2
+      ? "这组牌先把阻滞、犹豫或未被承认的部分推到台前。"
+      : "这组牌的第一层信息偏向流动、显化与可执行的下一步。";
+
+    return {
+      oneLine: lead
+        ? `${leadPosition?.name ?? "核心牌位"}的「${lead.card.nameZh}」先把问题落在“${themes[0] ?? lead.card.nameZh}”上。`
+        : "牌面已经展开，可以先看整体倾向，再决定是否补充追问。",
+      tone,
+      themes,
+      cards: focusCards,
+    };
+  }, [cardsRevealed, resolvedCards, spread.positions]);
 
   useEffect(() => {
     if (!cardsRevealed) return;
@@ -229,14 +255,14 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         }),
       });
 
-      if (!response.ok) throw new Error("追问生成服务暂时不可用。");
+      if (!response.ok) throw new Error("补充问题暂时没有出现，可以先看牌面解读。");
 
       const payload = (await response.json()) as AdaptiveQuestionResponse;
       setAdaptiveQuestions(payload.questions ?? []);
       setCoreTension(payload.coreTension ?? null);
       setQuestionStrategy(payload.questionStrategy ?? null);
     } catch (caughtError) {
-      const message = caughtError instanceof Error ? caughtError.message : "追问生成失败。";
+      const message = caughtError instanceof Error ? caughtError.message : "补充问题暂时没有出现。";
       setError(message);
     } finally {
       setQuestionsLoading(false);
@@ -336,7 +362,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         }),
       });
 
-      if (!response.ok || !response.body) throw new Error("解读服务暂时不可用。");
+      if (!response.ok || !response.body) throw new Error("牌面一时没有回应，请稍后再试。");
 
       const model = response.headers.get("x-model") ?? "unknown";
       const reader = response.body.getReader();
@@ -372,18 +398,18 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
 
       setPhase("done");
     } catch (caughtError) {
-      const message = caughtError instanceof Error ? caughtError.message : "解读生成失败。";
+      const message = caughtError instanceof Error ? caughtError.message : "这次解读没有顺利展开。";
       setError(message);
       setPhase("revealed");
     }
   }
 
-  const busy =
+  const interactionBusy =
     phase === "shuffling" ||
     phase === "cutting" ||
     phase === "selecting" ||
-    phase === "reading" ||
-    questionsLoading;
+    phase === "reading";
+  const busy = interactionBusy || questionsLoading;
 
   const showRitualOnly = phase === "shuffling" || phase === "cutting" || phase === "selecting";
 
@@ -464,7 +490,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
                   </span>
                   {drawLog ? (
                     <span className="rounded-full border border-[var(--line)] px-3 py-1 font-mono text-[10px] tracking-[0.16em] text-[var(--ink-muted)]">
-                      seed · {drawLog.seed.slice(0, 10)}
+                      牌纹 · {drawLog.seed.slice(0, 10)}
                     </span>
                   ) : null}
                 </div>
@@ -476,6 +502,9 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           </div>
 
           <aside className="min-w-0 space-y-6 xl:sticky xl:top-24 xl:self-start">
+            {preliminaryOverview ? (
+              <PreliminaryOverview overview={preliminaryOverview} />
+            ) : null}
             <FollowupPanel
               questionsLoading={questionsLoading}
               adaptiveQuestions={adaptiveQuestions}
@@ -484,7 +513,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
               coreTension={coreTension}
               questionStrategy={questionStrategy}
               onSubmit={handleInterpret}
-              busy={busy}
+              busy={interactionBusy}
               phase={phase}
             />
             <StreamingInterpretation
@@ -572,7 +601,7 @@ function IdleSetup({
         <div className="flex flex-wrap items-center gap-4 border-t border-[var(--line)] pt-5">
           <Button onClick={onStart}>进入洗牌 →</Button>
           <p className="text-[13px] leading-6 text-[var(--ink-muted)]">
-            不填写也可以，系统会按当前领域生成一个默认问题。
+            不填写也可以，我会先替你放入一个适合这副牌阵的问题。
           </p>
         </div>
       </Panel>
@@ -669,6 +698,52 @@ function RitualShell({ children, phase }: { children: React.ReactNode; phase: Fl
         </div>
         {children}
       </div>
+    </Panel>
+  );
+}
+
+function PreliminaryOverview({
+  overview,
+}: {
+  overview: {
+    oneLine: string;
+    tone: string;
+    themes: string[];
+    cards: Array<{
+      card: NonNullable<ReturnType<typeof getCardById>>;
+      reversed: boolean;
+      positionOrder: number;
+    }>;
+  };
+}) {
+  return (
+    <Panel className="space-y-4 border-[var(--coral-edge)] bg-[var(--surface)]">
+      <div>
+        <p className="eyebrow">初步概览</p>
+        <h2 className="mt-1.5 font-serif-display text-[22px] leading-tight text-[var(--ink)]">
+          先给你一句牌面提示
+        </h2>
+      </div>
+
+      <p className="font-serif-display text-[20px] leading-[1.55] text-[var(--ink)]">
+        {overview.oneLine}
+      </p>
+      <p className="text-[13.5px] leading-7 text-[var(--ink-soft)]">
+        {overview.tone}
+      </p>
+
+      {overview.themes.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {overview.themes.map((theme) => (
+            <span
+              key={theme}
+              className="rounded-full border border-[var(--coral-edge)] bg-[var(--coral-wash)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--coral-deep)]"
+            >
+              {theme}
+            </span>
+          ))}
+        </div>
+      ) : null}
     </Panel>
   );
 }
@@ -775,40 +850,47 @@ function FollowupPanel({
         <div>
           <p className="eyebrow">牌面追问</p>
           <h2 className="mt-1.5 font-serif-display text-[22px] leading-tight text-[var(--ink)]">
-            塔罗的低语
+            补几句直觉
           </h2>
           <p className="mt-1 text-[13px] leading-6 text-[var(--ink-muted)]">
-            先回应几个直觉感受，解读会更贴你。
+            愿意多说几句，牌面会读得更贴近你；想先看结论，也可以直接展开。
           </p>
         </div>
-        {totalCount > 0 && !isSummary ? (
-          <button
-            type="button"
-            onClick={handleSkipAll}
-            className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)] underline-offset-4 transition hover:text-[var(--coral-deep)] hover:underline"
-          >
-            暂不回答 →
-          </button>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-2">
+          {totalCount > 0 && !isSummary ? (
+            <button
+              type="button"
+              onClick={handleSkipAll}
+              className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)] underline-offset-4 transition hover:text-[var(--coral-deep)] hover:underline"
+            >
+              跳过填写
+            </button>
+          ) : null}
+          <Button onClick={onSubmit} disabled={busy || phase === "reading"}>
+            {phase === "reading" ? "读牌中..." : "直接看解读"}
+          </Button>
+        </div>
       </div>
 
       {questionsLoading ? (
-        <div className="flex items-center gap-3 rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-4">
-          <span className="inline-block h-2 w-2 rounded-full bg-[var(--coral)] animate-shimmer" />
-          <p className="text-[13.5px] leading-6 text-[var(--ink-soft)]">
-            塔罗正在感受这副牌面...
-          </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-4">
+          <div className="flex items-center gap-3">
+            <span className="inline-block h-2 w-2 rounded-full bg-[var(--coral)] animate-shimmer" />
+            <p className="text-[13.5px] leading-6 text-[var(--ink-soft)]">
+              牌面正在浮出几个补充问题，不影响你先看解读。
+            </p>
+          </div>
         </div>
       ) : null}
 
       {isEmpty ? (
         <>
           <p className="rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-[13.5px] leading-7 text-[var(--ink-soft)]">
-            这次没有需要回答的牌面追问，可以直接生成解读。
+            这次没有需要补充的问题，可以直接看解读。
           </p>
           <div className="flex justify-end pt-1">
             <Button onClick={onSubmit} disabled={busy || phase === "reading"}>
-              {phase === "reading" ? "生成中..." : "生成解读"}
+              {phase === "reading" ? "读牌中..." : "看解读"}
             </Button>
           </div>
         </>
@@ -882,7 +964,7 @@ function FollowupPanel({
                   ← 回第一题
                 </Button>
                 <Button onClick={onSubmit} disabled={busy || phase === "reading"}>
-                  {phase === "reading" ? "塔罗正在低语..." : "生成解读"}
+                  {phase === "reading" ? "塔罗正在低语..." : "看解读"}
                 </Button>
               </>
             )}
@@ -1015,13 +1097,6 @@ function WizardQuestionCard({
       <p className="font-serif-display text-[20px] leading-[1.55] text-[var(--ink)]">
         {question.question}
       </p>
-      {question.basis || question.purpose ? (
-        <p className="mt-2 text-[12.5px] leading-6 text-[var(--ink-muted)]">
-          {question.basis}
-          {question.purpose ? ` 用于${question.purpose}。` : ""}
-        </p>
-      ) : null}
-
       {question.answerType === "free_text" ? (
         <input
           autoFocus

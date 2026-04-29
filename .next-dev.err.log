@@ -1,0 +1,39 @@
+⨯ ReferenceError: Panel is not defined
+    at CardDetailPage (src\app\cards\[slug]\page.tsx:168:12)
+  166 |           </div>
+  167 |
+> 168 |           <Panel variant="ghost" className="mx-auto max-w-[340px] text-center">
+      |            ^
+  169 |             <p className="eyebrow-gold">{arcanaLabel}</p>
+  170 |             <p className="mt-2 text-[13px] text-[var(--text-muted)]">
+  171 |               {card.arcana === "major" {
+  digest: '3784920249'
+}
+[browser] Uncaught ReferenceError: Panel is not defined
+    at CardDetailPage (src\app\cards\[slug]\page.tsx:168:12)
+  166 |           </div>
+  167 |
+> 168 |           <Panel variant="ghost" className="mx-auto max-w-[340px] text-center">
+      |            ^
+  169 |             <p className="eyebrow-gold">{arcanaLabel}</p>
+  170 |             <p className="mt-2 text-[13px] text-[var(--text-muted)]">
+  171 |               {card.arcana === "major"
+⨯ ReferenceError: Panel is not defined
+    at CardDetailPage (src\app\cards\[slug]\page.tsx:168:12)
+  166 |           </div>
+  167 |
+> 168 |           <Panel variant="ghost" className="mx-auto max-w-[340px] text-center">
+      |            ^
+  169 |             <p className="eyebrow-gold">{arcanaLabel}</p>
+  170 |             <p className="mt-2 text-[13px] text-[var(--text-muted)]">
+  171 |               {card.arcana === "major" {
+  digest: '3784920249'
+}
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] Image with src "/tarot/the-star.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[browser] Encountered two children with the same key, `關鍵特徵-toc`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Encountered two children with the same key, `關鍵特徵-toc`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Encountered two children with the same key, `關鍵特徵-toc`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Encountered two children with the same key, `關鍵特徵-toc`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Image with src "/spreads/site-edge-background-v1.png" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes

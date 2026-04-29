@@ -87,15 +87,20 @@ const goalLabels: Record<ReadingIntent["goal"], string> = {
 };
 
 export const ADAPTIVE_QUESTION_SYSTEM_PROMPT = [
-  "你是 Projectio 塔罗系统中的“牌面触发追问润色器”。",
-  "系统已经在本地完成牌义读取、单牌聚焦、核心张力和候选问题生成。你的任务只是在不改变牌义方向的前提下，把候选问题润色成自然、贴牌、适合用户回答的 2 到 4 个心理感受问题。",
+  "你是 Projectio 塔罗系统中的“牌面知觉追问润色器”。",
+  "系统已经在本地完成牌义读取、单牌聚焦、核心张力和候选问题生成。你的任务是在不改变方向的前提下，把候选问题润色成自然、贴近用户主观体验的 2 到 4 个“心理知觉”问题。",
+  "",
+  "核心准则——这些问题不是问卷，不是让用户对照牌义打勾：",
+  "- 必须问用户的主观感受、第一反应、视觉直觉、身体感和联想。",
+  "- 例如：看到这张牌你最先注意到什么？牌面是亮的还是暗的？是因为牌名、画面还是某种氛围让你停留？身体里是更紧还是更松？",
+  "- 不要问“这种课题有没有出现在你的处境里”“你觉得这种感觉对应你现在吗”这种直面对照式问题。",
   "",
   "规则：",
   "1. 不要输出 card_focus_analysis 或 quality_check。",
   "2. 不要解牌、不要预测、不要替用户下结论。",
   "3. 不要推翻 local_card_focus；具体牌义高于花色通用含义。",
-  "4. 每个问题都必须保留候选问题里的牌名、正逆位、牌阵位置或 basis 依据。",
-  "5. 选项必须贴合本地候选选项，不要改成通用模板。",
+  "4. 每个问题都必须保留候选问题里的牌名、正逆位或牌阵位置作为定位词。",
+  "5. 选项必须贴合本地候选选项的“知觉/感受”取向，不要改成阶段开始/阶段结束/失控/看清这种通用阶段模板。",
   "6. 不要触发 avoid_focus，例如不要把命运之轮写成行动力，不要把星币四逆位写成休息。",
   "7. 问题数量必须等于输入的 question_count。",
   "8. 输出必须是合法 JSON，不能有 Markdown、注释、尾逗号或多余解释。",
@@ -343,6 +348,10 @@ function buildCardMeaning(card: ResolvedQuestionCard, intent: ReadingIntent | un
 }
 
 function inferCoreTension(cards: ResolvedQuestionCard[]) {
+  if (cards.length === 0) {
+    return "暂时没有解析到具体的牌面，建议先聊聊用户看到这组牌时的整体画面感和情绪基调。";
+  }
+
   const hasWheel = cards.some(({ card }) => card.nameEn === "Wheel of Fortune");
   const hasPentaclesFourReversed = cards.some(
     ({ card, orientation }) =>
@@ -354,11 +363,13 @@ function inferCoreTension(cards: ResolvedQuestionCard[]) {
     return "过去有一轮变化或转折，现在用户可能因为安全感、资源或稳定性问题而收紧自己；但内心又期待更稳定、更被支持、更有归属感的状态。";
   }
 
-  const currentCard = cards.find(({ position }) => /现在|现状|当前/.test(position.name)) ?? cards[1];
+  const currentCard =
+    cards.find(({ position }) => /现在|现状|当前/.test(position.name)) ?? cards[1] ?? cards[0];
   const futureCard =
     cards.find(({ position }) => /未来|结果|走向|建议|倾向/.test(position.name)) ??
     cards[cards.length - 1];
-  const backgroundCard = cards.find(({ position }) => /过去|背景|根源/.test(position.name)) ?? cards[0];
+  const backgroundCard =
+    cards.find(({ position }) => /过去|背景|根源/.test(position.name)) ?? cards[0];
   const shortFocus = (card: ResolvedQuestionCard | undefined) => {
     if (!card) return "当前主题";
     const focus = getCardFocus(card).trueFocus;
@@ -366,14 +377,14 @@ function inferCoreTension(cards: ResolvedQuestionCard[]) {
   };
 
   if (cards.length === 1) {
-    return `${getPositionRole(cards[0])}把${shortFocus(cards[0])}带到眼前，系统需要先确认用户看到它时是共鸣、抗拒，还是没有明显感觉。`;
+    return `${getPositionRole(cards[0])}把${shortFocus(cards[0])}带到眼前，先确认用户看到它的第一反应是什么——画面、牌名、氛围还是某个细节。`;
   }
 
   if (cards.length === 2) {
-    return `${getPositionRole(backgroundCard)}像是在提供背景里的${shortFocus(backgroundCard)}，而${getPositionRole(currentCard)}更像眼下真正卡住或需要确认的${shortFocus(currentCard)}。`;
+    return `${getPositionRole(backgroundCard)}像是在提供背景里的${shortFocus(backgroundCard)}，而${getPositionRole(currentCard)}更像眼下真正吸引用户视线或卡住的画面，需要先听用户说出主观感受。`;
   }
 
-  return `${getPositionRole(backgroundCard)}像是背景里的${shortFocus(backgroundCard)}，${getPositionRole(currentCard)}是眼下最需要确认的${shortFocus(currentCard)}；后续又被${getPositionRole(futureCard)}里的${shortFocus(futureCard)}牵动，所以这组牌需要先问清用户更想稳住、靠近、推进，还是正在抗拒。`;
+  return `${getPositionRole(backgroundCard)}像是背景里的${shortFocus(backgroundCard)}，${getPositionRole(currentCard)}是眼下最先抓住用户注意力的画面；后续又被${getPositionRole(futureCard)}里的${shortFocus(futureCard)}牵动——先问清用户对这几张牌的主观知觉和情绪基调，再谈牌义。`;
 }
 
 function getPositionRole(card: ResolvedQuestionCard) {
@@ -416,34 +427,95 @@ function createQualityCheck(pass: boolean) {
 }
 
 function buildOverallQuestion(cards: ResolvedQuestionCard[]) {
-  const hasWheel = cards.some(({ card }) => card.nameEn === "Wheel of Fortune");
-  const hasPentaclesFourReversed = cards.some(
-    ({ card, orientation }) =>
-      card.suit === "pentacles" && card.number === 4 && orientation === "逆位",
-  );
-  const hasTenOfCups = cards.some(({ card }) => card.suit === "cups" && card.number === 10);
-  const options =
-    hasWheel && hasPentaclesFourReversed && hasTenOfCups
-      ? [
-          "事情正在变化，但我还没完全适应",
-          "我很想稳定下来，但又觉得有点卡住",
-          "我在期待一种被支持、被回应、被接住的感觉",
-          "现实压力和情绪期待在拉扯",
-          "说不上来，只是有点复杂",
-        ]
-      : [
-          ...new Set(cards.map((card) => getCardFocus(card).overallOption)),
-          "现实压力和情绪期待在拉扯",
-          "说不上来，只是有点复杂",
-        ].slice(0, 5);
+  const options = [
+    "整体偏亮，像有希望或松一口气",
+    "整体偏暗，像被压住或藏着压力",
+    "一半亮一半暗，里面有拉扯",
+    "灰色地带，看不太清",
+    "其实没什么明显感觉",
+  ];
+
+  const cardsHint = cards.length === 0
+    ? "（暂时没有解析到具体牌面，先聊整体画面感即可。）"
+    : "";
 
   return createChoiceQuestion(
     "q1_overall_feeling",
-    "你看到这组牌时，整体更像哪一种感觉？",
-    "基于用户问题和整组抽牌结果，先确认用户对牌面的整体情绪基调。",
-    "确认后续解读应该落在哪个心理落点上",
+    `这组牌摆在面前的第一眼，整体画面感更偏亮还是更偏暗？${cardsHint}`,
+    "用整体明暗/氛围作为知觉锚点，让用户先说出主观感受，避免被牌义牵着走。",
+    "确认用户对整组牌的初始视觉/情绪基调，作为后续解读的落点。",
     options,
   );
+}
+
+type PerceptualPrompt = {
+  question: string;
+  purpose: string;
+  options: string[];
+};
+
+const perceptualPromptBuilders: Array<(role: string, cardName: string) => PerceptualPrompt> = [
+  (role) => ({
+    question: `看到${role}时，你最先注意到的是什么？`,
+    purpose: "捕捉用户对这张牌的第一注意点，避免直接用牌义对照。",
+    options: [
+      "牌名让我先有反应",
+      "画面里的人物或场景",
+      "颜色或光线",
+      "某个具体细节（动物、姿势、物件等）",
+      "一种说不清的氛围",
+    ],
+  }),
+  (role) => ({
+    question: `${role}这张牌给你的整体氛围更偏亮还是更偏暗？`,
+    purpose: "通过明暗感判断用户对这张牌的情绪基调。",
+    options: [
+      "偏亮，像被照见或松一口气",
+      "偏暗，像被压住或藏着什么",
+      "灰色地带，说不清楚",
+      "又亮又暗，里面有拉扯",
+      "没什么明显感觉",
+    ],
+  }),
+  (role) => ({
+    question: `看到${role}时，你身体里更想靠近还是更想躲开？`,
+    purpose: "用身体反应捕捉用户对这张牌的真实距离感和情绪。",
+    options: [
+      "想再多看一会儿",
+      "想很快翻过去",
+      "停在那里、有点定住",
+      "胸口或肩膀有点紧",
+      "没特别反应",
+    ],
+  }),
+  (role) => ({
+    question: `如果你对${role}印象比较深，更多是因为什么？`,
+    purpose: "拆解用户的吸引点，看看在意的是符号、画面，还是联想。",
+    options: [
+      "牌名让我先有反应",
+      "画面或人物的样子",
+      "整体颜色或氛围",
+      "它让我想到某个人或某件事",
+      "其实印象不算深",
+    ],
+  }),
+  (role) => ({
+    question: `${role}让你心里更紧还是更松？`,
+    purpose: "用情绪/呼吸维度的对比探测这张牌带来的真实感受。",
+    options: [
+      "心口或呼吸有点紧",
+      "反而比之前松一点",
+      "一阵复杂、说不清",
+      "比较平静",
+      "没什么感觉",
+    ],
+  }),
+];
+
+function getPerceptualPrompt(card: ResolvedQuestionCard, index: number): PerceptualPrompt {
+  const role = getPositionRole(card);
+  const builder = perceptualPromptBuilders[index % perceptualPromptBuilders.length];
+  return builder(role, card.card.nameZh);
 }
 
 function scoreQuestionCard(card: ResolvedQuestionCard) {
@@ -459,13 +531,30 @@ function scoreQuestionCard(card: ResolvedQuestionCard) {
 
 function buildCardQuestion(card: ResolvedQuestionCard, index: number) {
   const focus = getCardFocus(card);
+  const perceptual = getPerceptualPrompt(card, index);
 
   return createChoiceQuestion(
     `q${index + 2}_${card.card.slug.replace(/[^a-z0-9]+/g, "_")}`,
-    focus.question,
+    perceptual.question,
     `${getPositionRole(card)}主要聚焦：${focus.trueFocus}。牌义摘要：${card.meaning}`,
-    focus.purpose,
-    focus.options,
+    perceptual.purpose,
+    perceptual.options,
+  );
+}
+
+function buildGenericPerceptualQuestion(): AdaptiveQuestion {
+  return createChoiceQuestion(
+    "q2_first_attention",
+    "你最想先聊聊这组牌里的哪一种感受？",
+    "在没有具体牌面解析时，先用知觉/感受的入口让用户开口。",
+    "捕捉用户最在意的主观维度，再决定后续追问方向。",
+    [
+      "某张牌的画面让我有感觉",
+      "整体颜色或氛围",
+      "某张牌的牌名一下抓住我",
+      "看到牌之后心里有点紧",
+      "其实没什么特别感觉",
+    ],
   );
 }
 
@@ -478,15 +567,18 @@ export function buildFallbackAdaptiveQuestions(input: BuildAdaptiveQuestionInput
     .sort((a, b) => scoreQuestionCard(b) - scoreQuestionCard(a) || a.position.order - b.position.order)
     .slice(0, Math.max(1, questionCount - 1))
     .map(buildCardQuestion);
-  const questions = [buildOverallQuestion(cards), ...cardQuestions];
+  const baseQuestions =
+    cards.length === 0
+      ? [buildOverallQuestion(cards), buildGenericPerceptualQuestion()]
+      : [buildOverallQuestion(cards), ...cardQuestions];
   const cardMeanings = cards.map((card) => buildCardMeaning(card, input.readingIntent));
 
   return {
     domain: input.readingIntent?.domain ?? "self",
     coreTension,
     questionStrategy:
-      "先确认整组牌的情绪基调，再逐张覆盖关键牌：现状或逆位优先，其次是大阿卡那和情绪/现实落点。",
-    questions: questions.slice(0, questionCount),
+      "先用整体明暗/画面感建立情绪基调，再逐张追问知觉性反应（注意点、亮暗、身体感、吸引点）；不让用户对照牌义打勾。",
+    questions: baseQuestions.slice(0, Math.max(2, questionCount)),
     cardMeanings,
     qualityCheck: createQualityCheck(true),
     model: "local-card-aware-fallback",
@@ -538,7 +630,7 @@ export function buildAdaptiveQuestionPayload(input: BuildAdaptiveQuestionInput):
     domain: input.readingIntent?.domain ?? "self",
     coreTension,
     questionStrategy:
-      "先确认整体情绪基调，再确认关键牌位上的共鸣、抗拒、压力来源或现实联想。",
+      "先用整体明暗/画面感建立情绪基调，再针对关键牌位生成知觉性追问（第一注意、亮暗、身体反应、吸引点等），避免直面对照牌义。",
     questions: fallback.questions,
     cardMeanings,
     userPrompt,
@@ -665,6 +757,28 @@ export function reviewAdaptiveQuestionOutput(
     problems.push("选项偏通用模板，不够贴合具体牌义。");
     rewriteReasons.push("generic_options");
     improvementInstructions.push("每个选项都要来自 specific_focus、possibleUserFeelings 或 domainMapping。");
+  }
+
+  const surveyStyleHits = generated.questions.filter((question) => {
+    const text = [
+      question.question,
+      ...(question.options?.map((option) => option.label) ?? []),
+    ].join("\n");
+    const surveyOptionCount = (text.match(/阶段开始|阶段结束|有点失控|正在看清|不像/g) ?? [])
+      .length;
+    const surveyStem = /(对应|有没有出现在|是否(正在|已经)|是不是.*阶段|准备好面对)/.test(question.question);
+    return surveyOptionCount >= 3 || surveyStem;
+  });
+  if (surveyStyleHits.length > 0) {
+    problems.push(
+      `${surveyStyleHits.length} 个问题仍是直面对照式：${surveyStyleHits
+        .map((q) => q.id)
+        .join("、")}。`,
+    );
+    rewriteReasons.push("survey_style_question");
+    improvementInstructions.push(
+      "改写成知觉/感受类提问，例如：第一眼看到什么、画面是亮还是暗、心里更紧还是更松、是因为牌名/画面/氛围让你停留。不要让用户对照牌义打勾。",
+    );
   }
 
   const score = Math.max(0, 100 - problems.length * 18 - rewriteReasons.length * 7);

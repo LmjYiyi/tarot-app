@@ -56,14 +56,14 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
   switch (spread?.slug) {
     case "single-guidance":
       return {
-        sections: ["1. 牌面总览", "2. 反馈线索", "3. 核心讯息", "4. 今日行动", "5. 一句提醒"],
+        sections: ["1. 牌面总览", "2. 牌面线索", "3. 核心讯息", "4. 今日行动", "5. 一句提醒"],
         instruction: "把重点压缩到一张牌的核心提醒，不展开成大而全分析。",
       };
     case "career-five":
       return {
         sections: [
           "1. 牌面总览",
-          "2. 用户反馈摘要",
+          "2. 直觉补充",
           "3. 当前状态一句话",
           "4. 逐张牌解读",
           "5. 整组牌关系",
@@ -79,7 +79,7 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 用户反馈摘要",
+          "2. 直觉补充",
           "3. 关系现状",
           "4. 双方与连接断裂点",
           "5. 修复路径",
@@ -92,7 +92,7 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 用户反馈摘要",
+          "2. 直觉补充",
           "3. 决策核心",
           "4. A/B 路径对比",
           "5. 情绪上的倾向",
@@ -104,7 +104,7 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 用户反馈摘要",
+          "2. 直觉补充",
           "3. 当前心理状态",
           "4. 压力源与需求",
           "5. 调整方向",
@@ -116,7 +116,7 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 用户反馈摘要",
+          "2. 直觉补充",
           "3. 局势总览",
           "4. 关键结构解读",
           "5. 近期走向与结果趋势",
@@ -128,7 +128,7 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 用户反馈摘要",
+          "2. 直觉补充",
           "3. 整体概览",
           "4. 分位置解读",
           "5. 行动建议",
@@ -225,7 +225,7 @@ function summarizeFeedback(
   feedback: UserFeedback | undefined,
 ) {
   if (!feedback) {
-    return "用户未填写直觉反馈，请只做基础牌面解读。";
+    return "无额外直觉补充。写作时不要说明用户未填写或无法判断，也不要把“没有补充”写成单独段落；直接回到牌面本身。";
   }
 
   const findCard = (cardId: string | undefined) =>
@@ -251,7 +251,7 @@ function summarizeFeedback(
 
 function summarizeAdaptiveAnswers(answers: AdaptiveAnswer[] | undefined) {
   if (!answers?.length) {
-    return "适配追问：未回答。不要自行编造用户感受。";
+    return "无额外补充回应。写作时不要说明用户未回答追问，也不要围绕缺席信息分析；直接依据牌面解读。";
   }
 
   return answers
@@ -340,9 +340,10 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     "4. 权重指令：若提供了「本次牌组组合意义」，应将其作为解读局势结构或核心矛盾的优先依据，而不是只平铺单牌解析。",
     "5. 元素、行星、星象和数字只作为辅助线索：当它们能解释重复模式（多张同号牌）、显著冲突、互补或趋势时再使用。禁止为了显得神秘而硬凑或堆砌这些术语。",
     "6. 用户的适配追问答案只代表看牌后的感受，不要把它当作客观事实。",
-    "7. 不要使用绝对预言（必然、一定、命中注定），用更像是、倾向于、需要注意的表达。",
-    "8. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
-    "9. 输出要克制精炼，不要写 Markdown 表格，不要逐项复制所有关键词。",
+    "7. 如果用户没有填写直觉反馈或补充回应，严禁写“用户未填写”“未回答”“无法判断你是否认同/不安”等缺席说明；这类信息不应该呈现给用户。直接解读牌面即可。",
+    "8. 不要使用绝对预言（必然、一定、命中注定），用更像是、倾向于、需要注意的表达。",
+    "9. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
+    "10. 输出要克制精炼，不要写 Markdown 表格，不要逐项复制所有关键词。",
     annotationRule,
     selectedCards.length <= 5
       ? "长度要求：700 到 1000 个中文字符，优先保留核心矛盾和行动建议。"

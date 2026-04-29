@@ -360,18 +360,40 @@ function SelectStage({
   onModeChange: (mode: SelectMode) => void;
   onSelectionDone: (indices: number[]) => void;
 }) {
+  const [showModes, setShowModes] = useState(false);
+
   return (
     <div className="flex flex-col gap-6 pb-2">
-      <div className="flex flex-wrap items-center justify-center gap-1.5">
-        <ModeTab active={mode === "fan"} onClick={() => onModeChange("fan")}>
-          扇形挑牌
-        </ModeTab>
-        <ModeTab active={mode === "piles"} onClick={() => onModeChange("piles")}>
-          三叠选一
-        </ModeTab>
-        <ModeTab active={mode === "number"} onClick={() => onModeChange("number")}>
-          心象数字
-        </ModeTab>
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1.5">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+            当前抽牌方式
+          </span>
+          <span className="text-[13px] font-medium text-[var(--ink)]">
+            {mode === "fan" ? "扇形挑牌" : mode === "piles" ? "三叠选一" : "心象数字"}
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowModes((value) => !value)}
+            className="text-[12px] text-[var(--coral-deep)] underline-offset-4 hover:underline"
+          >
+            换一种
+          </button>
+        </div>
+
+        {showModes ? (
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            <ModeTab active={mode === "fan"} onClick={() => onModeChange("fan")}>
+              扇形挑牌
+            </ModeTab>
+            <ModeTab active={mode === "piles"} onClick={() => onModeChange("piles")}>
+              三叠选一
+            </ModeTab>
+            <ModeTab active={mode === "number"} onClick={() => onModeChange("number")}>
+              心象数字
+            </ModeTab>
+          </div>
+        ) : null}
       </div>
 
       <AnimatePresence mode="wait">

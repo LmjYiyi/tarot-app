@@ -34,7 +34,7 @@ export function StreamingInterpretation({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--coral)] opacity-75" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--coral)]" />
             </span>
-            Streaming
+            读牌中
           </span>
         ) : null}
       </header>
@@ -81,10 +81,10 @@ function EmptyState() {
         </svg>
       </div>
       <p className="font-serif-display text-[19px] leading-tight text-[var(--ink)]">
-        解读会在这里实时展开
+        牌面会在这里慢慢展开
       </p>
       <p className="max-w-[280px] text-[13px] leading-6 text-[var(--ink-muted)]">
-        先抽牌、回答追问，然后点击&ldquo;生成解读&rdquo;。
+        抽完牌后，可以直接看解读；也可以先补几句直觉。
       </p>
     </div>
   );

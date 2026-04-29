@@ -85,7 +85,7 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
       >
         {/* faint astrological chart, dialed way back so the cards lead */}
         <Image
-          src="/spreads/astrology-chart-background.png"
+          src="/spreads/astrology-chart-background-v2.png"
           alt=""
           fill
           priority
@@ -195,7 +195,7 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
       <div className="hidden md:flex mt-12 flex-col items-center justify-center text-center space-y-2">
         <div className="h-px w-16 bg-[var(--line-strong)]" />
         <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--ink-muted)]">
-          {spread.cardCount} cards · 已布局
+          {spread.cardCount} 张牌 · 已落位
         </p>
       </div>
     </div>

@@ -71,18 +71,28 @@ function StarGlyph({ className }: { className?: string }) {
 
 function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[rgba(250,249,245,0.82)] backdrop-blur-md">
+    <header
+      className="border-b border-[rgba(74,59,50,0.10)]"
+      style={{
+        position: "fixed",
+        inset: "0 0 auto 0",
+        zIndex: 100,
+        background:
+          "linear-gradient(180deg, rgba(251, 240, 200, 0.86) 0%, rgba(251, 240, 200, 0.72) 100%)",
+        textShadow: "0 1px 0 rgba(253,248,225,0.78)",
+      }}
+    >
       <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-6 px-5 py-3.5 sm:px-8 lg:px-12">
         <Link href="/" className="flex items-center gap-2.5 text-[var(--ink)]">
           <StarGlyph className="h-3.5 w-3.5 text-[var(--coral)]" />
           <span className="font-serif-display text-[19px] tracking-[-0.01em]">Arcana Flow</span>
         </Link>
 
-        <nav className="flex items-center gap-1 text-[13.5px] text-[var(--ink-soft)]">
-          <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]" href="/spreads">
+        <nav className="flex items-center gap-1 text-[13.5px] font-medium text-[var(--ink)]">
+          <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)]" href="/spreads">
             牌阵
           </Link>
-          <Link className="hidden rounded-[8px] px-3 py-1.5 transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)] sm:inline-flex" href="/cards/the-fool">
+          <Link className="hidden rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)] sm:inline-flex" href="/cards/the-fool">
             牌义
           </Link>
         </nav>
@@ -90,7 +100,7 @@ function SiteHeader() {
         <div className="flex items-center gap-3">
           <span className="hidden items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)] md:inline-flex">
             <span className="inline-block h-1 w-1 rounded-full bg-[var(--coral)]" />
-            中文 · 流式解读
+            中文 · 即时读牌
           </span>
           <Link
             className="inline-flex items-center justify-center rounded-[10px] bg-[var(--coral)] px-4 py-1.5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(168,85,62,0.18)] transition hover:bg-[var(--coral-deep)]"
@@ -106,8 +116,23 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="relative mt-20 border-t border-[var(--line)] bg-[var(--surface-tint)] text-[var(--ink-soft)]">
-      <div className="mx-auto grid w-full max-w-[1320px] gap-10 px-6 py-14 lg:grid-cols-[1.4fr_0.6fr_0.6fr] lg:px-12">
+    <footer className="relative mt-16 overflow-hidden text-[var(--ink-soft)]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-center gap-5 px-6"
+      >
+        <span className="h-px flex-1 bg-[linear-gradient(90deg,transparent,rgba(74,59,50,0.12),rgba(200,90,60,0.20))]" />
+        <span className="relative flex h-9 w-9 items-center justify-center">
+          <span className="absolute inset-0 rotate-45 border border-[rgba(200,90,60,0.18)]" />
+          <StarGlyph className="h-3.5 w-3.5 text-[rgba(200,90,60,0.68)]" />
+        </span>
+        <span className="h-px flex-1 bg-[linear-gradient(90deg,rgba(200,90,60,0.20),rgba(74,59,50,0.12),transparent)]" />
+      </div>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-[10%] top-8 h-28 bg-[radial-gradient(ellipse_at_center,rgba(200,90,60,0.08)_0%,rgba(251,240,200,0.08)_48%,transparent_72%)]"
+      />
+      <div className="relative z-10 mx-auto grid w-full max-w-[1320px] gap-10 px-6 py-16 [text-shadow:0_1px_0_rgba(253,248,225,0.72)] lg:grid-cols-[1.4fr_0.6fr_0.6fr] lg:px-12">
         <div className="space-y-4">
           <div className="flex items-center gap-2.5 text-[var(--ink)]">
             <StarGlyph className="h-3.5 w-3.5 text-[var(--coral)]" />
@@ -117,7 +142,7 @@ function SiteFooter() {
             The cards whisper; you answer.
           </p>
           <p className="max-w-md text-[13.5px] leading-[1.7]">
-            牌面、文字与生成内容仅用于自我观察与灵感整理，不替代医疗、法律、投资及任何专业建议。
+            牌面与文字仅用于自我观察与灵感整理，不替代医疗、法律、投资及任何专业建议。
           </p>
         </div>
         <div className="space-y-3 text-[13.5px]">
@@ -130,13 +155,13 @@ function SiteFooter() {
         <div className="space-y-3 text-[13.5px]">
           <p className="eyebrow-ink">进度 · Phase</p>
           <p className="leading-[1.75]">
-            I · 抽牌、展示、直觉反馈与证据链解读。
+            I · 抽牌、翻牌、直觉补充与牌面解读。
             <br />
-            II · 塔罗师工作台、客户会话与导出。
+            II · 更完整的牌阵记录、会话与导出。
           </p>
         </div>
       </div>
-      <div className="border-t border-[var(--line)] py-5 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)]">
+      <div className="relative z-10 border-t border-[rgba(74,59,50,0.08)] py-5 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)] [text-shadow:0_1px_0_rgba(253,248,225,0.68)]">
         Arcana Flow · 2026 · Made with care
       </div>
     </footer>
@@ -156,7 +181,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <MouseTrail />
-        <div className="relative flex min-h-screen flex-col">
+        <div className="relative flex min-h-screen flex-col pt-[57px]">
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />

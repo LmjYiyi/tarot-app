@@ -3,21 +3,22 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { SpreadRecommender } from "@/components/SpreadRecommender";
 import { buttonStyles } from "@/components/ui/button";
 import { Ornament, toRoman } from "@/components/ui/ornament";
 import { Panel } from "@/components/ui/panel";
 import { getAllSpreads } from "@/lib/tarot/catalog";
 
 const spreadThumbnails: Record<string, string> = {
-  "career-five": "/spreads/career-five-thumbnail.png",
-  "three-card": "/spreads/three-card-thumbnail.png",
-  "single-guidance": "/spreads/single-guidance-thumbnail.png",
-  "cross-five": "/spreads/cross-five-thumbnail.png",
-  "relationship-six": "/spreads/relationship-six-thumbnail.png",
-  "lovers-pyramid": "/spreads/lovers-pyramid-thumbnail.png",
-  "path-of-choice": "/spreads/path-of-choice-thumbnail.png",
-  "self-state": "/spreads/self-state-thumbnail.png",
-  "celtic-cross": "/spreads/celtic-cross-thumbnail.png",
+  "career-five": "/spreads/career-five-thumbnail-v2.png",
+  "three-card": "/spreads/three-card-thumbnail-v2.png",
+  "single-guidance": "/spreads/single-guidance-thumbnail-v2.png",
+  "cross-five": "/spreads/cross-five-thumbnail-v2.png",
+  "relationship-six": "/spreads/relationship-six-thumbnail-v2.png",
+  "lovers-pyramid": "/spreads/lovers-pyramid-thumbnail-v2.png",
+  "path-of-choice": "/spreads/path-of-choice-thumbnail-v2.png",
+  "self-state": "/spreads/self-state-thumbnail-v2.png",
+  "celtic-cross": "/spreads/celtic-cross-thumbnail-v2.png",
 };
 
 export const metadata: Metadata = {
@@ -35,7 +36,7 @@ export default function SpreadsPage() {
         className="relative mx-auto mb-10 h-[180px] w-full max-w-5xl overflow-hidden sm:h-[220px] lg:h-[260px]"
       >
         <Image
-          src="/visuals/parchment-star-map-band.png"
+          src="/visuals/parchment-star-map-band-v2.png"
           alt=""
           fill
           sizes="(max-width: 1280px) 100vw, 1024px"
@@ -56,7 +57,7 @@ export default function SpreadsPage() {
           选择今天要使用的牌阵
         </h1>
         <p className="text-[16px] leading-8 text-[var(--ink-soft)]">
-          问题越复杂，越适合用更多牌位拆开结构、关系张力和短期趋势。先选牌阵，再进入固定 seed 抽牌和直觉反馈流程。
+          先问问自己“我现在想看什么”。轻一点的问题，用少量牌照见方向；关系、选择和长期课题，再交给更完整的牌阵慢慢摊开。
         </p>
         <div className="mx-auto flex max-w-md items-center gap-4">
           <div className="h-px flex-1 bg-[var(--line)]" />
@@ -65,10 +66,12 @@ export default function SpreadsPage() {
         </div>
       </header>
 
+      <SpreadRecommender spreads={spreads} />
+
       <div className="mt-16 grid gap-6 lg:grid-cols-3">
         {spreads.map((spread, index) => (
           <ScrollReveal key={spread.slug} delay={index * 0.06}>
-            <Panel className="group relative flex h-full flex-col gap-6 overflow-hidden border-[var(--line)] bg-[var(--surface-tint)] transition-all hover:border-[var(--coral-edge)]">
+            <Panel className="group relative flex h-full flex-col gap-5 overflow-hidden border-[var(--line)] bg-[var(--surface-tint)] transition-all hover:border-[var(--coral-edge)]">
               {/* Decorative Background Roman Numeral */}
               <span className="pointer-events-none absolute -right-4 -top-6 select-none font-serif-display text-[120px] italic text-[var(--coral)] opacity-[0.06] transition-opacity group-hover:opacity-[0.10]">
                 {toRoman(index + 1)}
@@ -79,13 +82,13 @@ export default function SpreadsPage() {
                   {toRoman(index + 1)}
                 </span>
                 <span className="rounded-full border border-[var(--line)] bg-[var(--surface-raised)] px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-[var(--ink-muted)] font-mono">
-                  {spread.cardCount} cards
+                  {spread.cardCount} 张牌
                 </span>
               </div>
 
               <div className="relative aspect-[16/9] overflow-hidden rounded-[12px] border border-[var(--line)] bg-[var(--surface-raised)] shadow-[0_4px_12px_rgba(26,26,25,0.08)]">
                 <Image
-                  src={spreadThumbnails[spread.slug] ?? "/spreads/astrology-chart-background.png"}
+                  src={spreadThumbnails[spread.slug] ?? "/spreads/astrology-chart-background-v2.png"}
                   alt=""
                   fill
                   sizes="(max-width: 1024px) calc(100vw - 48px), 360px"
@@ -98,10 +101,12 @@ export default function SpreadsPage() {
               </div>
 
               <div className="space-y-2">
-                <p className="eyebrow">{spread.hero}</p>
                 <h2 className="font-serif-display text-[26px] text-[var(--ink)]">
                   {spread.nameZh}
                 </h2>
+                <p className="text-[13px] leading-6 text-[var(--ink-muted)]">
+                  {spread.hero}
+                </p>
               </div>
 
               <p className="text-[14px] leading-7 text-[var(--ink-soft)] line-clamp-3">
@@ -119,24 +124,10 @@ export default function SpreadsPage() {
                 ))}
               </div>
 
-              <ul className="grid gap-2 border-t border-[var(--line)] pt-4 text-[13px] text-[var(--ink-soft)]">
-                {spread.positions.slice(0, 3).map((position) => (
-                  <li
-                    key={position.order}
-                    className="flex items-center gap-3"
-                  >
-                    <span className="font-mono text-[12px] text-[var(--coral-deep)]">
-                      {toRoman(position.order)}
-                    </span>
-                    <span className="truncate">
-                      <span className="font-medium text-[var(--ink)]">{position.name}</span>
-                    </span>
-                  </li>
-                ))}
-                {spread.positions.length > 3 && (
-                  <li className="text-[11px] italic opacity-50">及另外 {spread.positions.length - 3} 个牌位...</li>
-                )}
-              </ul>
+              <div className="flex items-center justify-between border-t border-[var(--line)] pt-4 text-[12.5px] text-[var(--ink-muted)]">
+                <span>{Math.max(2, Math.ceil(spread.cardCount * 1.2))} 分钟左右</span>
+                <span>{spread.positions.length} 个牌位</span>
+              </div>
 
               <div className="mt-auto flex items-center justify-between gap-4 pt-2">
                 <div className="h-px flex-1 bg-[var(--line)]" />
@@ -144,7 +135,7 @@ export default function SpreadsPage() {
                   className={buttonStyles({})}
                   href={`/spreads/${spread.slug}`}
                 >
-                  进入牌阵
+                  开始这局
                 </Link>
               </div>
             </Panel>
