@@ -30,25 +30,21 @@ export default function SpreadsPage() {
   const spreads = getAllSpreads();
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-6 py-16 lg:px-10 lg:py-24">
+    <div className="relative isolate mx-auto w-full max-w-6xl px-6 py-16 lg:px-10 lg:py-24">
       <div
         aria-hidden
-        className="relative mx-auto mb-10 h-[180px] w-full max-w-5xl overflow-hidden sm:h-[220px] lg:h-[260px]"
+        className="pointer-events-none fixed inset-0 -z-10"
       >
         <Image
-          src="/visuals/parchment-star-map-band-v2.png"
+          src="/visuals/spread-selection-background-clean.jpg"
           alt=""
           fill
-          sizes="(max-width: 1280px) 100vw, 1024px"
+          sizes="100vw"
           priority
-          className="object-cover"
-          style={{
-            maskImage:
-              "linear-gradient(180deg, transparent 0%, black 18%, black 78%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(180deg, transparent 0%, black 18%, black 78%, transparent 100%)",
-          }}
+          className="scale-[1.01] object-cover opacity-[0.58] blur-[0.5px]"
         />
+        <div className="absolute inset-0 bg-[rgba(251,240,200,0.34)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(251,240,200,0.18)_0%,rgba(251,240,200,0.44)_48%,rgba(251,240,200,0.72)_100%)]" />
       </div>
       <header className="mx-auto max-w-3xl space-y-6 text-center">
         <Ornament variant="quatrefoil" />
@@ -71,7 +67,7 @@ export default function SpreadsPage() {
       <div className="mt-16 grid gap-6 lg:grid-cols-3">
         {spreads.map((spread, index) => (
           <ScrollReveal key={spread.slug} delay={index * 0.06}>
-            <Panel className="group relative flex h-full flex-col gap-5 overflow-hidden border-[var(--line)] bg-[var(--surface-tint)] transition-all hover:border-[var(--coral-edge)]">
+            <Panel className="group relative flex h-full flex-col gap-5 overflow-hidden border-[var(--line)] bg-[rgba(253,248,225,0.84)] backdrop-blur-[1.5px] transition-all hover:border-[var(--coral-edge)]">
               {/* Decorative Background Roman Numeral */}
               <span className="pointer-events-none absolute -right-4 -top-6 select-none font-serif-display text-[120px] italic text-[var(--coral)] opacity-[0.06] transition-opacity group-hover:opacity-[0.10]">
                 {toRoman(index + 1)}

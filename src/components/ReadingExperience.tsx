@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 
+import { CardBack } from "@/components/DeckShuffle";
 import { InteractiveDeck, type RitualPhase, type SelectMode } from "@/components/InteractiveDeck";
 import { MobileStickyDeck } from "@/components/MobileStickyDeck";
 import { SpreadLayout } from "@/components/SpreadLayout";
@@ -12,7 +14,7 @@ import {
   getDefaultIntentForSpread,
   getDefaultQuestionForIntent,
 } from "@/lib/tarot/adaptive-questions";
-import { getCardById } from "@/lib/tarot/catalog";
+import { getAllCards, getCardById } from "@/lib/tarot/catalog";
 import {
   DEFAULT_DRAW_RULE,
   DEFAULT_REVERSED_RATE,
@@ -21,6 +23,7 @@ import {
   shuffleDeck,
   type ShuffledDeck,
 } from "@/lib/tarot/shuffle";
+import { layoutPresets, type LayoutPreset } from "@/lib/tarot/layout-config";
 import type {
   AdaptiveAnswer,
   AdaptiveQuestion,
@@ -129,6 +132,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const [questionsLoading, setQuestionsLoading] = useState(false);
   const [interpretation, setInterpretation] = useState("");
   const [sharePath, setSharePath] = useState<string | null>(null);
+  const [resultDialogOpen, setResultDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stickyDeckVisible, setStickyDeckVisible] = useState(false);
   const ritualRef = useRef<HTMLDivElement | null>(null);
@@ -153,6 +157,18 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           } => Boolean(value),
         ),
     [cards],
+  );
+  const shufflePreviewCards = useMemo(
+    () =>
+      getAllCards()
+        .filter((card): card is typeof card & { imageUrl: string } =>
+          Boolean(card.imageUrl),
+        )
+        .map((card) => ({
+          imageUrl: card.imageUrl,
+          nameZh: card.nameZh,
+        })),
+    [],
   );
 
   const cardsRevealed = resolvedCards.length > 0;
@@ -282,6 +298,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     setError(null);
     setInterpretation("");
     setSharePath(null);
+    setResultDialogOpen(false);
     setCoreTension(null);
     setQuestionStrategy(null);
     setAdaptiveQuestions([]);
@@ -347,6 +364,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       setPhase("reading");
       setInterpretation("");
       setSharePath(null);
+      setResultDialogOpen(true);
 
       const response = await fetch("/api/interpret", {
         method: "POST",
@@ -412,13 +430,52 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const busy = interactionBusy || questionsLoading;
 
   const showRitualOnly = phase === "shuffling" || phase === "cutting" || phase === "selecting";
+  const pageBackgroundSrc =
+    phase === "reading" || phase === "done"
+      ? "/visuals/reading-result-background-clean.jpg"
+      : cardsRevealed
+        ? "/visuals/ritual-table-after-shuffle-background-clean.jpg"
+        : "/visuals/draw-shuffle-background-clean.jpg";
 
   return (
-    <div className="space-y-10">
+    <div className="relative isolate space-y-10">
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10"
+      >
+        <Image
+          src={pageBackgroundSrc}
+          alt=""
+          fill
+          sizes="100vw"
+          priority
+          className="scale-[1.01] object-cover opacity-[0.62] blur-[0.5px]"
+        />
+        <div className="absolute inset-0 bg-[rgba(251,240,200,0.28)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(251,240,200,0.06)_0%,rgba(251,240,200,0.30)_60%,rgba(251,240,200,0.55)_100%)]" />
+      </div>
+
       <MobileStickyDeck
         visible={cardsRevealed && stickyDeckVisible}
         spread={spread}
         cards={resolvedCards}
+      />
+
+      <StreamingInterpretation
+        open={resultDialogOpen || phase === "reading"}
+        onClose={() => setResultDialogOpen(false)}
+        text={interpretation}
+        isStreaming={phase === "reading"}
+        sharePath={sharePath}
+        adaptiveAnswers={adaptiveAnswers}
+        spreadName={spread.nameZh}
+        question={question}
+        cards={resolvedCards.map(({ card, reversed, positionOrder }) => ({
+          card,
+          reversed,
+          positionOrder,
+          positionName: spread.positions.find((position) => position.order === positionOrder)?.name,
+        }))}
       />
 
       {/* Header — quiet, editorial */}
@@ -459,12 +516,13 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       ) : null}
 
       {showRitualOnly ? (
-        <div ref={ritualRef} className="scroll-mt-24">
+        <div ref={ritualRef} className="min-h-[calc(100vh-9rem)] scroll-mt-24">
           <RitualShell phase={phase}>
             <InteractiveDeck
               phase={phaseToDeckPhase[phase]}
               cardCount={spread.cardCount}
               selectMode={selectMode}
+              shufflePreviewCards={shufflePreviewCards}
               onModeChange={setSelectMode}
               onShuffleDone={handleShuffleAnimationDone}
               onCutDone={handleCutDone}
@@ -516,12 +574,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
               busy={interactionBusy}
               phase={phase}
             />
-            <StreamingInterpretation
-              text={interpretation}
-              isStreaming={phase === "reading"}
-              sharePath={sharePath}
-              adaptiveAnswers={adaptiveAnswers}
-            />
             {error ? (
               <div className="rounded-[12px] border border-[rgba(184,92,110,0.4)] bg-[rgba(184,92,110,0.06)] px-4 py-3 text-sm text-[#8a3447]">
                 {error}
@@ -556,89 +608,213 @@ function IdleSetup({
   onStart: () => void;
 }) {
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <Panel className="space-y-7">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="eyebrow">主题与目标</p>
-            <h2 className="mt-2 font-serif-display text-[26px] leading-tight text-[var(--ink)]">
-              先把问题收束清楚
-            </h2>
-          </div>
-          <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
-            {questionLength} / 280
-          </span>
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-2">
-          <SegmentedField
-            label="占卜领域"
-            value={readingIntent.domain}
-            options={domainOptions}
-            onChange={(value) => onIntentChange({ domain: value as ReadingDomain })}
-          />
-          <SegmentedField
-            label="想看的方向"
-            value={readingIntent.goal}
-            options={goalOptions}
-            onChange={(value) => onIntentChange({ goal: value as ReadingGoal })}
-          />
-        </div>
-
-        <label className="block space-y-2">
-          <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
-            你的问题
-          </span>
-          <textarea
-            value={question}
-            onChange={(event) => onQuestionChange(event.target.value.slice(0, 280))}
-            rows={3}
-            placeholder="例如：未来三个月事业发展会怎么样？"
-            className="w-full resize-y rounded-[12px] border border-[var(--line-strong)] bg-[var(--surface)] px-4 py-3.5 font-serif-display text-[19px] leading-[1.6] text-[var(--ink)] outline-none transition-all placeholder:text-[var(--ink-faint)] focus:border-[var(--coral)] focus:bg-[var(--surface-tint)] focus:shadow-[0_0_0_3px_var(--coral-wash)]"
-          />
-        </label>
-
-        <div className="flex flex-wrap items-center gap-4 border-t border-[var(--line)] pt-5">
-          <Button onClick={onStart}>进入洗牌 →</Button>
-          <p className="text-[13px] leading-6 text-[var(--ink-muted)]">
-            不填写也可以，我会先替你放入一个适合这副牌阵的问题。
-          </p>
-        </div>
-      </Panel>
-
-      <Panel className="space-y-4">
-        <div className="flex items-center justify-between">
-          <p className="eyebrow">牌位</p>
-          <span className="rounded-full border border-[var(--line)] px-2.5 py-0.5 font-mono text-[10px] tracking-[0.18em] text-[var(--ink-soft)]">
-            {spread.cardCount} cards
-          </span>
-        </div>
-        <ul className="max-h-[260px] space-y-1 overflow-y-auto pr-1">
-          {spread.positions.map((position) => (
-            <li
-              key={position.order}
-              className="flex items-start gap-3 rounded-[10px] px-2 py-2 transition hover:bg-[var(--surface-raised)]"
-            >
-              <span className="mt-[2px] inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--coral-wash)] font-mono text-[10px] text-[var(--coral-deep)]">
-                {position.order}
-              </span>
-              <div className="min-w-0">
-                <p className="text-[14px] font-medium text-[var(--ink)]">
-                  {position.name}
+    <section className="relative border-t border-[var(--line)] pt-16">
+      <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start xl:grid-cols-[minmax(0,1fr)_460px]">
+        <div className="min-w-0 space-y-12">
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-3">
+              <span className="w-12 h-px bg-[var(--coral)] opacity-40" />
+              <p className="eyebrow !tracking-[0.3em]">THE STAGE IS SET</p>
+            </div>
+            <div>
+              <h2 className="font-serif-display text-[clamp(2.5rem,5vw,4.2rem)] leading-[1.05] text-[var(--ink)] tracking-tight">
+                将问题赋予<br />
+                <span className="italic text-[var(--coral-deep)]">这张桌面</span>
+              </h2>
+              <div className="mt-8 max-w-2xl space-y-4">
+                <p className="text-[16.5px] leading-relaxed text-[var(--ink-soft)]">
+                  无需复杂的生辰或资料。塔罗占卜更像是一场潜意识的镜像。
                 </p>
-                <p className="mt-0.5 text-[12.5px] leading-5 text-[var(--ink-soft)]">
-                  {position.focus}
+                <p className="text-[15px] leading-relaxed text-[var(--ink-muted)]">
+                  深呼吸，在心中明确你当下的困惑或期待。看一眼右侧的牌阵结构，把那句最核心的提问留下来，然后开始洗牌。
                 </p>
               </div>
-            </li>
-          ))}
-        </ul>
-      </Panel>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute -inset-4 bg-[var(--surface-raised)]/30 rounded-[24px] -z-10 blur-xl" />
+            <SpreadPreview spread={spread} />
+          </div>
+        </div>
+
+        <div className="relative min-w-0 lg:pt-8">
+          <div className="sticky top-24 space-y-10">
+            <Panel className="border-[var(--line-strong)] bg-[var(--surface-tint)]/80 backdrop-blur-sm shadow-xl">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="eyebrow !text-[10px]">YOUR INQUIRY · 提问</p>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--ink-faint)]">
+                      {questionLength} / 280
+                    </span>
+                  </div>
+                  <label className="block group">
+                    <textarea
+                      value={question}
+                      onChange={(event) => onQuestionChange(event.target.value.slice(0, 280))}
+                      rows={6}
+                      placeholder="例如：这段关系接下来最需要看清什么？"
+                      className="w-full resize-none rounded-xl border border-[var(--line-strong)] bg-[var(--surface)]/50 px-5 py-6 font-serif-display text-[22px] leading-[1.6] text-[var(--ink)] outline-none transition-all placeholder:text-[rgba(74,59,50,0.25)] focus:border-[var(--coral)] focus:bg-[var(--surface)] focus:shadow-[0_0_0_4px_var(--coral-wash)]"
+                    />
+                  </label>
+                </div>
+
+                <div className="space-y-6 pt-2">
+                  <IntentRibbon
+                    label="关注领域"
+                    value={readingIntent.domain}
+                    options={domainOptions}
+                    onChange={(value) => onIntentChange({ domain: value as ReadingDomain })}
+                  />
+                  <IntentRibbon
+                    label="解读倾向"
+                    value={readingIntent.goal}
+                    options={goalOptions}
+                    onChange={(value) => onIntentChange({ goal: value as ReadingGoal })}
+                  />
+                </div>
+
+                <div className="pt-6 border-t border-[var(--line)]">
+                  <Button 
+                    onClick={onStart} 
+                    className="w-full py-7 text-[16px] font-medium tracking-wide shadow-lg hover:shadow-xl transition-all"
+                  >
+                    开始洗牌 · START RITUAL
+                  </Button>
+                  <p className="mt-4 text-center text-[12.5px] leading-relaxed text-[var(--ink-muted)]">
+                    即便留空，我也会为这副牌阵注入最契合的通用意图。
+                  </p>
+                </div>
+              </div>
+            </Panel>
+            
+            {/* Quick tips */}
+            <div className="px-4 py-2 flex items-center gap-3 text-[12px] text-[var(--ink-faint)] italic">
+              <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[var(--coral)] opacity-30" />
+              <p>提问越具体，牌阵的能量指向越明确。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SpreadPreview({ spread }: { spread: SpreadDefinition }) {
+  const preset = layoutPresets[spread.slug] ?? createFallbackPreviewPreset(spread.cardCount);
+  const compactCards = spread.cardCount >= 7;
+  const namedPositions = spread.positions.slice(0, Math.min(spread.positions.length, 6));
+
+  return (
+    <div className="relative">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="font-serif-display text-[26px] leading-tight text-[var(--ink)]">
+            {spread.nameZh}
+          </p>
+          <p className="mt-1 text-[13.5px] leading-6 text-[var(--ink-muted)]">
+            {spread.hero}
+          </p>
+        </div>
+      </div>
+
+      <div
+        className={cn(
+          "relative mx-auto w-full overflow-visible",
+          preset.aspectRatio,
+        )}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            maskImage:
+              "radial-gradient(ellipse at center, black 0%, rgba(0,0,0,0.72) 52%, rgba(0,0,0,0.20) 76%, transparent 92%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse at center, black 0%, rgba(0,0,0,0.72) 52%, rgba(0,0,0,0.20) 76%, transparent 92%)",
+          }}
+        >
+          <Image
+            src="/spreads/astrology-chart-background-v2.png"
+            alt=""
+            fill
+            sizes="(max-width: 1024px) 92vw, 760px"
+            className="object-cover opacity-[0.18] mix-blend-multiply"
+            aria-hidden
+          />
+        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(253,248,225,0.12)_0%,transparent_62%,rgba(253,248,225,0.24)_100%)]" />
+
+        {spread.positions.map((position, index) => {
+          const layoutPos = preset.positions[position.order];
+          if (!layoutPos) return null;
+          const previewPos = clampPreviewPosition(layoutPos);
+
+          return (
+            <div
+              key={position.order}
+              className={cn(
+                "group absolute aspect-[2/3.5] -translate-x-1/2 -translate-y-1/2",
+                preset.cardWidth,
+              )}
+              style={{
+                left: `${previewPos.x}%`,
+                top: `${previewPos.y}%`,
+                transform: `translate(-50%, -50%) rotate(${layoutPos.rotate ?? 0}deg)`,
+                zIndex: 10 + index,
+              }}
+            >
+              <div className="relative h-full w-full">
+                <div
+                  aria-hidden
+                  className="absolute -inset-2 rounded-[14px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background:
+                      "radial-gradient(closest-side, rgba(200,90,60,0.20), transparent)",
+                  }}
+                />
+                <CardBack
+                  compact={compactCards}
+                  className="rounded-[9px] shadow-[0_10px_24px_rgba(74,59,50,0.12),0_2px_6px_rgba(74,59,50,0.08)]"
+                />
+                <span className="absolute -top-3 -left-3 flex h-6 w-6 items-center justify-center rounded-full border border-[var(--coral-edge)] bg-[var(--surface-tint)] font-mono text-[10px] text-[var(--coral-deep)] shadow-[0_2px_8px_rgba(74,59,50,0.08)]">
+                  {position.order}
+                </span>
+                {!compactCards ? (
+                  <span className="absolute left-1/2 top-[calc(100%+6px)] max-w-[120px] -translate-x-1/2 whitespace-nowrap rounded-full border border-[rgba(74,59,50,0.14)] bg-[rgba(253,248,225,0.86)] px-2 py-0.5 text-center text-[11px] leading-4 text-[var(--ink-soft)] shadow-[0_2px_8px_rgba(74,59,50,0.05)]">
+                    {position.name}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+        {namedPositions.map((position) => (
+          <div
+            key={position.order}
+            className="border-t border-[var(--line)] pt-2"
+          >
+            <p className="flex items-center gap-2 text-[13px] font-medium text-[var(--ink)]">
+              <span className="font-mono text-[10px] text-[var(--coral-deep)]">
+                {position.order}
+              </span>
+              {position.name}
+            </p>
+            <p className="mt-0.5 line-clamp-2 text-[12px] leading-5 text-[var(--ink-muted)]">
+              {position.focus}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-function SegmentedField({
+function IntentRibbon({
   label,
   value,
   options,
@@ -650,8 +826,8 @@ function SegmentedField({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="space-y-2">
-      <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="mr-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
         {label}
       </span>
       <div className="flex flex-wrap gap-1.5">
@@ -663,10 +839,10 @@ function SegmentedField({
               key={option.value}
               onClick={() => onChange(option.value)}
               className={cn(
-                "rounded-[8px] border px-3 py-1.5 text-[13px] transition-all",
+                "rounded-full border px-3 py-1.5 text-[12.5px] transition-all",
                 active
                   ? "border-[var(--ink)] bg-[var(--ink)] text-[var(--surface)]"
-                  : "border-[var(--line-strong)] bg-transparent text-[var(--ink-soft)] hover:border-[var(--ink-soft)] hover:text-[var(--ink)]",
+                  : "border-[rgba(74,59,50,0.20)] bg-transparent text-[var(--ink-soft)] hover:border-[var(--coral-edge)] hover:text-[var(--coral-deep)]",
               )}
             >
               {option.label}
@@ -678,27 +854,83 @@ function SegmentedField({
   );
 }
 
+function clampPreviewPosition(position: { x: number; y: number; rotate?: number }) {
+  return {
+    x: Math.max(10, Math.min(90, position.x)),
+    y: Math.max(14, Math.min(86, position.y)),
+  };
+}
+
+function createFallbackPreviewPreset(cardCount: number): LayoutPreset {
+  const columns = Math.min(Math.max(cardCount, 1), 4);
+  const rows = Math.ceil(cardCount / columns);
+  const positions: LayoutPreset["positions"] = {};
+
+  Array.from({ length: cardCount }).forEach((_, index) => {
+    const row = Math.floor(index / columns);
+    const column = index % columns;
+    const rowCount = row === rows - 1 ? cardCount - row * columns : columns;
+    const xStep = 100 / (rowCount + 1);
+    const yStep = 100 / (rows + 1);
+
+    positions[index + 1] = {
+      x: xStep * (column + 1),
+      y: yStep * (row + 1),
+    };
+  });
+
+  return {
+    aspectRatio: cardCount <= 3 ? "aspect-[2/1]" : "aspect-[16/10]",
+    cardWidth: cardCount >= 7 ? "w-[10%]" : cardCount >= 4 ? "w-[12%]" : "w-[15%]",
+    positions,
+  };
+}
+
 /* ============================================================
-   Ritual shell — calm cream stage, no Latin chrome
+   Ritual shell — calm cream stage, enhanced with decorative borders
    ============================================================ */
 
 function RitualShell({ children, phase }: { children: React.ReactNode; phase: FlowPhase }) {
   const phaseTitle = phaseLabel[phase];
+
   return (
-    <Panel className="overflow-hidden p-0">
-      <div className="relative min-h-[440px] p-6 lg:p-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)]">
-            仪式桌面
-          </p>
-          <div className="h-px flex-1 bg-[var(--line)]" />
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-soft)]">
-            {phaseTitle}
-          </p>
-        </div>
-        {children}
+    <div className="relative group">
+      {/* Decorative corners */}
+      <div className="absolute -inset-2 pointer-events-none opacity-20">
+        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[var(--coral)] rounded-tl-lg" />
+        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[var(--coral)] rounded-tr-lg" />
+        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[var(--coral)] rounded-bl-lg" />
+        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[var(--coral)] rounded-br-lg" />
       </div>
-    </Panel>
+
+      <Panel className="overflow-hidden border-[rgba(74,59,50,0.18)] bg-[rgba(253,248,225,0.82)] p-0 shadow-[0_20px_50px_rgba(74,59,50,0.12),inset_0_0_80px_rgba(253,248,225,0.4)] backdrop-blur-[4px]">
+        {/* Subtle texture overlay */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-multiply" 
+             style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/old-mathematics.png")' }} />
+        
+        <div className="relative min-h-[460px] p-6 lg:p-10">
+          <div className="mb-8 flex items-center justify-between gap-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-px bg-gradient-to-r from-transparent to-[var(--line-strong)]" />
+              <p className="font-mono text-[10.5px] uppercase tracking-[0.25em] text-[var(--ink-muted)]">
+                仪式桌面 · RITUAL STAGE
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="h-px w-12 bg-[var(--line)]" />
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--coral-deep)] font-bold">
+                {phaseTitle}
+              </p>
+              <span className="h-px w-6 bg-[var(--line)]" />
+            </div>
+          </div>
+          
+          <div className="relative z-10">
+            {children}
+          </div>
+        </div>
+      </Panel>
+    </div>
   );
 }
 

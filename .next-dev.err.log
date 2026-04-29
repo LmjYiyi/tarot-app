@@ -37,3 +37,2843 @@ Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
 [browser] Encountered two children with the same key, `關鍵特徵-toc`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
 [browser] Encountered two children with the same key, `關鍵特徵-toc`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
 [browser] Image with src "/spreads/site-edge-background-v1.png" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/spreads" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="zh-CN"
+                          data-scroll-behavior="smooth"
+                          className="__variable_73ee6c __variable_e9ff3d __variable_e99beb __variable_35b0e9 __variabl..."
+-                         data-immersive-translate-page-theme="light"
+                        >
+                  ...
+ 
+[browser] Image with src "/spreads/three-card-thumbnail-v2.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+⨯ ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+⨯ ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\admin\Desktop\RPC\tarot-app\.next\dev\cache\webpack\client-development-fallback\1.pack.gz_' -> 'C:\Users\admin\Desktop\RPC\tarot-app\.next\dev\cache\webpack\client-development-fallback\1.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\admin\Desktop\RPC\tarot-app\.next\dev\cache\webpack\client-development-fallback\1.pack.gz_' -> 'C:\Users\admin\Desktop\RPC\tarot-app\.next\dev\cache\webpack\client-development-fallback\1.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'C:\Users\admin\Desktop\RPC\tarot-app\.next\dev\cache\webpack\client-development-fallback\1.pack.gz_' -> 'C:\Users\admin\Desktop\RPC\tarot-app\.next\dev\cache\webpack\client-development-fallback\1.pack.gz'
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+⨯ ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+⨯ ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx 
+⨯ ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/cards/[slug]/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/app/cards/[slug]/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:1]
+ 304 |       </div>
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     : ^
+     `----
+  x Expected '</', got '<eof>'
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\app\cards\[slug]\page.tsx:307:3]
+ 305 |     </div>
+ 306 |   );
+ 307 | }
+     `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/cards/the..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="zh-CN"
+                          data-scroll-behavior="smooth"
+                          className="__variable_73ee6c __variable_e9ff3d __variable_e99beb __variable_35b0e9 __variabl..."
+-                         data-immersive-translate-page-theme="light"
+                        >
+                  ...
+ 
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/cards/the..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="zh-CN"
+                          data-scroll-behavior="smooth"
+                          className="__variable_73ee6c __variable_e9ff3d __variable_e99beb __variable_35b0e9 __variabl..."
+-                         data-immersive-translate-page-theme="light"
+                        >
+                  ...
+ 
+[browser] ./src/components/StreamingInterpretation.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\admin\Desktop\RPC\tarot-app\src\components\StreamingInterpretation.tsx
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./src/components/StreamingInterpretation.tsx
+./src/components/ReadingExperience.tsx 
+[browser] ./src/components/StreamingInterpretation.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\admin\Desktop\RPC\tarot-app\src\components\StreamingInterpretation.tsx
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./src/components/StreamingInterpretation.tsx
+./src/components/ReadingExperience.tsx 
+[browser] ./src/components/StreamingInterpretation.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\admin\Desktop\RPC\tarot-app\src\components\StreamingInterpretation.tsx
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./src/components/StreamingInterpretation.tsx
+./src/components/ReadingExperience.tsx 
+⨯ ./src/components/StreamingInterpretation.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\admin\Desktop\RPC\tarot-app\src\components\StreamingInterpretation.tsx
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./src/components/StreamingInterpretation.tsx
+./src/components/ReadingExperience.tsx
+⨯ ./src/components/StreamingInterpretation.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\admin\Desktop\RPC\tarot-app\src\components\StreamingInterpretation.tsx
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./src/components/StreamingInterpretation.tsx
+./src/components/ReadingExperience.tsx
+[browser] ./src/components/StreamingInterpretation.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\admin\Desktop\RPC\tarot-app\src\components\StreamingInterpretation.tsx
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./src/components/StreamingInterpretation.tsx
+./src/components/ReadingExperience.tsx 
+[browser] ./src/components/StreamingInterpretation.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\admin\Desktop\RPC\tarot-app\src\components\StreamingInterpretation.tsx
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./src/components/StreamingInterpretation.tsx
+./src/components/ReadingExperience.tsx 
+[browser] ./src/components/StreamingInterpretation.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from C:\Users\admin\Desktop\RPC\tarot-app\src\components\StreamingInterpretation.tsx
+    1: 系统找不到指定的文件。 (os error 2)
+
+Import trace for requested module:
+./src/components/StreamingInterpretation.tsx
+./src/components/ReadingExperience.tsx 
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/spreads/t..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="zh-CN"
+                          data-scroll-behavior="smooth"
+                          className="__variable_73ee6c __variable_e9ff3d __variable_e99beb __variable_35b0e9 __variabl..."
+-                         data-immersive-translate-page-theme="light"
+                        >
+                  ...
+ 
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/spreads/t..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="zh-CN"
+                          data-scroll-behavior="smooth"
+                          className="__variable_73ee6c __variable_e9ff3d __variable_e99beb __variable_35b0e9 __variabl..."
+-                         data-immersive-translate-page-theme="light"
+                        >
+                  ...
+ 
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/spreads/t..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="zh-CN"
+                          data-scroll-behavior="smooth"
+                          className="__variable_73ee6c __variable_e9ff3d __variable_e99beb __variable_35b0e9 __variabl..."
+-                         data-immersive-translate-page-theme="light"
+                        >
+                  ...
+ 
+[browser] Image with src "/visuals/draw-shuffle-background-v1.png" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/visuals/draw-shuffle-background-v1.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/spreads/t..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="zh-CN"
+                          data-scroll-behavior="smooth"
+                          className="__variable_73ee6c __variable_e9ff3d __variable_e99beb __variable_35b0e9 __variabl..."
+-                         data-immersive-translate-page-theme="light"
+                        >
+                  ...
+ 
+[browser] Image with src "/visuals/draw-shuffle-background-v1.png" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/visuals/draw-shuffle-background-v1.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.
+[browser] Image with src "/visuals/draw-shuffle-background-clean.png" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/visuals/draw-shuffle-background-clean.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <RootLayout>
+                        <html
+                          lang="zh-CN"
+                          data-scroll-behavior="smooth"
+                          className="__variable_73ee6c __variable_e9ff3d __variable_e99beb __variable_35b0e9 __variabl..."
+-                         data-immersive-translate-page-theme="light"
+                        >
+                  ...
+ 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/ReadingExperience.tsx 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/ReadingExperience.tsx 
+⨯ ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/ReadingExperience.tsx
+./src/app/spreads/[slug]/page.tsx
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/ReadingExperience.tsx
+./src/app/spreads/[slug]/page.tsx 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/ReadingExperience.tsx
+./src/app/spreads/[slug]/page.tsx 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+[browser] ./src/components/ReadingExperience.tsx
+Error:   x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :         ^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Unterminated regexp literal
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+  x Expression expected
+     ,-[C:\Users\admin\Desktop\RPC\tarot-app\src\components\ReadingExperience.tsx:853:1]
+ 850 |     </div>
+ 851 |   );
+ 852 | }
+ 853 |         </div>
+     :          ^^^^^
+ 854 |       </div>
+ 855 |     </Panel>
+ 856 |   );
+     `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] Image with src "/visuals/draw-shuffle-background-clean.png" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/visuals/draw-shuffle-background-clean.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.
+[browser] Image with src "/visuals/draw-shuffle-background-clean.png" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/visuals/draw-shuffle-background-clean.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.
+[browser] Image with src "/spreads/astrology-chart-background-v2.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.
+[browser] Image with src "/visuals/draw-shuffle-background-clean.png" has "fill" prop and "sizes" prop of "100vw", but image is not rendered at full viewport width. Please adjust "sizes" to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/visuals/draw-shuffle-background-clean.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.
+[browser] Image with src "/spreads/astrology-chart-background-v2.png" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height.

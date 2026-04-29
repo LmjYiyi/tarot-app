@@ -72,7 +72,7 @@ function StarGlyph({ className }: { className?: string }) {
 function SiteHeader() {
   return (
     <header
-      className="border-b border-[rgba(74,59,50,0.10)]"
+      className="hidden border-b border-[rgba(74,59,50,0.10)] sm:block"
       style={{
         position: "fixed",
         inset: "0 0 auto 0",
@@ -116,21 +116,22 @@ function SiteHeader() {
 
 function SiteFooter() {
   return (
-    <footer className="relative mt-16 overflow-hidden text-[var(--ink-soft)]">
+    <footer className="relative isolate mt-16 overflow-hidden text-[var(--ink-soft)]">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-center gap-5 px-6"
-      >
-        <span className="h-px flex-1 bg-[linear-gradient(90deg,transparent,rgba(74,59,50,0.12),rgba(200,90,60,0.20))]" />
-        <span className="relative flex h-9 w-9 items-center justify-center">
-          <span className="absolute inset-0 rotate-45 border border-[rgba(200,90,60,0.18)]" />
-          <StarGlyph className="h-3.5 w-3.5 text-[rgba(200,90,60,0.68)]" />
-        </span>
-        <span className="h-px flex-1 bg-[linear-gradient(90deg,rgba(200,90,60,0.20),rgba(74,59,50,0.12),transparent)]" />
-      </div>
+        className="pointer-events-none absolute inset-x-0 -top-32 h-32 bg-[linear-gradient(180deg,rgba(251,240,200,0)_0%,rgba(251,240,200,0.28)_58%,rgba(251,240,200,0.48)_100%)]"
+      />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-[10%] top-8 h-28 bg-[radial-gradient(ellipse_at_center,rgba(200,90,60,0.08)_0%,rgba(251,240,200,0.08)_48%,transparent_72%)]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(251,240,200,0.48)_0%,rgba(251,240,200,0.66)_42%,rgba(251,240,200,0.76)_100%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_18%_18%,rgba(253,248,225,0.46)_0%,transparent_56%),radial-gradient(ellipse_at_88%_0%,rgba(200,90,60,0.06)_0%,transparent_52%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-[8%] top-0 h-36 bg-[radial-gradient(ellipse_at_center,rgba(200,90,60,0.07)_0%,rgba(251,240,200,0.18)_48%,transparent_74%)]"
       />
       <div className="relative z-10 mx-auto grid w-full max-w-[1320px] gap-10 px-6 py-16 [text-shadow:0_1px_0_rgba(253,248,225,0.72)] lg:grid-cols-[1.4fr_0.6fr_0.6fr] lg:px-12">
         <div className="space-y-4">
@@ -181,7 +182,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <MouseTrail />
-        <div className="relative flex min-h-screen flex-col pt-[57px]">
+        <div className="relative flex min-h-screen w-full max-w-full flex-col overflow-x-hidden sm:pt-[57px]">
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />

@@ -147,7 +147,7 @@ export default async function CardDetailPage({ params }: CardPageProps) {
     <div className="relative isolate overflow-x-clip">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
         <Image
-          src="/spreads/site-edge-background-v1.png"
+          src="/spreads/site-edge-background-clean.jpg"
           alt=""
           fill
           sizes="100vw"
@@ -201,8 +201,9 @@ export default async function CardDetailPage({ params }: CardPageProps) {
               </span>
             </div>
 
-            <div className="mx-auto max-w-[340px] border-y border-[rgba(74,59,50,0.10)] bg-[rgba(251,240,200,0.22)] px-1 py-6">
-              <Ornament variant="rule" className="mb-5 opacity-65" />
+            <div className="mx-auto max-w-[340px] border-y border-[rgba(74,59,50,0.10)] bg-[rgba(251,240,200,0.18)]">
+              <div className="px-1 pb-5 pt-6">
+              <Ornament variant="rule" className="mb-5 opacity-55" />
               <p className="eyebrow">{arcanaLabel}</p>
               <p className="mt-2 text-[14px] leading-7 text-[var(--ink-soft)]">
                 {card.arcana === "major"
@@ -211,8 +212,8 @@ export default async function CardDetailPage({ params }: CardPageProps) {
               </p>
             </div>
 
-            <nav className="mx-auto max-w-[340px] border-y border-[rgba(74,59,50,0.12)] bg-[rgba(251,240,200,0.20)] px-1 py-5">
-              <p className="eyebrow-ink mb-4">牌面目录 · Cards</p>
+            <nav className="border-t border-[rgba(74,59,50,0.08)] px-1 pb-5 pt-4">
+              <p className="eyebrow-ink mb-3">牌面目录 · Cards</p>
               <div className="grid max-h-[42vh] grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto pr-2 text-[13px] leading-6 text-[var(--ink-soft)]">
                 {allCards.map((item) => (
                   <Link
@@ -227,6 +228,8 @@ export default async function CardDetailPage({ params }: CardPageProps) {
                 ))}
               </div>
             </nav>
+          </div>
+
           </div>
 
           <div className="min-w-0">
@@ -283,7 +286,7 @@ export default async function CardDetailPage({ params }: CardPageProps) {
               </article>
 
               <aside className="hidden xl:block">
-                <div className="space-y-4 border-l border-[rgba(74,59,50,0.14)] bg-[rgba(251,240,200,0.16)] py-1 pl-6 pr-2 text-[12px] leading-5 text-[var(--ink-muted)] xl:sticky xl:top-16 xl:max-h-[calc(100vh-4rem)] xl:overflow-y-auto xl:overscroll-contain">
+                <div className="space-y-4 border-l border-[rgba(74,59,50,0.14)] bg-[rgba(251,240,200,0.16)] py-1 pl-6 pr-2 text-[12px] leading-5 text-[var(--ink-muted)] xl:sticky xl:top-16 xl:max-h-[calc(100vh-4rem)] xl:overflow-y-auto xl:overscroll-contain xl:[scrollbar-width:none] xl:[&::-webkit-scrollbar]:hidden">
                   <p className="eyebrow-ink">本页章节</p>
                   {contentSections.map((section, index) => (
                     <Link

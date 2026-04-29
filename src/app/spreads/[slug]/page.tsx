@@ -37,7 +37,7 @@ export default async function SpreadDetailPage({ params }: SpreadPageProps) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-6 py-10 lg:px-10">
+    <div className="mx-auto min-h-[calc(100vh-57px)] w-full max-w-7xl px-6 py-10 lg:px-10">
       <ReadingExperience spread={spread} />
     </div>
   );

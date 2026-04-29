@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { AnnotatedInterpretation } from "@/components/AnnotatedInterpretation";
+import { ReadingShareActions } from "@/components/ReadingShareActions";
 import { Ornament, toRoman } from "@/components/ui/ornament";
 import { getReadingByToken } from "@/lib/readings/store";
 import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
@@ -66,6 +67,25 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
   }
 
   const spread = getSpreadBySlug(reading.spreadSlug);
+  const shareActionCards = reading.cards.map((drawnCard) => {
+    const card = getCardById(drawnCard.cardId);
+    const position = spread?.positions.find(
+      (item) => item.order === drawnCard.positionOrder,
+    );
+
+    return {
+      cardId: drawnCard.cardId,
+      cardName: card?.nameZh ?? drawnCard.cardId,
+      imageUrl: card?.imageUrl,
+      reversed: drawnCard.reversed,
+      positionOrder: drawnCard.positionOrder,
+      positionName: position?.name,
+    };
+  });
+  const readingIntentLabel = reading.readingIntent
+    ? `${domainLabels[reading.readingIntent.domain]} · ${goalLabels[reading.readingIntent.goal]}`
+    : null;
+  const readingDrawModeLabel = drawModeLabel(reading.drawLog?.drawRule);
 
   return (
     <div className="relative isolate overflow-hidden">
@@ -74,17 +94,17 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
         className="pointer-events-none fixed inset-0 -z-20"
       >
         <Image
-          src="/spreads/astrology-chart-background-v2.png"
+          src="/visuals/reading-result-background-clean.jpg"
           alt=""
           fill
           sizes="100vw"
           priority
-          className="object-cover"
+          className="scale-[1.01] object-cover opacity-[0.72] blur-[0.5px]"
         />
       </div>
         <div
           aria-hidden
-          className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(90deg,rgba(252,244,207,0.92)_0%,rgba(252,244,207,0.78)_48%,rgba(252,244,207,0.9)_100%)]"
+          className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(90deg,rgba(252,244,207,0.90)_0%,rgba(252,244,207,0.68)_48%,rgba(252,244,207,0.86)_100%)]"
         />
       <div className="editorial-parchment relative z-10 mx-auto w-full max-w-7xl px-5 py-12 lg:px-10 lg:py-18">
         <header className="mx-auto max-w-4xl space-y-6 text-center">
@@ -96,11 +116,20 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
           <p className="mx-auto max-w-3xl font-fraunces text-[22px] italic leading-9 text-[var(--ink-soft)]">
             &ldquo;{reading.question || "我想看清自己当前最需要面对的课题。"}&rdquo;
           </p>
+          <ReadingShareActions
+            spreadName={spread?.nameZh ?? "塔罗解读"}
+            question={reading.question}
+            interpretation={reading.aiInterpretation}
+            sharePath={`/r/${token}`}
+            cards={shareActionCards}
+            intentLabel={readingIntentLabel}
+            drawModeLabel={readingDrawModeLabel}
+          />
           <Ornament variant="rule" className="mx-auto max-w-xs" />
         </header>
 
-        <div className="mt-12 grid gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start">
-          <aside className="space-y-5 xl:sticky xl:top-24">
+        <div className="mx-auto mt-12 max-w-4xl space-y-8">
+          <aside className="hidden">
             <section className="rounded-[22px] border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.72)] p-5 shadow-[0_24px_70px_rgba(42,32,18,0.12)] backdrop-blur-md">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <p className="eyebrow-ink">抽到的牌</p>
@@ -184,6 +213,51 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
                 这副牌想说的话
               </h2>
               <Ornament variant="rule" className="mt-5 max-w-[220px]" />
+            </div>
+            <div className="mb-8 space-y-5 rounded-[20px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.62)] p-4 sm:p-5">
+              <div className="grid gap-3 text-[13.5px] leading-7 text-[var(--ink-soft)] sm:grid-cols-2">
+                {readingIntentLabel ? (
+                  <p>
+                    <span className="font-medium text-[var(--ink)]">提问方向：</span>
+                    {readingIntentLabel}
+                  </p>
+                ) : null}
+                <p>
+                  <span className="font-medium text-[var(--ink)]">抽牌方式：</span>
+                  {readingDrawModeLabel}
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {shareActionCards.map((card) => (
+                  <article
+                    key={`${card.cardId}-${card.positionOrder}`}
+                    className="flex flex-col items-center gap-3 rounded-[18px] border border-[var(--gilt)]/25 bg-[rgba(255,255,255,0.28)] p-3 text-center transition-transform hover:scale-[1.02]"
+                  >
+                    <div className="relative aspect-[300/524] w-[130px] overflow-hidden rounded-[10px] border border-[var(--gilt)]/35 bg-[var(--vellum-1)] shadow-[0_12px_35px_rgba(42,32,18,0.18)]">
+                      {card.imageUrl ? (
+                        <Image
+                          src={card.imageUrl}
+                          alt={card.cardName}
+                          fill
+                          sizes="160px"
+                          className={`object-cover ${card.reversed ? "rotate-180" : ""}`}
+                        />
+                      ) : null}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+                        {card.positionName ?? `牌位 ${card.positionOrder}`}
+                      </p>
+                      <p className="mt-1.5 font-serif-display text-[21px] leading-tight text-[var(--ink)]">
+                        {card.cardName}
+                      </p>
+                      <p className="mt-1 text-[13px] text-[var(--ink-muted)]">
+                        {card.reversed ? "逆位" : "正位"}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
             <AnnotatedInterpretation
               text={reading.aiInterpretation}

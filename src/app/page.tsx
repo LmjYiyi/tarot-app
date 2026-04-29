@@ -64,7 +64,7 @@ export default function HomePage() {
         className="pointer-events-none fixed inset-0 -z-10"
       >
         <Image
-          src="/spreads/site-edge-background-v1.png"
+          src="/spreads/site-edge-background-clean.jpg"
           alt=""
           fill
           sizes="100vw"
