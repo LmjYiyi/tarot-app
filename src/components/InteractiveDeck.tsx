@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 
@@ -47,7 +47,7 @@ export function InteractiveDeck({
   onShuffleDone,
   onCutDone,
   onSelectionDone,
-  shuffleDurationMs = 2900,
+  shuffleDurationMs = 4200,
 }: InteractiveDeckProps) {
   return (
     <div className="relative w-full">
@@ -99,6 +99,89 @@ export function InteractiveDeck({
         ) : null}
       </AnimatePresence>
     </div>
+  );
+}
+
+function ShufflePile({
+  side,
+  active,
+  closing,
+  reduceMotion,
+  cards,
+  faceCards,
+}: {
+  side: "left" | "right";
+  active: boolean;
+  closing: boolean;
+  reduceMotion: boolean;
+  cards: ShufflePreviewCard[];
+  faceCards: ShufflePreviewCard[];
+}) {
+  const direction = side === "left" ? -1 : 1;
+  const restX = direction * 94;
+  const closeDuration = reduceMotion ? 0.2 : SHUFFLE_CLOSE_MS / 1000;
+  const showFace = active && !closing && !reduceMotion;
+
+  return (
+    <motion.div
+      className="absolute left-1/2 top-1/2 h-52 w-32 will-change-transform"
+      style={{
+        marginLeft: -64,
+        marginTop: -104,
+        transformStyle: "preserve-3d",
+      }}
+      animate={
+        closing
+          ? { x: direction * 18, y: 0, rotate: direction * 1.5, opacity: 0 }
+          : { x: restX, y: 0, rotate: direction * 3.5, opacity: 1 }
+      }
+      transition={{ duration: closing ? closeDuration : 0.7, ease: "easeInOut" }}
+    >
+      {cards.map((_, index) => {
+        const lift = -index * 3;
+        const offsetX = direction * index * 4;
+        const offsetY = index * 2;
+
+        return (
+          <div
+            key={`${side}-${index}`}
+            className="absolute inset-0 will-change-transform"
+            style={{
+              transformStyle: "preserve-3d",
+              transform: `translate(${offsetX}px, ${offsetY + lift}px) rotate(${direction * index * 0.7}deg)`,
+              zIndex: SHUFFLE_PILE_SIZE - index,
+            }}
+          >
+            <CardBack />
+          </div>
+        );
+      })}
+
+      {faceCards.map((faceCard, index) => {
+        const depth = index / Math.max(1, faceCards.length - 1);
+
+        return (
+          <div
+            key={`${side}-${faceCard.imageUrl}-${index}`}
+            className="absolute inset-0 overflow-hidden rounded-[12px] border border-[rgba(255,255,255,0.62)] bg-[var(--surface)] shadow-[0_10px_26px_rgba(26,26,25,0.16)] transition-opacity duration-500"
+            style={{
+              opacity: showFace ? 1 - depth * 0.3 : 0,
+              transform: `translate(${direction * (5 + index * 8)}px, ${-6 - index * 7}px) rotate(${direction * (0.8 + index * 1.4)}deg) scale(${1 - index * 0.035})`,
+              zIndex: SHUFFLE_PILE_SIZE + 2 + (faceCards.length - index),
+            }}
+          >
+            <Image
+              src={faceCard.imageUrl}
+              alt=""
+              fill
+              sizes="128px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,transparent_50%,rgba(26,26,25,0.18)_100%)]" />
+          </div>
+        );
+      })}
+    </motion.div>
   );
 }
 
@@ -156,7 +239,21 @@ function StageLayout({
    ============================================================ */
 
 const SHUFFLE_CYCLE_SEC = 2.8;
-const RIFFLE_HALF = 8;
+const SHUFFLE_CLOSE_MS = 560;
+const SHUFFLE_PILE_SIZE = 5;
+const SHUFFLE_FACE_COUNT = 3;
+const SHUFFLE_FACE_INTERVAL_MS = 720;
+
+function pickRandomPreviewCards(cards: ShufflePreviewCard[], count: number) {
+  if (cards.length <= count) return cards;
+
+  const picked = new Set<number>();
+  while (picked.size < count) {
+    picked.add(Math.floor(Math.random() * cards.length));
+  }
+
+  return Array.from(picked).map((index) => cards[index]);
+}
 
 function ShuffleStage({
   active,
@@ -169,10 +266,23 @@ function ShuffleStage({
   previewCards: ShufflePreviewCard[];
   onDone: () => void;
 }) {
+  const [closing, setClosing] = useState(false);
+  const reduceMotion = useReducedMotion() ?? false;
+
   useEffect(() => {
     if (!active) return;
-    const timeout = window.setTimeout(onDone, durationMs);
-    return () => window.clearTimeout(timeout);
+
+    const closeTimeout = window.setTimeout(() => {
+      setClosing(true);
+    }, Math.max(0, durationMs - SHUFFLE_CLOSE_MS));
+    const timeout = window.setTimeout(() => {
+      onDone();
+    }, durationMs);
+
+    return () => {
+      window.clearTimeout(closeTimeout);
+      window.clearTimeout(timeout);
+    };
   }, [active, durationMs, onDone]);
 
   return (
@@ -186,71 +296,80 @@ function ShuffleStage({
       }
       headerAddon={
         active && (
-          <motion.div
+          <div
+            aria-hidden
             className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] mix-blend-overlay"
             style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.05 }}
           />
         )
       }
     >
-      <ShuffleAura active={active} previewCards={previewCards} />
+      <ShuffleAura
+        active={active}
+        closing={closing}
+        reduceMotion={reduceMotion}
+        previewCards={previewCards}
+      />
     </StageLayout>
   );
 }
 
-// Stable random values for floating sparks to satisfy React purity rules
-const STATIC_SPARKS = Array.from({ length: 15 }).map(() => ({
-  xStart: (Math.random() - 0.5) * 600,
-  xEnd: (Math.random() - 0.5) * 600,
-  duration: 3 + Math.random() * 2,
-  delay: Math.random() * 2,
-}));
-
 function ShuffleAura({
   active,
+  closing,
+  reduceMotion,
   previewCards,
 }: {
   active: boolean;
+  closing: boolean;
+  reduceMotion: boolean;
   previewCards: ShufflePreviewCard[];
 }) {
-  const total = RIFFLE_HALF * 2;
-  const [previewOffset, setPreviewOffset] = useState(0);
   const visiblePreviewCards = useMemo(
     () => (previewCards.length > 0 ? previewCards : FALLBACK_PREVIEW_CARDS),
     [previewCards],
   );
+  const [faceCards, setFaceCards] = useState(() => ({
+    left: pickRandomPreviewCards(FALLBACK_PREVIEW_CARDS, SHUFFLE_FACE_COUNT),
+    right: pickRandomPreviewCards(FALLBACK_PREVIEW_CARDS, SHUFFLE_FACE_COUNT),
+  }));
 
   useEffect(() => {
-    if (!active) {
-      return;
-    }
+    if (!active || reduceMotion) return;
 
+    const updateFaces = () => {
+      setFaceCards({
+        left: pickRandomPreviewCards(visiblePreviewCards, SHUFFLE_FACE_COUNT),
+        right: pickRandomPreviewCards(visiblePreviewCards, SHUFFLE_FACE_COUNT),
+      });
+    };
+
+    updateFaces();
     const interval = window.setInterval(() => {
-      setPreviewOffset((offset) => (offset + 1) % visiblePreviewCards.length);
-    }, 260);
+      updateFaces();
+    }, SHUFFLE_FACE_INTERVAL_MS);
 
     return () => window.clearInterval(interval);
-  }, [active, visiblePreviewCards.length]);
+  }, [active, reduceMotion, visiblePreviewCards]);
 
   function getPreviewCard(index: number) {
-    return visiblePreviewCards[(previewOffset + index) % visiblePreviewCards.length];
+    return visiblePreviewCards[index % visiblePreviewCards.length];
   }
 
   return (
     <div
+      aria-hidden="true"
       className="relative flex h-[340px] w-full max-w-[760px] items-center justify-center overflow-visible sm:h-[380px]"
       style={{ perspective: "1800px" }}
     >
       {/* compass dial — a slowly turning hairline ring with tick marks */}
       <motion.div
         className="absolute h-[310px] w-[310px] sm:h-[400px] sm:w-[400px] rounded-full"
-        animate={active ? { rotate: 360 } : { rotate: 0 }}
+        animate={active && !reduceMotion ? { rotate: 360 } : { rotate: 0 }}
         transition={{
           duration: 90,
           ease: "linear",
-          repeat: active ? Infinity : 0,
+          repeat: active && !reduceMotion ? Infinity : 0,
         }}
       >
         <div className="absolute inset-0 rounded-full border border-[var(--coral-edge)] opacity-25 shadow-[0_0_40px_rgba(200,90,60,0.1)]" />
@@ -263,7 +382,7 @@ function ShuffleAura({
       <motion.div
         className="absolute left-1/2 top-1/2 h-px w-[min(82vw,600px)] -translate-x-1/2 bg-gradient-to-r from-transparent via-[rgba(168,85,62,0.4)] to-transparent"
         animate={
-          active
+          active && !reduceMotion
             ? {
                 opacity: [0.25, 0.7, 0.25],
                 scaleX: [0.75, 1.05, 0.75],
@@ -272,7 +391,7 @@ function ShuffleAura({
         }
         transition={{
           duration: SHUFFLE_CYCLE_SEC,
-          repeat: active ? Infinity : 0,
+          repeat: active && !reduceMotion ? Infinity : 0,
           ease: "easeInOut",
         }}
       />
@@ -285,13 +404,13 @@ function ShuffleAura({
             "radial-gradient(ellipse, rgba(200,90,60,0.3) 0%, transparent 70%)",
         }}
         animate={
-          active
+          active && !reduceMotion
             ? { opacity: [0.4, 0.8, 0.4], scale: [0.95, 1.1, 0.95] }
             : { opacity: 0.35, scale: 1 }
         }
         transition={{
           duration: SHUFFLE_CYCLE_SEC,
-          repeat: Infinity,
+          repeat: active && !reduceMotion ? Infinity : 0,
           ease: "easeInOut",
         }}
       />
@@ -301,196 +420,60 @@ function ShuffleAura({
         className="relative h-[280px] w-[min(86vw,580px)] sm:h-[320px]"
         style={{ transformStyle: "preserve-3d" }}
       >
-        {Array.from({ length: total }).map((_, i) => {
-          const isLeft = i < RIFFLE_HALF;
-          const half = isLeft ? -1 : 1;
-          const localIdx = isLeft ? i : i - RIFFLE_HALF;
-          const stackSpread = Math.min(localIdx * 1.8, 12);
-          const restX = half * (108 + stackSpread);
-          const restY = 26 - localIdx * 1.3;
-          const restRotate = half * (8.5 - localIdx * 0.58);
-          const bridgeX = half * (22 - localIdx * 1.5);
-          const bridgeY = -20 - localIdx * 3.4;
-          const phase = localIdx * 0.06 + (isLeft ? 0 : 0.03);
-          const flashFace = active && (localIdx === 1 || localIdx === 4 || localIdx === 7);
-          const previewCard = getPreviewCard(i + localIdx * 3);
+        <ShufflePile
+          side="left"
+          active={active}
+          closing={closing}
+          reduceMotion={reduceMotion}
+          cards={Array.from({ length: SHUFFLE_PILE_SIZE }).map((_, index) =>
+            getPreviewCard(index * 5),
+          )}
+          faceCards={faceCards.left}
+        />
+        <ShufflePile
+          side="right"
+          active={active}
+          closing={closing}
+          reduceMotion={reduceMotion}
+          cards={Array.from({ length: SHUFFLE_PILE_SIZE }).map((_, index) =>
+            getPreviewCard(index * 5 + 2),
+          )}
+          faceCards={faceCards.right}
+        />
 
-          return (
-            <motion.div
-              key={i}
-              className="absolute h-52 w-32 will-change-transform"
+        <motion.div
+          aria-hidden
+          className="absolute left-1/2 top-1/2 h-52 w-32 will-change-transform"
+          style={{
+            marginLeft: -64,
+            marginTop: -104,
+            transformStyle: "preserve-3d",
+          }}
+          animate={
+            closing
+              ? { opacity: 1, scale: 1, y: 0, rotate: 0 }
+              : { opacity: 0, scale: 0.94, y: 18, rotate: 0 }
+          }
+          transition={{
+            duration: reduceMotion ? 0.2 : SHUFFLE_CLOSE_MS / 1000,
+            ease: [0.22, 0.65, 0.2, 1],
+          }}
+        >
+          {[0, 1, 2].map((layer) => (
+            <div
+              key={layer}
+              className="absolute inset-0 rounded-[12px]"
               style={{
-                left: "50%",
-                top: "50%",
-                marginLeft: -64,
-                marginTop: -104,
-                transformStyle: "preserve-3d",
-                zIndex: 100 - localIdx + (isLeft ? 0 : 2),
+                transform: `translate(${layer * 1.5}px, ${-layer * 1.5}px)`,
+                zIndex: layer,
               }}
-              animate={
-                active
-                  ? {
-                      x: [restX, half * 76, bridgeX, half * 36, restX, restX],
-                      y: [
-                        restY,
-                        restY - 7,
-                        bridgeY,
-                        11 - localIdx * 1.5,
-                        23 - localIdx,
-                        restY,
-                      ],
-                      rotate: [
-                        restRotate,
-                        half * 4.5,
-                        half * -9,
-                        half * -2.5,
-                        restRotate * 0.48,
-                        restRotate,
-                      ],
-                      rotateX: [0, 1, 15, 7, 1, 0],
-                      rotateY: [0, half * -7, half * -20, half * -7, 0, 0],
-                    }
-                  : { x: restX, y: restY, rotate: restRotate, rotateX: 0, rotateY: 0 }
-              }
-              transition={
-                active
-                  ? {
-                      duration: SHUFFLE_CYCLE_SEC,
-                      repeat: Infinity,
-                      ease: [0.4, 0.02, 0.25, 1],
-                      times: [0, 0.2, 0.46, 0.72, 0.94, 1],
-                      delay: phase,
-                    }
-                  : { duration: 0.58, ease: "easeOut" }
-              }
             >
-              <RiffleCard card={previewCard} showFace={flashFace} delay={phase} />
-            </motion.div>
-          );
-        })}
+              <CardBack />
+            </div>
+          ))}
+        </motion.div>
       </div>
 
-      {/* drifting motes — sparse atmosphere */}
-      {active ? (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
-          {Array.from({ length: 4 }).map((_, i) => {
-            const previewCard = getPreviewCard(i * 13 + previewOffset);
-            const half = i % 2 === 0 ? 1 : -1;
-
-            return (
-              <motion.div
-                key={i}
-                className="absolute h-[110px] w-[66px] overflow-hidden rounded-[8px] border border-[rgba(255,255,255,0.5)] bg-[var(--surface)] shadow-[0_8px_20px_rgba(26,26,25,0.12)]"
-                initial={{ opacity: 0, x: half * 80, y: 30, rotate: half * 4, scale: 0.8 }}
-                animate={{
-                  opacity: [0, 0.65, 0],
-                  x: [half * 90, half * (20 + i * 14), half * -80],
-                  y: [40, -10 - i * 10, 30],
-                  rotate: [half * 8, half * -5, half * -15],
-                  scale: [0.8, 0.92, 0.8],
-                }}
-                transition={{
-                  duration: 1.3,
-                  repeat: Infinity,
-                  delay: i * 0.45,
-                  ease: "easeInOut",
-                }}
-              >
-                <Image
-                  src={previewCard.imageUrl}
-                  alt=""
-                  fill
-                  sizes="66px"
-                  className="object-cover opacity-90"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,transparent_50%,rgba(26,26,25,0.25)_100%)]" />
-              </motion.div>
-            );
-          })}
-        </div>
-      ) : null}
-
-      {active && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {STATIC_SPARKS.map((spark, i) => (
-            <motion.span
-              key={i}
-              aria-hidden
-              className="absolute h-[2px] w-[2px] rounded-full bg-[var(--coral-soft)] opacity-30"
-              initial={{ 
-                x: spark.xStart, 
-                y: 200, 
-                opacity: 0 
-              }}
-              animate={{ 
-                y: -200, 
-                opacity: [0, 0.5, 0],
-                x: spark.xEnd
-              }}
-              transition={{
-                duration: spark.duration,
-                repeat: Infinity,
-                delay: spark.delay,
-                ease: "linear",
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ============================================================
-   Cut stage — drag a coral line on a calm cream rail
-   ============================================================ */
-
-function RiffleCard({
-  card,
-  showFace,
-  delay,
-}: {
-  card: ShufflePreviewCard;
-  showFace: boolean;
-  delay: number;
-}) {
-  return (
-    <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
-      <motion.div
-        className="absolute inset-0"
-        style={{ backfaceVisibility: "hidden" }}
-        animate={showFace ? { opacity: [1, 0.12, 1] } : { opacity: 1 }}
-        transition={{
-          duration: SHUFFLE_CYCLE_SEC,
-          repeat: showFace ? Infinity : 0,
-          delay,
-          ease: "easeInOut",
-          times: [0, 0.42, 1],
-        }}
-      >
-        <CardBack />
-      </motion.div>
-      <motion.div
-        className="absolute inset-0 overflow-hidden rounded-[12px] border border-[rgba(255,255,255,0.62)] bg-[var(--surface)] shadow-[0_10px_26px_rgba(26,26,25,0.16)]"
-        style={{ backfaceVisibility: "hidden" }}
-        animate={showFace ? { opacity: [0, 0.95, 0], scale: [0.985, 1.02, 0.995] } : { opacity: 0 }}
-        transition={{
-          duration: SHUFFLE_CYCLE_SEC,
-          repeat: showFace ? Infinity : 0,
-          delay,
-          ease: "easeInOut",
-          times: [0, 0.42, 1],
-        }}
-      >
-        <Image
-          src={card.imageUrl}
-          alt={card.nameZh}
-          fill
-          sizes="128px"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,transparent_50%,rgba(26,26,25,0.18)_100%)]" />
-      </motion.div>
     </div>
   );
 }
@@ -502,6 +485,10 @@ const FALLBACK_PREVIEW_CARDS: ShufflePreviewCard[] = [
   { imageUrl: "/tarot/death.jpg", nameZh: "Death" },
   { imageUrl: "/tarot/cups-two.jpg", nameZh: "Two of Cups" },
 ];
+
+/* ============================================================
+   Cut stage
+   ============================================================ */
 
 function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
   const [position, setPosition] = useState(0.5);
