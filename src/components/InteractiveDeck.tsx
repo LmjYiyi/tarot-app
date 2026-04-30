@@ -118,16 +118,16 @@ function ShufflePile({
   faceCards: ShufflePreviewCard[];
 }) {
   const direction = side === "left" ? -1 : 1;
-  const restX = direction * 112;
+  const restX = direction * 140;
   const closeDuration = reduceMotion ? 0.2 : SHUFFLE_CLOSE_MS / 1000;
   const showFace = active && !closing && !reduceMotion;
 
   return (
     <motion.div
-      className="absolute left-1/2 top-1/2 h-60 w-36 will-change-transform"
+      className="absolute left-1/2 top-1/2 h-[300px] w-[180px] will-change-transform"
       style={{
-        marginLeft: -72,
-        marginTop: -120,
+        marginLeft: -90,
+        marginTop: -150,
         transformStyle: "preserve-3d",
       }}
       animate={
@@ -174,7 +174,7 @@ function ShufflePile({
               src={faceCard.imageUrl}
               alt=""
               fill
-              sizes="144px"
+              sizes="180px"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,transparent_50%,rgba(26,26,25,0.18)_100%)]" />
@@ -359,7 +359,7 @@ function ShuffleAura({
   return (
     <div
       aria-hidden="true"
-      className="relative flex h-[380px] w-full max-w-[860px] items-center justify-center overflow-visible sm:h-[430px]"
+      className="relative flex h-[460px] w-full max-w-[860px] items-center justify-center overflow-visible sm:h-[520px]"
       style={{ perspective: "1800px" }}
     >
       {/* compass dial — a slowly turning hairline ring with tick marks */}
@@ -417,7 +417,7 @@ function ShuffleAura({
 
       {/* card stack — riffle */}
       <div
-        className="relative h-[320px] w-[min(92vw,680px)] sm:h-[370px]"
+        className="relative h-[400px] w-[min(92vw,680px)] sm:h-[460px]"
         style={{ transformStyle: "preserve-3d" }}
       >
         <ShufflePile
@@ -443,10 +443,10 @@ function ShuffleAura({
 
         <motion.div
           aria-hidden
-          className="absolute left-1/2 top-1/2 h-60 w-36 will-change-transform"
+          className="absolute left-1/2 top-1/2 h-[300px] w-[180px] will-change-transform"
           style={{
-            marginLeft: -72,
-            marginTop: -120,
+            marginLeft: -90,
+            marginTop: -150,
             transformStyle: "preserve-3d",
           }}
           animate={
