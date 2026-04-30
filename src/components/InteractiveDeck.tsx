@@ -19,7 +19,7 @@ export type RitualPhase =
   | "revealing"
   | "revealed";
 
-export type SelectMode = "fan" | "piles" | "number";
+export type SelectMode = "focus" | "fan" | "piles" | "number";
 
 type InteractiveDeckProps = {
   phase: RitualPhase;
@@ -649,43 +649,32 @@ function SelectStage({
   onModeChange: (mode: SelectMode) => void;
   onSelectionDone: (indices: number[]) => void;
 }) {
-  const [showModes, setShowModes] = useState(false);
+  const isSingle = cardCount <= 1;
+  const [showAlternates, setShowAlternates] = useState(false);
+
+  // For single-card spreads, the spread itself decides the mode — no UI choice.
+  const alternates: Array<{ value: SelectMode; label: string; helper: string }> = isSingle
+    ? []
+    : [
+        { value: "fan", label: "扇形挑牌", helper: "把整副牌摊成弧形，凭直觉点中一张" },
+        { value: "piles", label: "三叠选一", helper: "牌堆分作三叠，先选叠再翻牌" },
+        { value: "number", label: "心象数字", helper: "默念问题，捕获浮现的数字" },
+      ];
 
   return (
-    <div className="flex flex-col gap-6 pb-2">
-      <div className="flex flex-col items-center gap-3">
-        <div className="flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1.5">
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
-            当前抽牌方式
-          </span>
-          <span className="text-[13px] font-medium text-[var(--ink)]">
-            {mode === "fan" ? "扇形挑牌" : mode === "piles" ? "三叠选一" : "心象数字"}
-          </span>
-          <button
-            type="button"
-            onClick={() => setShowModes((value) => !value)}
-            className="text-[12px] text-[var(--coral-deep)] underline-offset-4 hover:underline"
-          >
-            换一种
-          </button>
-        </div>
-
-        {showModes ? (
-          <div className="flex flex-wrap items-center justify-center gap-1.5">
-            <ModeTab active={mode === "fan"} onClick={() => onModeChange("fan")}>
-              扇形挑牌
-            </ModeTab>
-            <ModeTab active={mode === "piles"} onClick={() => onModeChange("piles")}>
-              三叠选一
-            </ModeTab>
-            <ModeTab active={mode === "number"} onClick={() => onModeChange("number")}>
-              心象数字
-            </ModeTab>
-          </div>
-        ) : null}
-      </div>
-
+    <div className="flex flex-col gap-8 pb-2">
       <AnimatePresence mode="wait">
+        {mode === "focus" ? (
+          <motion.div
+            key="focus"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.35 }}
+          >
+            <FocusPicker onDone={onSelectionDone} />
+          </motion.div>
+        ) : null}
         {mode === "fan" ? (
           <motion.div
             key="fan"
@@ -720,35 +709,186 @@ function SelectStage({
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      {alternates.length > 0 ? (
+        <div className="flex flex-col items-center gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => setShowAlternates((value) => !value)}
+            aria-expanded={showAlternates}
+            className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--ink-muted)] underline-offset-[6px] decoration-[var(--line-strong)] transition hover:text-[var(--coral-deep)] hover:decoration-[var(--coral)] hover:underline"
+          >
+            {showAlternates ? "收起" : "更多抽牌方式"}
+          </button>
+          {showAlternates ? (
+            <ul className="grid w-full max-w-2xl gap-px overflow-hidden border-y border-[var(--line)] sm:grid-cols-3">
+              {alternates.map((option) => {
+                const active = option.value === mode;
+                return (
+                  <li key={option.value} className="bg-[var(--surface)]/40">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        triggerHaptic(8);
+                        onModeChange(option.value);
+                      }}
+                      className={cn(
+                        "flex h-full w-full flex-col items-start gap-1 px-4 py-3 text-left transition-colors",
+                        active
+                          ? "bg-[var(--coral-wash)] text-[var(--coral-deep)]"
+                          : "text-[var(--ink-soft)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]",
+                      )}
+                    >
+                      <span className="text-[13.5px] font-medium tracking-[0.02em]">
+                        {option.label}
+                      </span>
+                      <span className="text-[11.5px] leading-5 text-[var(--ink-muted)]">
+                        {option.helper}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function ModeTab({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
+/* ---------------- Focus picker (single-card draw) ---------------- */
+
+const FOCUS_VISIBLE = 7;
+
+function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
+  // Pre-pick which deck indices the visible cards correspond to.
+  // The deck is already shuffled, so any 7 indices give different cards;
+  // we spread them across 0..77 so the visible options feel evenly drawn from the deck.
+  const offsets = useMemo(() => {
+    const step = TOTAL_CARDS / FOCUS_VISIBLE;
+    return Array.from({ length: FOCUS_VISIBLE }, (_, i) =>
+      Math.min(TOTAL_CARDS - 1, Math.floor(i * step + step / 2)),
+    );
+  }, []);
+
+  const reduceMotion = useReducedMotion() ?? false;
+  const [pickedSlot, setPickedSlot] = useState<number | null>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
+
+  function handlePick(slotIndex: number) {
+    if (pickedSlot !== null) return;
+    triggerHaptic([12, 28, 18]);
+    setPickedSlot(slotIndex);
+    window.setTimeout(() => {
+      onDone([offsets[slotIndex]]);
+    }, 520);
+  }
+
   return (
-    <button
-      type="button"
-      onClick={() => {
-        triggerHaptic(8);
-        onClick();
-      }}
-      className={cn(
-        "rounded-[8px] px-3.5 py-1.5 text-[12px] font-medium tracking-[0.02em] transition-all",
-        active
-          ? "bg-[var(--ink)] text-[var(--surface)]"
-          : "text-[var(--ink-soft)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]",
-      )}
-    >
-      {children}
-    </button>
+    <div className="flex flex-col items-center gap-9 py-4">
+      <div className="flex flex-col items-center gap-2 px-6 text-center">
+        <p className="max-w-md text-[15px] leading-7 text-[var(--ink-soft)]">
+          深呼吸三次。让目光在牌上停留。
+        </p>
+        <p className="text-[12.5px] text-[var(--ink-muted)]">
+          哪一张在召唤你 — 直接点它。
+        </p>
+      </div>
+
+      <div
+        className="relative flex h-[280px] w-full max-w-[640px] items-end justify-center sm:h-[320px]"
+        style={{ perspective: "1200px" }}
+      >
+        {offsets.map((_, slotIndex) => {
+          const t = slotIndex / (FOCUS_VISIBLE - 1) - 0.5;
+          const angle = t * 14;
+          const lift = -Math.cos(t * Math.PI) * 24;
+          const isPicked = pickedSlot === slotIndex;
+          const someoneElsePicked = pickedSlot !== null && !isPicked;
+          const isHovered = hovered === slotIndex;
+
+          return (
+            <motion.button
+              type="button"
+              key={slotIndex}
+              onClick={() => handlePick(slotIndex)}
+              onPointerEnter={() => setHovered(slotIndex)}
+              onPointerLeave={() => setHovered((current) => (current === slotIndex ? null : current))}
+              className="absolute bottom-6 origin-bottom focus:outline-none"
+              style={{
+                left: `calc(50% + ${t * 280}px)`,
+                transform: `translateX(-50%) rotate(${angle}deg)`,
+                zIndex: isPicked ? 50 : isHovered ? 40 : 10 + slotIndex,
+              }}
+              animate={{
+                y: isPicked ? -90 : someoneElsePicked ? lift + 6 : lift,
+                opacity: someoneElsePicked ? 0.16 : 1,
+                scale: isPicked ? 1.1 : isHovered ? 1.04 : 1,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 220,
+                damping: 26,
+              }}
+              whileTap={{ scale: 0.97 }}
+              aria-label={`抽出第 ${slotIndex + 1} 张可选牌`}
+            >
+              <motion.div
+                className="relative h-[200px] w-[124px] sm:h-[224px] sm:w-[140px]"
+                animate={
+                  reduceMotion || pickedSlot !== null
+                    ? { y: 0 }
+                    : {
+                        y: [0, -3, 0],
+                      }
+                }
+                transition={{
+                  duration: 3.2 + slotIndex * 0.14,
+                  repeat: reduceMotion || pickedSlot !== null ? 0 : Infinity,
+                  ease: "easeInOut",
+                  delay: slotIndex * 0.18,
+                }}
+              >
+                <div
+                  className={cn(
+                    "absolute inset-0 rounded-[14px] transition-shadow duration-300",
+                    isPicked
+                      ? "shadow-[0_24px_60px_rgba(200,90,60,0.32)]"
+                      : isHovered
+                        ? "shadow-[0_18px_40px_rgba(74,59,50,0.18)]"
+                        : "shadow-[0_10px_28px_rgba(74,59,50,0.10)]",
+                  )}
+                >
+                  <CardBack className="rounded-[14px]" />
+                </div>
+                {isHovered && pickedSlot === null ? (
+                  <motion.div
+                    aria-hidden
+                    className="pointer-events-none absolute -inset-3 rounded-[18px]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    style={{
+                      background:
+                        "radial-gradient(closest-side, rgba(200,90,60,0.22), transparent)",
+                    }}
+                  />
+                ) : null}
+              </motion.div>
+            </motion.button>
+          );
+        })}
+
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-8 bottom-3 h-px bg-gradient-to-r from-transparent via-[var(--line-strong)] to-transparent"
+        />
+      </div>
+
+      <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--ink-faint)]">
+        {pickedSlot !== null ? "正在翻开" : "Trust the first one your eye returns to"}
+      </p>
+    </div>
   );
 }
 
@@ -766,8 +906,17 @@ function FanPicker({
   const fanRef = useRef<HTMLDivElement | null>(null);
   const [panX, setPanX] = useState(0);
   const [maxPanX, setMaxPanX] = useState(0);
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef<{ active: boolean; startX: number; startPan: number; moved: boolean }>({
+    active: false,
+    startX: 0,
+    startPan: 0,
+    moved: false,
+  });
 
   function togglePick(index: number) {
+    if (dragRef.current.moved) return;
     const alreadyPicked = picks.includes(index);
     if (!alreadyPicked && picks.length >= cardCount) return;
     triggerHaptic(alreadyPicked ? 8 : [10, 25, 12]);
@@ -801,14 +950,67 @@ function FanPicker({
     return () => window.removeEventListener("resize", measure);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const media = window.matchMedia("(pointer: coarse)");
+    const update = () => setIsCoarsePointer(media.matches);
+    update();
+    media.addEventListener?.("change", update);
+    return () => media.removeEventListener?.("change", update);
+  }, []);
+
+  function clampPan(next: number) {
+    if (maxPanX <= 0) return 0;
+    return Math.min(maxPanX, Math.max(0, next));
+  }
+
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    // On touch devices, only respond to drag gestures; ignore hover-style pan.
+    if (isCoarsePointer) {
+      if (!dragRef.current.active) return;
+      const deltaX = event.clientX - dragRef.current.startX;
+      if (Math.abs(deltaX) > 4) dragRef.current.moved = true;
+      setPanX(clampPan(dragRef.current.startPan - deltaX));
+      return;
+    }
+
+    if (dragRef.current.active) {
+      const deltaX = event.clientX - dragRef.current.startX;
+      if (Math.abs(deltaX) > 4) dragRef.current.moved = true;
+      setPanX(clampPan(dragRef.current.startPan - deltaX));
+      return;
+    }
+
     const viewport = viewportRef.current;
     if (!viewport || maxPanX <= 0) return;
-
     const rect = viewport.getBoundingClientRect();
     const ratio = (event.clientX - rect.left) / rect.width;
     const easedRatio = Math.min(1, Math.max(0, ratio));
     setPanX(easedRatio * maxPanX);
+  }
+
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    setIsDragging(true);
+    dragRef.current = {
+      active: true,
+      startX: event.clientX,
+      startPan: panX,
+      moved: false,
+    };
+  }
+
+  function handlePointerUp() {
+    // Reset drag state, but keep `moved` flag briefly so click handler can read it.
+    const wasMoved = dragRef.current.moved;
+    dragRef.current.active = false;
+    setIsDragging(false);
+    if (wasMoved) {
+      window.setTimeout(() => {
+        dragRef.current.moved = false;
+      }, 60);
+    } else {
+      dragRef.current.moved = false;
+    }
   }
 
   return (
@@ -818,13 +1020,22 @@ function FanPicker({
           78 张牌摊开成一道弧 — 凭直觉点击其中{" "}
           <span className="font-serif-display text-[18px] text-[var(--coral-deep)]">{cardCount}</span> 张。
         </p>
-        <p className="text-[12.5px] text-[var(--ink-muted)]">被选中的牌会浮起并散发光芒。</p>
+        <p className="text-[12.5px] text-[var(--ink-muted)]">
+          {isCoarsePointer ? "横向滑动牌弧浏览，点击选定。" : "移动鼠标浏览，点击选定。"}
+        </p>
       </div>
 
       <div
         ref={viewportRef}
-        className="relative w-full overflow-hidden pb-8 pt-4"
+        className="relative w-full touch-pan-y select-none overflow-hidden pb-8 pt-4"
         onPointerMove={handlePointerMove}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onPointerLeave={() => {
+          if (dragRef.current.active) handlePointerUp();
+        }}
+        style={{ cursor: isCoarsePointer ? "grab" : "default" }}
       >
         <div
           aria-hidden
@@ -839,7 +1050,7 @@ function FanPicker({
           className="relative flex h-[310px] w-max items-end justify-center px-32 pb-8 will-change-transform"
           style={{
             transform: `translateX(${-panX}px)`,
-            transition: "transform 180ms ease-out",
+            transition: isDragging ? "none" : "transform 180ms ease-out",
           }}
         >
           {cards.map((cardIndex) => {
@@ -912,7 +1123,7 @@ function FanPicker({
 
       <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--ink-faint)]">
         <span className="w-8 h-px bg-[var(--line)]" />
-        <span>左右移动移动鼠标浏览</span>
+        <span>{isCoarsePointer ? "Swipe to browse" : "Move to browse"}</span>
         <span className="w-8 h-px bg-[var(--line)]" />
       </div>
 
@@ -956,46 +1167,72 @@ function PilePicker({
   onDone: (indices: number[]) => void;
 }) {
   const [chosenPile, setChosenPile] = useState<number | null>(null);
+  const [picks, setPicks] = useState<number[]>([]);
   const piles = [
-    { label: "左 · 你", offset: -1, range: [0, 26] },
-    { label: "中 · 情境", offset: 0, range: [26, 52] },
-    { label: "右 · 对方／环境", offset: 1, range: [52, 78] },
+    { label: "\u5de6 / \u81ea\u6211", range: [0, 26] },
+    { label: "\u4e2d / \u60c5\u5883", range: [26, 52] },
+    { label: "\u53f3 / \u5916\u754c", range: [52, 78] },
   ];
+  const selectedPile = chosenPile === null ? null : piles[chosenPile];
+  const pileCards = selectedPile
+    ? Array.from(
+        { length: selectedPile.range[1] - selectedPile.range[0] },
+        (_, index) => selectedPile.range[0] + index,
+      )
+    : [];
+
+  function choosePile(index: number) {
+    triggerHaptic(12);
+    setChosenPile(index);
+    setPicks([]);
+  }
+
+  function togglePick(index: number) {
+    triggerHaptic(picks.includes(index) ? 8 : [10, 25, 12]);
+    setPicks((current) => {
+      if (current.includes(index)) {
+        return current.filter((item) => item !== index);
+      }
+      if (current.length >= cardCount) return current;
+      return [...current, index];
+    });
+  }
 
   function confirm() {
-    if (chosenPile === null) return;
+    if (picks.length !== cardCount) return;
     triggerHaptic([10, 20, 14]);
-    const range = piles[chosenPile].range;
-    const indices: number[] = [];
-    for (let i = 0; i < cardCount; i += 1) {
-      indices.push(range[0] + i);
-    }
-    onDone(indices);
+    onDone(picks);
   }
 
   return (
     <div className="flex flex-col items-center gap-9 py-4">
-      <div className="flex flex-col items-center gap-2">
-        <p className="max-w-xl text-center text-[15px] leading-7 text-[var(--ink-soft)]">
-          牌堆已分作三叠 — 不要思考，凭第一感觉选一叠。
+      <div className="flex flex-col items-center gap-2 px-6 text-center">
+        <p className="max-w-xl text-[15px] leading-7 text-[var(--ink-soft)]">
+          {"\u5148\u51ed\u7b2c\u4e00\u611f\u89c9\u9009\u4e00\u53e0\uff0c\u518d\u4ece\u8fd9\u53e0\u91cc\u4eb2\u624b\u62bd\u51fa\u724c\u3002"}
         </p>
-        <p className="text-[12.5px] text-[var(--ink-muted)]">我会从那叠由上往下抽出 {cardCount} 张。</p>
+        <p className="text-[12.5px] text-[var(--ink-muted)]">
+          {selectedPile
+            ? "\u8bf7\u70b9\u9009 " + cardCount + " \u5f20\u724c\uff0c\u70b9\u51fb\u987a\u5e8f\u5c31\u662f\u724c\u4f4d\u987a\u5e8f\u3002"
+            : "\u9009\u4e2d\u4e00\u53e0\u540e\uff0c\u4f1a\u5c55\u5f00 26 \u5f20\u80cc\u9762\u724c\u3002"}
+        </p>
       </div>
 
-      <div className="flex items-center justify-center gap-12">
+      <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
         {piles.map((pile, index) => {
           const isChosen = chosenPile === index;
+          const isDimmed = chosenPile !== null && !isChosen;
           return (
             <motion.button
               type="button"
               key={pile.label}
-              onClick={() => {
-                triggerHaptic(12);
-                setChosenPile(index);
-              }}
+              onClick={() => choosePile(index)}
               className="group relative flex flex-col items-center gap-4"
               whileHover={{ y: -6 }}
-              animate={{ y: isChosen ? -12 : 0 }}
+              animate={{
+                y: isChosen ? -12 : 0,
+                opacity: isDimmed ? 0.32 : 1,
+                scale: isDimmed ? 0.94 : 1,
+              }}
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
             >
               <div
@@ -1016,7 +1253,7 @@ function PilePicker({
                         : "border-[var(--line-strong)] group-hover:border-[var(--coral-edge)]",
                     )}
                     style={{
-                      transform: `translate(${layer * 1.5}px, ${-layer * 1.5}px)`,
+                      transform: "translate(" + layer * 1.5 + "px, " + -layer * 1.5 + "px)",
                       zIndex: layer,
                     }}
                   >
@@ -1033,11 +1270,14 @@ function PilePicker({
                 >
                   {pile.label}
                 </span>
-                <span className="h-0.5 w-0 bg-[var(--coral)] transition-all duration-300" style={{ width: isChosen ? '100%' : '0%' }} />
+                <span
+                  className="h-0.5 bg-[var(--coral)] transition-all duration-300"
+                  style={{ width: isChosen ? "100%" : "0%" }}
+                />
               </div>
-              
+
               {isChosen ? (
-                <motion.span 
+                <motion.span
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   className="absolute -top-6 left-1/2 -translate-x-1/2 rounded-full border border-[var(--coral-edge)] bg-[var(--surface-tint)] px-3 py-1 font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--coral-deep)] shadow-sm"
@@ -1050,12 +1290,75 @@ function PilePicker({
         })}
       </div>
 
-      <Button 
+      <AnimatePresence>
+        {selectedPile ? (
+          <motion.div
+            key="pile-cards"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.35 }}
+            className="flex w-full max-w-4xl flex-col items-center gap-5"
+          >
+            <div className="grid w-full grid-cols-7 gap-2 px-2 sm:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2.5">
+              {pileCards.map((deckIndex, index) => {
+                const pickOrder = picks.indexOf(deckIndex);
+                const isPicked = pickOrder >= 0;
+                const disabled = !isPicked && picks.length >= cardCount;
+
+                return (
+                  <motion.button
+                    type="button"
+                    key={deckIndex}
+                    onClick={() => togglePick(deckIndex)}
+                    disabled={disabled}
+                    className={cn(
+                      "group relative aspect-[2/3.5] min-h-[68px] rounded-[8px] transition",
+                      disabled ? "cursor-not-allowed opacity-35" : "cursor-pointer",
+                    )}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{
+                      opacity: 1,
+                      y: isPicked ? -10 : 0,
+                      scale: isPicked ? 1.06 : 1,
+                    }}
+                    transition={{
+                      delay: Math.min(index * 0.012, 0.18),
+                      type: "spring",
+                      stiffness: 240,
+                      damping: 24,
+                    }}
+                  >
+                    <CardBack className="rounded-[8px]" compact />
+                    <span
+                      className={cn(
+                        "pointer-events-none absolute inset-0 rounded-[8px] border transition",
+                        isPicked
+                          ? "border-[var(--coral)] shadow-[0_10px_24px_rgba(200,90,60,0.24)]"
+                          : "border-[var(--line-strong)] group-hover:border-[var(--coral-edge)]",
+                      )}
+                    />
+                    {isPicked ? (
+                      <span className="absolute -top-2 left-1/2 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border-2 border-[var(--surface-tint)] bg-[var(--coral)] font-mono text-[10px] font-bold text-white shadow-lg">
+                        {pickOrder + 1}
+                      </span>
+                    ) : null}
+                  </motion.button>
+                );
+              })}
+            </div>
+
+            <PickProgress picks={picks.length} total={cardCount} />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <Button
         className="px-12 py-6 text-[15px]"
-        onClick={confirm} 
-        disabled={chosenPile === null}
+        onClick={confirm}
+        disabled={picks.length !== cardCount}
       >
-        从这叠抽 {cardCount} 张牌
+        {"\u7ffb\u5f00"} {cardCount} {"\u5f20\u724c"}
       </Button>
     </div>
   );

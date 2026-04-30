@@ -64,7 +64,7 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
                     ? "border-[rgba(184,92,110,0.45)] text-[#8a3447] bg-[rgba(184,92,110,0.08)]"
                     : "border-[var(--coral-edge)] text-[var(--coral-deep)] bg-[var(--coral-wash)]"
                 )}>
-                  {reversed ? "REVERSED" : "UPRIGHT"}
+                  {reversed ? "逆位 · 受阻/内化" : "正位 · 顺流/外显"}
                 </span>
               </div>
             </motion.div>
@@ -183,7 +183,7 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
                       ? "border-[rgba(184,92,110,0.45)] text-[#8a3447] bg-[rgba(184,92,110,0.08)]"
                       : "border-[var(--coral-edge)] text-[var(--coral-deep)] bg-[var(--coral-wash)]",
                   )}>
-                    {reversed ? "REV" : "UP"}
+                    {reversed ? "逆位 · 内化" : "正位 · 外显"}
                   </span>
                 </div>
               </div>

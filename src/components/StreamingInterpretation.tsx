@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
@@ -60,7 +61,8 @@ export function StreamingInterpretation({
   );
 
   useEffect(() => {
-    setMounted(true);
+    const timeoutId = window.setTimeout(() => setMounted(true), 0);
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {
@@ -97,7 +99,18 @@ export function StreamingInterpretation({
       className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(32,24,18,0.45)] px-3 py-3 backdrop-blur-sm sm:px-4 sm:py-5"
     >
       <div className="relative flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-[24px] border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.94)] shadow-[0_30px_110px_rgba(32,24,18,0.30)]">
-        <header className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--gilt)]/25 px-5 py-4 sm:px-7">
+        <Image
+          src="/visuals/reading-share-modal-background-v1.png"
+          alt=""
+          fill
+          sizes="(max-width: 768px) 94vw, 1152px"
+          className="pointer-events-none object-cover opacity-[0.62] mix-blend-multiply"
+          priority
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[rgba(255,249,232,0.36)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,251,238,0.44)_0%,rgba(255,249,232,0.26)_52%,rgba(210,162,92,0.28)_100%)]" />
+
+        <header className="relative z-10 flex flex-wrap items-start justify-between gap-4 border-b border-[var(--gilt)]/25 px-5 py-4 sm:px-7">
           <div>
             <p className="eyebrow-ink">Reading Share · 结果解读</p>
             <h2 className="mt-1 font-serif-display text-[clamp(1.8rem,4vw,3rem)] leading-tight text-[var(--ink)]">
@@ -129,7 +142,7 @@ export function StreamingInterpretation({
         </header>
 
         {isStreaming ? (
-          <div className="border-b border-[var(--gilt)]/20 px-5 py-4 sm:px-7">
+          <div className="relative z-10 border-b border-[var(--gilt)]/20 px-5 py-4 sm:px-7">
             <div className="mb-2 flex items-center justify-between gap-4">
               <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
                 正在生成结果解读
@@ -147,21 +160,21 @@ export function StreamingInterpretation({
           </div>
         ) : null}
 
-        <div className="min-h-0 overflow-y-auto px-5 py-6 sm:px-7">
+        <div className="relative z-10 min-h-0 overflow-y-auto px-5 py-6 sm:px-7">
           {!hasContent ? (
             <LoadingState />
           ) : (
             <div className="grid gap-7 xl:grid-cols-[400px_minmax(0,1fr)]">
-              <aside className="space-y-4">
-                <section className="rounded-[18px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.70)] p-4">
+              <aside className="space-y-8">
+                <section className="border-t border-[var(--line)] pt-5">
                   <p className="eyebrow-ink">你的问题</p>
                   <p className="mt-2 font-fraunces text-[19px] italic leading-8 text-[var(--ink-soft)]">
                     “{question || "我想看清自己当前最需要面对的课题。"}”
                   </p>
                 </section>
 
-                <section className="rounded-[18px] border border-[var(--gilt)]/30 bg-[rgba(255,249,232,0.70)] p-4">
-                  <div className="mb-4 flex items-center justify-between gap-3">
+                <section className="border-t border-[var(--line)] pt-5">
+                  <div className="mb-5 flex items-center justify-between gap-3">
                     <p className="eyebrow-ink">抽到的牌</p>
                     <span className="text-[12px] text-[var(--ink-muted)]">{cards.length} 张</span>
                   </div>
@@ -170,9 +183,9 @@ export function StreamingInterpretation({
                       <article
                         key={`${card.id}-${positionOrder}`}
                         className={cn(
-                          "rounded-[16px] border border-[var(--gilt)]/25 bg-[rgba(255,255,255,0.28)] p-2.5",
+                          "p-1",
                           singleCard
-                            ? "flex w-full max-w-[250px] flex-col items-center gap-3 text-center"
+                            ? "flex w-full max-w-[250px] flex-col items-center gap-4 text-center"
                             : "flex min-w-0 flex-col items-center gap-2.5 text-center",
                         )}
                       >
@@ -211,7 +224,7 @@ export function StreamingInterpretation({
                 </section>
               </aside>
 
-              <article className="rounded-[20px] border border-[var(--gilt)]/35 bg-[rgba(255,249,232,0.78)] px-5 py-6 shadow-[0_18px_50px_rgba(42,32,18,0.10)] sm:px-7">
+              <article className="border-t border-[var(--line)] px-1 pt-6 sm:px-3">
                 <div className="mb-6">
                   <p className="eyebrow-ink">完整解读</p>
                   <h3 className="mt-2 font-serif-display text-[clamp(1.9rem,3vw,2.8rem)] leading-tight text-[var(--ink)]">

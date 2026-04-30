@@ -63,7 +63,7 @@ type ReturnDialogSnapshot = {
 
 const returnDialogStorageKey = "arcana-flow:return-result-dialog";
 
-const phaseLabel: Record<FlowPhase, string> = {
+const phaseLabelFull: Record<FlowPhase, string> = {
   idle: "01 · 提问",
   shuffling: "02 · 洗牌",
   cutting: "03 · 切牌",
@@ -72,6 +72,17 @@ const phaseLabel: Record<FlowPhase, string> = {
   revealed: "06 · 补充",
   reading: "07 · 解读",
   done: "08 · 沉淀",
+};
+
+const phaseLabelSingle: Record<FlowPhase, string> = {
+  idle: "01 · 提问",
+  shuffling: "02 · 洗牌",
+  cutting: "02 · 洗牌",
+  selecting: "03 · 抽牌",
+  revealing: "04 · 翻牌",
+  revealed: "04 · 翻牌",
+  reading: "05 · 解读",
+  done: "06 · 沉淀",
 };
 
 const phaseToDeckPhase: Record<FlowPhase, RitualPhase> = {
@@ -119,11 +130,13 @@ function getConfiguredReversedRate() {
 }
 
 function defaultModeFor(spread: SpreadDefinition): SelectMode {
-  if (spread.cardCount <= 1) return "fan";
+  // The spread itself decides the right interaction. Users don't see this choice
+  // up-front — it surfaces only as an optional "更多抽牌方式" disclosure.
+  if (spread.cardCount <= 1) return "focus";
   if (spread.cardCount === 3) return "fan";
   if (spread.cardCount === 4) return "piles";
   if (spread.cardCount === 5) return "piles";
-  if (spread.cardCount === 6) return "fan";
+  if (spread.cardCount === 6) return "piles";
   if (spread.cardCount >= 7) return "piles";
   return "fan";
 }
@@ -150,6 +163,9 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const [stickyDeckVisible, setStickyDeckVisible] = useState(false);
   const ritualRef = useRef<HTMLDivElement | null>(null);
   const mainSpreadRef = useRef<HTMLDivElement | null>(null);
+
+  const isSingleCard = spread.cardCount <= 1;
+  const phaseLabel = isSingleCard ? phaseLabelSingle : phaseLabelFull;
 
   const resolvedCards = useMemo(
     () =>
@@ -366,6 +382,12 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   }
 
   function handleShuffleAnimationDone() {
+    // Single-card spreads skip the cut step — at one card, "shuffle + cut + pick"
+    // becomes redundant. The user feels the ritual as one fluid breath.
+    if (isSingleCard) {
+      setPhase("selecting");
+      return;
+    }
     setPhase("cutting");
   }
 
@@ -384,7 +406,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     setCards(drawn);
     setDrawLog({
       seed: shuffled.seed,
-      drawRule: `${DEFAULT_DRAW_RULE}::${selectMode}`,
+      drawRule: `${DEFAULT_DRAW_RULE}::${selectMode}::orientation_settle`,
       reversedRate: shuffled.reversedRate,
       createdAt: new Date().toISOString(),
     });
@@ -578,7 +600,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
 
       {showRitualOnly ? (
         <div ref={ritualRef} className="min-h-[calc(100vh-9rem)] scroll-mt-24">
-          <RitualShell phase={phase}>
+          <RitualShell phase={phase} phaseLabel={phaseLabel}>
             <InteractiveDeck
               phase={phaseToDeckPhase[phase]}
               cardCount={spread.cardCount}
@@ -599,7 +621,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           className="grid gap-8 scroll-mt-24 xl:grid-cols-[minmax(640px,1fr)_440px]"
         >
           <div ref={mainSpreadRef} className="min-w-0">
-            <RitualShell phase={phase}>
+            <RitualShell phase={phase} phaseLabel={phaseLabel}>
               <SpreadLayout spread={spread} cards={resolvedCards} />
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-5">
                 <div className="flex flex-wrap items-center gap-2">
@@ -951,47 +973,27 @@ function createFallbackPreviewPreset(cardCount: number): LayoutPreset {
    Ritual shell — calm cream stage, enhanced with decorative borders
    ============================================================ */
 
-function RitualShell({ children, phase }: { children: React.ReactNode; phase: FlowPhase }) {
+function RitualShell({
+  children,
+  phase,
+  phaseLabel,
+}: {
+  children: React.ReactNode;
+  phase: FlowPhase;
+  phaseLabel: Record<FlowPhase, string>;
+}) {
   const phaseTitle = phaseLabel[phase];
 
   return (
-    <div className="relative group">
-      {/* Decorative corners */}
-      <div className="absolute -inset-2 pointer-events-none opacity-20">
-        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[var(--coral)] rounded-tl-lg" />
-        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[var(--coral)] rounded-tr-lg" />
-        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[var(--coral)] rounded-bl-lg" />
-        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[var(--coral)] rounded-br-lg" />
+    <section className="relative border-t border-[var(--line)] pt-8">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+        <p className="eyebrow">RITUAL STAGE · 仪式桌面</p>
+        <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--coral-deep)]">
+          {phaseTitle}
+        </p>
       </div>
-
-      <Panel className="overflow-hidden border-[rgba(74,59,50,0.18)] bg-[rgba(253,248,225,0.82)] p-0 shadow-[0_20px_50px_rgba(74,59,50,0.12),inset_0_0_80px_rgba(253,248,225,0.4)] backdrop-blur-[4px]">
-        {/* Subtle texture overlay */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-multiply" 
-             style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/old-mathematics.png")' }} />
-        
-        <div className="relative min-h-[460px] p-6 lg:p-10">
-          <div className="mb-8 flex items-center justify-between gap-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-px bg-gradient-to-r from-transparent to-[var(--line-strong)]" />
-              <p className="font-mono text-[10.5px] uppercase tracking-[0.25em] text-[var(--ink-muted)]">
-                仪式桌面 · RITUAL STAGE
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="h-px w-12 bg-[var(--line)]" />
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--coral-deep)] font-bold">
-                {phaseTitle}
-              </p>
-              <span className="h-px w-6 bg-[var(--line)]" />
-            </div>
-          </div>
-          
-          <div className="relative z-10">
-            {children}
-          </div>
-        </div>
-      </Panel>
-    </div>
+      <div className="relative min-h-[420px]">{children}</div>
+    </section>
   );
 }
 

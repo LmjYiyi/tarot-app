@@ -46,17 +46,19 @@ export function CardReveal({
       style={{ perspective: "1400px" }}
     >
       <motion.div
-        initial={{ rotateY: 0 }}
-        animate={{ rotateY: 180 }}
+        initial={{ opacity: 0, y: -18, rotateY: 0, rotateZ: reversed ? -6 : 4 }}
+        animate={{ opacity: 1, y: 0, rotateY: 180, rotateZ: 0 }}
         whileHover={{ scale: 1.05 }}
         transition={{ 
+          opacity: { duration: 0.26, delay: Math.max(0, flipDelay - 0.18) },
+          y: { duration: 0.46, delay: Math.max(0, flipDelay - 0.18), ease: [0.22, 0.65, 0.2, 1] },
           rotateY: { duration: 0.9, delay: flipDelay, ease: [0.25, 0.8, 0.3, 1] },
+          rotateZ: { duration: 0.52, delay: Math.max(0, flipDelay - 0.12), ease: [0.22, 0.65, 0.2, 1] },
           scale: { duration: 0.2 }
         }}
         style={{
           transformStyle: "preserve-3d",
           rotateX: tilt.x,
-          rotateZ: tilt.y * 0.18,
         }}
         className="relative w-full h-full cursor-pointer"
       >
