@@ -159,16 +159,16 @@ export default async function CardDetailPage({ params }: CardPageProps) {
       </div>
 
       <div className="mx-auto w-full max-w-[1320px] px-5 py-14 sm:px-8 lg:px-12 lg:py-24">
-        <div className="mb-12 flex flex-wrap items-center justify-between gap-4 text-[14px] uppercase tracking-[0.24em] text-[var(--ink-muted)] font-occult">
+        <div className="mb-12 flex flex-wrap items-center justify-between gap-4 text-[16px] uppercase tracking-[0.18em] text-[var(--ink-muted)] font-occult">
           <Link href="/" className="hover:text-[var(--coral-deep)]">
             ← Arcana Flow
           </Link>
-          <div className="flex items-center gap-3">
-            <Link className="text-[14px] hover:text-[var(--coral-deep)]" href={`/cards/${prevCard.slug}`}>
+          <div className="flex items-center gap-4">
+            <Link className="text-[16px] font-medium hover:text-[var(--coral-deep)]" href={`/cards/${prevCard.slug}`}>
               {prevCard.nameZh}
             </Link>
-            <span className="text-[var(--coral)]">·</span>
-            <Link className="text-[14px] hover:text-[var(--coral-deep)]" href={`/cards/${nextCard.slug}`}>
+            <span className="text-[var(--coral)] opacity-50">|</span>
+            <Link className="text-[16px] font-medium hover:text-[var(--coral-deep)]" href={`/cards/${nextCard.slug}`}>
               {nextCard.nameZh}
             </Link>
           </div>
