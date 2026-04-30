@@ -118,16 +118,16 @@ function ShufflePile({
   faceCards: ShufflePreviewCard[];
 }) {
   const direction = side === "left" ? -1 : 1;
-  const restX = direction * 94;
+  const restX = direction * 112;
   const closeDuration = reduceMotion ? 0.2 : SHUFFLE_CLOSE_MS / 1000;
   const showFace = active && !closing && !reduceMotion;
 
   return (
     <motion.div
-      className="absolute left-1/2 top-1/2 h-52 w-32 will-change-transform"
+      className="absolute left-1/2 top-1/2 h-60 w-36 will-change-transform"
       style={{
-        marginLeft: -64,
-        marginTop: -104,
+        marginLeft: -72,
+        marginTop: -120,
         transformStyle: "preserve-3d",
       }}
       animate={
@@ -174,7 +174,7 @@ function ShufflePile({
               src={faceCard.imageUrl}
               alt=""
               fill
-              sizes="128px"
+              sizes="144px"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,transparent_50%,rgba(26,26,25,0.18)_100%)]" />
@@ -359,12 +359,12 @@ function ShuffleAura({
   return (
     <div
       aria-hidden="true"
-      className="relative flex h-[340px] w-full max-w-[760px] items-center justify-center overflow-visible sm:h-[380px]"
+      className="relative flex h-[380px] w-full max-w-[860px] items-center justify-center overflow-visible sm:h-[430px]"
       style={{ perspective: "1800px" }}
     >
       {/* compass dial — a slowly turning hairline ring with tick marks */}
       <motion.div
-        className="absolute h-[310px] w-[310px] sm:h-[400px] sm:w-[400px] rounded-full"
+        className="absolute h-[340px] w-[340px] rounded-full sm:h-[440px] sm:w-[440px]"
         animate={active && !reduceMotion ? { rotate: 360 } : { rotate: 0 }}
         transition={{
           duration: 90,
@@ -417,7 +417,7 @@ function ShuffleAura({
 
       {/* card stack — riffle */}
       <div
-        className="relative h-[280px] w-[min(86vw,580px)] sm:h-[320px]"
+        className="relative h-[320px] w-[min(92vw,680px)] sm:h-[370px]"
         style={{ transformStyle: "preserve-3d" }}
       >
         <ShufflePile
@@ -443,10 +443,10 @@ function ShuffleAura({
 
         <motion.div
           aria-hidden
-          className="absolute left-1/2 top-1/2 h-52 w-32 will-change-transform"
+          className="absolute left-1/2 top-1/2 h-60 w-36 will-change-transform"
           style={{
-            marginLeft: -64,
-            marginTop: -104,
+            marginLeft: -72,
+            marginTop: -120,
             transformStyle: "preserve-3d",
           }}
           animate={

@@ -14,11 +14,11 @@ export const layoutPresets: Record<string, LayoutPreset> = {
   },
   "three-card": {
     aspectRatio: "aspect-[2/1]",
-    cardWidth: "md:w-[15.5%] lg:w-[12.5%]",
+    cardWidth: "md:w-[19%] lg:w-[18%]",
     positions: {
-      1: { x: 28, y: 52 },
-      2: { x: 50, y: 50 },
-      3: { x: 72, y: 52 },
+      1: { x: 27, y: 64 },
+      2: { x: 50, y: 62 },
+      3: { x: 73, y: 64 },
     },
   },
   "career-five": {

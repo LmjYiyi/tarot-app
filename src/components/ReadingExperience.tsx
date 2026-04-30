@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { CardBack } from "@/components/DeckShuffle";
 import { InteractiveDeck, type RitualPhase, type SelectMode } from "@/components/InteractiveDeck";
@@ -13,7 +13,7 @@ import { Panel } from "@/components/ui/panel";
 import {
   getDefaultIntentForSpread,
   getDefaultQuestionForIntent,
-} from "@/lib/tarot/adaptive-questions";
+} from "@/lib/tarot/default-reading";
 import { getAllCards, getCardById } from "@/lib/tarot/catalog";
 import {
   DEFAULT_DRAW_RULE,
@@ -25,8 +25,6 @@ import {
 } from "@/lib/tarot/shuffle";
 import { layoutPresets, type LayoutPreset } from "@/lib/tarot/layout-config";
 import type {
-  AdaptiveAnswer,
-  AdaptiveQuestion,
   DrawLog,
   DrawnCard,
   ReadingDomain,
@@ -56,7 +54,6 @@ type ReturnDialogSnapshot = {
   readingIntent: ReadingIntent;
   cards: DrawnCard[];
   drawLog: DrawLog | null;
-  adaptiveAnswers: AdaptiveAnswer[];
   interpretation: string;
   sharePath: string | null;
 };
@@ -69,9 +66,9 @@ const phaseLabelFull: Record<FlowPhase, string> = {
   cutting: "03 · 切牌",
   selecting: "04 · 选牌",
   revealing: "05 · 翻牌",
-  revealed: "06 · 补充",
+  revealed: "06 · 准备解读",
   reading: "07 · 解读",
-  done: "08 · 沉淀",
+  done: "08 · 完成",
 };
 
 const phaseLabelSingle: Record<FlowPhase, string> = {
@@ -80,9 +77,9 @@ const phaseLabelSingle: Record<FlowPhase, string> = {
   cutting: "02 · 洗牌",
   selecting: "03 · 抽牌",
   revealing: "04 · 翻牌",
-  revealed: "04 · 翻牌",
-  reading: "05 · 解读",
-  done: "06 · 沉淀",
+  revealed: "05 · 准备解读",
+  reading: "06 · 解读",
+  done: "07 · 完成",
 };
 
 const phaseToDeckPhase: Record<FlowPhase, RitualPhase> = {
@@ -113,12 +110,6 @@ const goalOptions: Array<{ value: ReadingGoal; label: string }> = [
   { value: "other_view", label: "换个视角" },
 ];
 
-type AdaptiveQuestionResponse = {
-  coreTension?: string;
-  questionStrategy?: string;
-  questions?: AdaptiveQuestion[];
-};
-
 function getConfiguredReversedRate() {
   const rawValue = process.env.NEXT_PUBLIC_TAROT_REVERSED_RATE;
   if (!rawValue) return DEFAULT_REVERSED_RATE;
@@ -130,15 +121,9 @@ function getConfiguredReversedRate() {
 }
 
 function defaultModeFor(spread: SpreadDefinition): SelectMode {
-  // The spread itself decides the right interaction. Users don't see this choice
-  // up-front — it surfaces only as an optional "更多抽牌方式" disclosure.
   if (spread.cardCount <= 1) return "focus";
   if (spread.cardCount === 3) return "fan";
-  if (spread.cardCount === 4) return "piles";
-  if (spread.cardCount === 5) return "piles";
-  if (spread.cardCount === 6) return "piles";
-  if (spread.cardCount >= 7) return "piles";
-  return "fan";
+  return "piles";
 }
 
 export function ReadingExperience({ spread }: ReadingExperienceProps) {
@@ -151,18 +136,15 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const [shuffled, setShuffled] = useState<ShuffledDeck | null>(null);
   const [cards, setCards] = useState<DrawnCard[]>([]);
   const [drawLog, setDrawLog] = useState<DrawLog | null>(null);
-  const [adaptiveQuestions, setAdaptiveQuestions] = useState<AdaptiveQuestion[]>([]);
-  const [adaptiveAnswers, setAdaptiveAnswers] = useState<AdaptiveAnswer[]>([]);
-  const [coreTension, setCoreTension] = useState<string | null>(null);
-  const [questionStrategy, setQuestionStrategy] = useState<string | null>(null);
-  const [questionsLoading, setQuestionsLoading] = useState(false);
   const [interpretation, setInterpretation] = useState("");
   const [sharePath, setSharePath] = useState<string | null>(null);
   const [resultDialogOpen, setResultDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stickyDeckVisible, setStickyDeckVisible] = useState(false);
+  const [postRevealContentVisible, setPostRevealContentVisible] = useState(false);
   const ritualRef = useRef<HTMLDivElement | null>(null);
   const mainSpreadRef = useRef<HTMLDivElement | null>(null);
+  const revealPauseTimeoutRef = useRef<number | null>(null);
 
   const isSingleCard = spread.cardCount <= 1;
   const phaseLabel = isSingleCard ? phaseLabelSingle : phaseLabelFull;
@@ -187,6 +169,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         ),
     [cards],
   );
+
   const shufflePreviewCards = useMemo(
     () =>
       getAllCards()
@@ -214,17 +197,17 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     const leadPosition = lead
       ? spread.positions.find((position) => position.order === lead.positionOrder)
       : undefined;
-    const tone = resolvedCards.filter((item) => item.reversed).length > resolvedCards.length / 2
-      ? "这组牌先把阻滞、犹豫或未被承认的部分推到台前。"
-      : "这组牌的第一层信息偏向流动、显化与可执行的下一步。";
+    const reversedCount = resolvedCards.filter((item) => item.reversed).length;
 
     return {
       oneLine: lead
         ? `${leadPosition?.name ?? "核心牌位"}的「${lead.card.nameZh}」先把问题落在“${themes[0] ?? lead.card.nameZh}”上。`
-        : "牌面已经展开，可以先看整体倾向，再决定是否补充追问。",
-      tone,
+        : "牌面已经展开，可以直接进入解读。",
+      tone:
+        reversedCount > resolvedCards.length / 2
+          ? "这组牌先把阻滞、犹豫或尚未承认的部分推到台前。"
+          : "这组牌的第一层信息偏向流动、显化与可执行的下一步。",
       themes,
-      cards: focusCards,
     };
   }, [cardsRevealed, resolvedCards, spread.positions]);
 
@@ -248,10 +231,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       if (snapshot.readingIntent) setReadingIntent(snapshot.readingIntent);
       setCards(snapshot.cards);
       setDrawLog(snapshot.drawLog ?? null);
-      setAdaptiveAnswers(snapshot.adaptiveAnswers ?? []);
       setInterpretation(snapshot.interpretation);
       setSharePath(snapshot.sharePath ?? null);
       setPhase("done");
+      setPostRevealContentVisible(true);
       setResultDialogOpen(true);
     } catch {
       window.sessionStorage.removeItem(returnDialogStorageKey);
@@ -281,67 +264,16 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     };
   }, [cardsRevealed]);
 
+  useEffect(() => {
+    return () => {
+      if (revealPauseTimeoutRef.current !== null) {
+        window.clearTimeout(revealPauseTimeoutRef.current);
+      }
+    };
+  }, []);
+
   function updateIntent(nextIntent: Partial<ReadingIntent>) {
     setReadingIntent((current) => ({ ...current, ...nextIntent }));
-    setAdaptiveAnswers([]);
-    setAdaptiveQuestions([]);
-    setCoreTension(null);
-    setQuestionStrategy(null);
-  }
-
-  function updateAdaptiveAnswer(questionId: string, answer: string, answerLabel?: string) {
-    const adaptiveQuestion = adaptiveQuestions.find((item) => item.id === questionId);
-    if (!adaptiveQuestion) return;
-
-    setAdaptiveAnswers((current) => {
-      if (!answer.trim()) {
-        return current.filter((item) => item.questionId !== questionId);
-      }
-
-      const nextAnswer: AdaptiveAnswer = {
-        questionId,
-        question: adaptiveQuestion.question,
-        answer,
-        answerLabel,
-      };
-      const withoutCurrent = current.filter((item) => item.questionId !== questionId);
-      return [...withoutCurrent, nextAnswer];
-    });
-  }
-
-  async function requestAdaptiveQuestions(drawnCards: DrawnCard[], finalQuestion: string) {
-    setQuestionsLoading(true);
-    setAdaptiveQuestions([]);
-    setAdaptiveAnswers([]);
-    setCoreTension(null);
-    setQuestionStrategy(null);
-
-    try {
-      const response = await fetch("/api/adaptive-questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: finalQuestion,
-          spreadSlug: spread.slug,
-          cards: drawnCards,
-          readingIntent,
-          questionCount: spread.cardCount <= 1 ? 2 : Math.min(4, spread.cardCount + 1),
-          locale: "zh-CN",
-        }),
-      });
-
-      if (!response.ok) throw new Error("补充问题暂时没有出现，可以先看牌面解读。");
-
-      const payload = (await response.json()) as AdaptiveQuestionResponse;
-      setAdaptiveQuestions(payload.questions ?? []);
-      setCoreTension(payload.coreTension ?? null);
-      setQuestionStrategy(payload.questionStrategy ?? null);
-    } catch (caughtError) {
-      const message = caughtError instanceof Error ? caughtError.message : "补充问题暂时没有出现。";
-      setError(message);
-    } finally {
-      setQuestionsLoading(false);
-    }
   }
 
   function resolveQuestion() {
@@ -358,13 +290,14 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     setInterpretation("");
     setSharePath(null);
     setResultDialogOpen(false);
-    setCoreTension(null);
-    setQuestionStrategy(null);
-    setAdaptiveQuestions([]);
-    setAdaptiveAnswers([]);
     setDrawLog(null);
     setCards([]);
     setStickyDeckVisible(false);
+    setPostRevealContentVisible(false);
+    if (revealPauseTimeoutRef.current !== null) {
+      window.clearTimeout(revealPauseTimeoutRef.current);
+      revealPauseTimeoutRef.current = null;
+    }
   }
 
   function handleStartShuffle() {
@@ -382,8 +315,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   }
 
   function handleShuffleAnimationDone() {
-    // Single-card spreads skip the cut step — at one card, "shuffle + cut + pick"
-    // becomes redundant. The user feels the ritual as one fluid breath.
     if (isSingleCard) {
       setPhase("selecting");
       return;
@@ -401,7 +332,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   function handleSelectionDone(indices: number[]) {
     if (!shuffled) return;
 
-    const finalQuestion = resolveQuestion();
+    resolveQuestion();
     const drawn = drawFromIndices(shuffled, indices);
     setCards(drawn);
     setDrawLog({
@@ -411,8 +342,15 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       createdAt: new Date().toISOString(),
     });
     setPhase("revealing");
-    void requestAdaptiveQuestions(drawn, finalQuestion);
-    window.setTimeout(() => setPhase("revealed"), 600);
+    setPostRevealContentVisible(false);
+    if (revealPauseTimeoutRef.current !== null) {
+      window.clearTimeout(revealPauseTimeoutRef.current);
+    }
+    revealPauseTimeoutRef.current = window.setTimeout(() => {
+      revealPauseTimeoutRef.current = null;
+      setPostRevealContentVisible(true);
+      setPhase("revealed");
+    }, 1200);
   }
 
   function handleReshuffle() {
@@ -440,12 +378,13 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           cards,
           drawLog,
           readingIntent,
-          adaptiveAnswers,
           locale: "zh-CN",
         }),
       });
 
-      if (!response.ok || !response.body) throw new Error("牌面一时没有回应，请稍后再试。");
+      if (!response.ok || !response.body) {
+        throw new Error("牌面暂时没有回应，请稍后再试。");
+      }
 
       const model = response.headers.get("x-model") ?? "unknown";
       const reader = response.body.getReader();
@@ -468,7 +407,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           cards,
           drawLog,
           readingIntent,
-          adaptiveAnswers,
           aiInterpretation: fullText,
           model,
         }),
@@ -496,7 +434,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       readingIntent,
       cards,
       drawLog,
-      adaptiveAnswers,
       interpretation,
       sharePath,
     };
@@ -509,32 +446,21 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     phase === "cutting" ||
     phase === "selecting" ||
     phase === "reading";
-  const busy = interactionBusy || questionsLoading;
-
   const showRitualOnly = phase === "shuffling" || phase === "cutting" || phase === "selecting";
-  const pageBackgroundSrc =
-    phase === "reading" || phase === "done"
-      ? "/visuals/reading-result-background-clean.jpg"
-      : cardsRevealed
-        ? "/visuals/ritual-table-after-shuffle-background-clean.jpg"
-        : "/visuals/draw-shuffle-background-clean.jpg";
 
   return (
     <div className="relative isolate space-y-10">
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10"
-      >
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
         <Image
-          src={pageBackgroundSrc}
+          src="/spreads/site-edge-background-clean.jpg"
           alt=""
           fill
           sizes="100vw"
           priority
-          className="scale-[1.01] object-cover opacity-[0.62] blur-[0.5px]"
+          className="scale-[1.01] object-cover opacity-[0.68] blur-[0.7px]"
         />
-        <div className="absolute inset-0 bg-[rgba(251,240,200,0.28)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(251,240,200,0.06)_0%,rgba(251,240,200,0.30)_60%,rgba(251,240,200,0.55)_100%)]" />
+        <div className="absolute inset-0 bg-[rgba(251,240,200,0.22)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(251,240,200,0.06)_0%,rgba(251,240,200,0.16)_56%,rgba(251,240,200,0.44)_100%)]" />
       </div>
 
       <MobileStickyDeck
@@ -549,7 +475,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         text={interpretation}
         isStreaming={phase === "reading"}
         sharePath={sharePath}
-        adaptiveAnswers={adaptiveAnswers}
         spreadName={spread.nameZh}
         question={question}
         onShareNavigate={preserveResultDialogForBackNavigation}
@@ -561,7 +486,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         }))}
       />
 
-      {/* Header — quiet, editorial */}
       <header className="space-y-5 border-b border-[var(--line)] pb-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p className="eyebrow">{spread.hero}</p>
@@ -569,7 +493,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
             <span
               className={cn(
                 "inline-block h-1.5 w-1.5 rounded-full",
-                busy ? "bg-[var(--coral)] animate-shimmer" : "bg-[var(--ink-faint)]",
+                interactionBusy ? "bg-[var(--coral)] animate-shimmer" : "bg-[var(--ink-faint)]",
               )}
             />
             {phaseLabel[phase]}
@@ -577,7 +501,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         </div>
         <h1 className="font-serif-display text-[clamp(2.4rem,4.6vw,3.8rem)] leading-[1.02] text-[var(--ink)]">
           {spread.nameZh}
-          <span className="ml-3 text-[var(--ink-muted)] font-light">
+          <span className="ml-3 font-light text-[var(--ink-muted)]">
             · {spread.cardCount} 张
           </span>
         </h1>
@@ -622,44 +546,48 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         >
           <div ref={mainSpreadRef} className="min-w-0">
             <RitualShell phase={phase} phaseLabel={phaseLabel}>
-              <SpreadLayout spread={spread} cards={resolvedCards} />
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[var(--coral-wash)] px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--coral-deep)]">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--coral)]" />
-                    已翻开 {resolvedCards.length} 张
-                  </span>
-                  {drawLog ? (
-                    <span className="rounded-full border border-[var(--line)] px-3 py-1 font-mono text-[10px] tracking-[0.16em] text-[var(--ink-muted)]">
-                      牌纹 · {drawLog.seed.slice(0, 10)}
+              <SpreadLayout
+                spread={spread}
+                cards={resolvedCards}
+                quiet={!postRevealContentVisible}
+              />
+              {postRevealContentVisible ? (
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-[var(--coral-wash)] px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--coral-deep)]">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--coral)]" />
+                      已翻开 {resolvedCards.length} 张
                     </span>
-                  ) : null}
+                    {drawLog ? (
+                      <span className="rounded-full border border-[var(--line)] px-3 py-1 font-mono text-[10px] tracking-[0.16em] text-[var(--ink-muted)]">
+                        牌纹 · {drawLog.seed.slice(0, 10)}
+                      </span>
+                    ) : null}
+                  </div>
+                  <Button variant="ghost" onClick={handleReshuffle} disabled={interactionBusy}>
+                    重新开始
+                  </Button>
                 </div>
-                <Button variant="ghost" onClick={handleReshuffle} disabled={busy}>
-                  重新开始
-                </Button>
-              </div>
+              ) : null}
             </RitualShell>
           </div>
 
           <aside className="min-w-0 space-y-6 xl:sticky xl:top-24 xl:self-start">
-            {preliminaryOverview ? (
-              <PreliminaryOverview overview={preliminaryOverview} />
-            ) : null}
-            <FollowupPanel
-              questionsLoading={questionsLoading}
-              adaptiveQuestions={adaptiveQuestions}
-              adaptiveAnswers={adaptiveAnswers}
-              onAnswer={updateAdaptiveAnswer}
-              coreTension={coreTension}
-              questionStrategy={questionStrategy}
-              onSubmit={handleInterpret}
-              busy={interactionBusy}
-              phase={phase}
-            />
-            {error ? (
-              <div className="rounded-[12px] border border-[rgba(184,92,110,0.4)] bg-[rgba(184,92,110,0.06)] px-4 py-3 text-sm text-[#8a3447]">
-                {error}
+            {postRevealContentVisible ? (
+              <div className="animate-fade-in space-y-6">
+                {preliminaryOverview ? (
+                  <PreliminaryOverview overview={preliminaryOverview} />
+                ) : null}
+                <DirectReadingPanel
+                  onSubmit={handleInterpret}
+                  busy={interactionBusy}
+                  phase={phase}
+                />
+                {error ? (
+                  <div className="rounded-[12px] border border-[rgba(184,92,110,0.4)] bg-[rgba(184,92,110,0.06)] px-4 py-3 text-sm leading-6 text-[#8a3447]">
+                    {error}
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </aside>
@@ -668,10 +596,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     </div>
   );
 }
-
-/* ============================================================
-   Idle setup — editorial question form
-   ============================================================ */
 
 function IdleSetup({
   question,
@@ -686,8 +610,8 @@ function IdleSetup({
   questionLength: number;
   readingIntent: ReadingIntent;
   spread: SpreadDefinition;
-  onQuestionChange: (value: string) => void;
-  onIntentChange: (nextIntent: Partial<ReadingIntent>) => void;
+  onQuestionChange: (question: string) => void;
+  onIntentChange: (intent: Partial<ReadingIntent>) => void;
   onStart: () => void;
 }) {
   return (
@@ -696,11 +620,11 @@ function IdleSetup({
         <div className="min-w-0 space-y-12">
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-3">
-              <span className="w-12 h-px bg-[var(--coral)] opacity-40" />
+              <span className="h-px w-12 bg-[var(--coral)] opacity-40" />
               <p className="eyebrow !tracking-[0.3em]">THE STAGE IS SET</p>
             </div>
             <div>
-              <h2 className="font-serif-display text-[clamp(2.5rem,5vw,4.2rem)] leading-[1.05] text-[var(--ink)] tracking-tight">
+              <h2 className="font-serif-display text-[clamp(2.5rem,5vw,4.2rem)] leading-[1.05] tracking-tight text-[var(--ink)]">
                 将问题赋予<br />
                 <span className="italic text-[var(--coral-deep)]">这张桌面</span>
               </h2>
@@ -716,14 +640,14 @@ function IdleSetup({
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-4 bg-[var(--surface-raised)]/30 rounded-[24px] -z-10 blur-xl" />
+            <div className="absolute -inset-4 -z-10 rounded-[24px] bg-[var(--surface-raised)]/30 blur-xl" />
             <SpreadPreview spread={spread} />
           </div>
         </div>
 
         <div className="relative min-w-0 lg:pt-8">
           <div className="sticky top-24 space-y-10">
-            <Panel className="border-[var(--line-strong)] bg-[var(--surface-tint)]/80 backdrop-blur-sm shadow-xl">
+            <Panel className="border-[var(--line-strong)] bg-[var(--surface-tint)]/80 shadow-xl backdrop-blur-sm">
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -758,10 +682,10 @@ function IdleSetup({
                   />
                 </div>
 
-                <div className="pt-6 border-t border-[var(--line)]">
-                  <Button 
-                    onClick={onStart} 
-                    className="w-full py-7 text-[16px] font-medium tracking-wide shadow-lg hover:shadow-xl transition-all"
+                <div className="border-t border-[var(--line)] pt-6">
+                  <Button
+                    onClick={onStart}
+                    className="w-full py-7 text-[16px] font-medium tracking-wide shadow-lg transition-all hover:shadow-xl"
                   >
                     开始洗牌 · START RITUAL
                   </Button>
@@ -771,10 +695,9 @@ function IdleSetup({
                 </div>
               </div>
             </Panel>
-            
-            {/* Quick tips */}
-            <div className="px-4 py-2 flex items-center gap-3 text-[12px] text-[var(--ink-faint)] italic">
-              <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[var(--coral)] opacity-30" />
+
+            <div className="flex items-center gap-3 px-4 py-2 text-[12px] italic text-[var(--ink-faint)]">
+              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--coral)] opacity-30" />
               <p>提问越具体，牌阵的能量指向越明确。</p>
             </div>
           </div>
@@ -802,12 +725,7 @@ function SpreadPreview({ spread }: { spread: SpreadDefinition }) {
         </div>
       </div>
 
-      <div
-        className={cn(
-          "relative mx-auto w-full overflow-visible",
-          preset.aspectRatio,
-        )}
-      >
+      <div className={cn("relative mx-auto w-full overflow-visible", preset.aspectRatio)}>
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
@@ -861,7 +779,7 @@ function SpreadPreview({ spread }: { spread: SpreadDefinition }) {
                   compact={compactCards}
                   className="rounded-[9px] shadow-[0_10px_24px_rgba(74,59,50,0.12),0_2px_6px_rgba(74,59,50,0.08)]"
                 />
-                <span className="absolute -top-3 -left-3 flex h-6 w-6 items-center justify-center rounded-full border border-[var(--coral-edge)] bg-[var(--surface-tint)] font-mono text-[10px] text-[var(--coral-deep)] shadow-[0_2px_8px_rgba(74,59,50,0.08)]">
+                <span className="absolute -left-3 -top-3 flex h-6 w-6 items-center justify-center rounded-full border border-[var(--coral-edge)] bg-[var(--surface-tint)] font-mono text-[10px] text-[var(--coral-deep)] shadow-[0_2px_8px_rgba(74,59,50,0.08)]">
                   {position.order}
                 </span>
                 {!compactCards ? (
@@ -877,10 +795,7 @@ function SpreadPreview({ spread }: { spread: SpreadDefinition }) {
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
         {namedPositions.map((position) => (
-          <div
-            key={position.order}
-            className="border-t border-[var(--line)] pt-2"
-          >
+          <div key={position.order} className="border-t border-[var(--line)] pt-3">
             <p className="flex items-center gap-2 text-[13px] font-medium text-[var(--ink)]">
               <span className="font-mono text-[10px] text-[var(--coral-deep)]">
                 {position.order}
@@ -895,6 +810,38 @@ function SpreadPreview({ spread }: { spread: SpreadDefinition }) {
       </div>
     </div>
   );
+}
+
+function clampPreviewPosition(position: { x: number; y: number; rotate?: number }) {
+  return {
+    x: Math.max(10, Math.min(90, position.x)),
+    y: Math.max(14, Math.min(86, position.y)),
+  };
+}
+
+function createFallbackPreviewPreset(cardCount: number): LayoutPreset {
+  const columns = Math.min(Math.max(cardCount, 1), 4);
+  const rows = Math.ceil(cardCount / columns);
+  const positions: LayoutPreset["positions"] = {};
+
+  Array.from({ length: cardCount }).forEach((_, index) => {
+    const row = Math.floor(index / columns);
+    const column = index % columns;
+    const rowCount = row === rows - 1 ? cardCount - row * columns : columns;
+    const xStep = 100 / (rowCount + 1);
+    const yStep = 100 / (rows + 1);
+
+    positions[index + 1] = {
+      x: xStep * (column + 1),
+      y: yStep * (row + 1),
+    };
+  });
+
+  return {
+    aspectRatio: cardCount <= 3 ? "aspect-[2/1]" : "aspect-[16/10]",
+    cardWidth: cardCount >= 7 ? "w-[10%]" : cardCount >= 4 ? "w-[12%]" : "w-[15%]",
+    positions,
+  };
 }
 
 function IntentRibbon({
@@ -937,42 +884,6 @@ function IntentRibbon({
   );
 }
 
-function clampPreviewPosition(position: { x: number; y: number; rotate?: number }) {
-  return {
-    x: Math.max(10, Math.min(90, position.x)),
-    y: Math.max(14, Math.min(86, position.y)),
-  };
-}
-
-function createFallbackPreviewPreset(cardCount: number): LayoutPreset {
-  const columns = Math.min(Math.max(cardCount, 1), 4);
-  const rows = Math.ceil(cardCount / columns);
-  const positions: LayoutPreset["positions"] = {};
-
-  Array.from({ length: cardCount }).forEach((_, index) => {
-    const row = Math.floor(index / columns);
-    const column = index % columns;
-    const rowCount = row === rows - 1 ? cardCount - row * columns : columns;
-    const xStep = 100 / (rowCount + 1);
-    const yStep = 100 / (rows + 1);
-
-    positions[index + 1] = {
-      x: xStep * (column + 1),
-      y: yStep * (row + 1),
-    };
-  });
-
-  return {
-    aspectRatio: cardCount <= 3 ? "aspect-[2/1]" : "aspect-[16/10]",
-    cardWidth: cardCount >= 7 ? "w-[10%]" : cardCount >= 4 ? "w-[12%]" : "w-[15%]",
-    positions,
-  };
-}
-
-/* ============================================================
-   Ritual shell — calm cream stage, enhanced with decorative borders
-   ============================================================ */
-
 function RitualShell({
   children,
   phase,
@@ -1004,11 +915,6 @@ function PreliminaryOverview({
     oneLine: string;
     tone: string;
     themes: string[];
-    cards: Array<{
-      card: NonNullable<ReturnType<typeof getCardById>>;
-      reversed: boolean;
-      positionOrder: number;
-    }>;
   };
 }) {
   return (
@@ -1023,9 +929,7 @@ function PreliminaryOverview({
       <p className="font-serif-display text-[20px] leading-[1.55] text-[var(--ink)]">
         {overview.oneLine}
       </p>
-      <p className="text-[13.5px] leading-7 text-[var(--ink-soft)]">
-        {overview.tone}
-      </p>
+      <p className="text-[13.5px] leading-7 text-[var(--ink-soft)]">{overview.tone}</p>
 
       {overview.themes.length > 0 ? (
         <div className="flex flex-wrap gap-2">
@@ -1043,442 +947,34 @@ function PreliminaryOverview({
   );
 }
 
-/* ============================================================
-   Followup wizard
-   ============================================================ */
-
-function FollowupPanel({
-  questionsLoading,
-  adaptiveQuestions,
-  adaptiveAnswers,
-  onAnswer,
-  coreTension,
-  questionStrategy,
+function DirectReadingPanel({
   onSubmit,
   busy,
   phase,
 }: {
-  questionsLoading: boolean;
-  adaptiveQuestions: AdaptiveQuestion[];
-  adaptiveAnswers: AdaptiveAnswer[];
-  onAnswer: (questionId: string, answer: string, label?: string) => void;
-  coreTension: string | null;
-  questionStrategy: string | null;
   onSubmit: () => void;
   busy: boolean;
   phase: FlowPhase;
 }) {
-  const totalCount = adaptiveQuestions.length;
-  const answeredCount = adaptiveAnswers.filter((answer) => answer.answer.trim()).length;
-
-  const [currentStep, setCurrentStep] = useState(0);
-  const [showContext, setShowContext] = useState(false);
-  const [prevQuestions, setPrevQuestions] = useState(adaptiveQuestions);
-  const advanceTimeoutRef = useRef<number | null>(null);
-
-  if (prevQuestions !== adaptiveQuestions) {
-    setPrevQuestions(adaptiveQuestions);
-    setCurrentStep(0);
-    setShowContext(false);
-  }
-
-  useEffect(() => {
-    return () => {
-      if (advanceTimeoutRef.current !== null) {
-        window.clearTimeout(advanceTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  function clearPendingAdvance() {
-    if (advanceTimeoutRef.current !== null) {
-      window.clearTimeout(advanceTimeoutRef.current);
-      advanceTimeoutRef.current = null;
-    }
-  }
-
-  function goTo(index: number) {
-    clearPendingAdvance();
-    const clamped = Math.max(0, Math.min(index, totalCount));
-    setCurrentStep(clamped);
-  }
-
-  function goNext() {
-    goTo(currentStep + 1);
-  }
-
-  function goBack() {
-    goTo(currentStep - 1);
-  }
-
-  function handleSelectChoice(questionId: string, value: string, label?: string) {
-    onAnswer(questionId, value, label);
-    clearPendingAdvance();
-    advanceTimeoutRef.current = window.setTimeout(() => {
-      advanceTimeoutRef.current = null;
-      setCurrentStep((step) => Math.min(step + 1, totalCount));
-    }, 420);
-  }
-
-  function handleSkipCurrent() {
-    const current = adaptiveQuestions[currentStep];
-    if (current) onAnswer(current.id, "");
-    goNext();
-  }
-
-  function handleSkipAll() {
-    clearPendingAdvance();
-    setCurrentStep(totalCount);
-  }
-
-  const isSummary = totalCount > 0 && currentStep >= totalCount;
-  const isEmpty = !questionsLoading && totalCount === 0;
-  const currentQuestion = !isSummary ? adaptiveQuestions[currentStep] : undefined;
-  const currentAnswer = currentQuestion
-    ? adaptiveAnswers.find((item) => item.questionId === currentQuestion.id)
-    : undefined;
-  const hasContext = Boolean(coreTension || questionStrategy);
-
   return (
     <Panel className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="eyebrow">牌面追问</p>
-          <h2 className="mt-1.5 font-serif-display text-[22px] leading-tight text-[var(--ink)]">
-            补几句直觉
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-[520px]">
+          <p className="eyebrow">牌面解读</p>
+          <h2 className="mt-2 font-serif-display text-[28px] leading-tight text-[var(--ink)]">
+            牌面已经展开
           </h2>
-          <p className="mt-1 text-[13px] leading-6 text-[var(--ink-muted)]">
-            愿意多说几句，牌面会读得更贴近你；想先看结论，也可以直接展开。
+          <p className="mt-2 text-[13.5px] leading-7 text-[var(--ink-muted)]">
+            接下来会基于你的问题、牌阵位置和这次抽出的牌面展开完整读牌。
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {totalCount > 0 && !isSummary ? (
-            <button
-              type="button"
-              onClick={handleSkipAll}
-              className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)] underline-offset-4 transition hover:text-[var(--coral-deep)] hover:underline"
-            >
-              跳过填写
-            </button>
-          ) : null}
-          <Button onClick={onSubmit} disabled={busy || phase === "reading"}>
-            {phase === "reading" ? "读牌中..." : "直接看解读"}
-          </Button>
-        </div>
+        <Button onClick={onSubmit} disabled={busy || phase === "reading"} className="shrink-0">
+          {phase === "reading" ? "读牌中..." : "看解读"}
+        </Button>
       </div>
-
-      {questionsLoading ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-4">
-          <div className="flex items-center gap-3">
-            <span className="inline-block h-2 w-2 rounded-full bg-[var(--coral)] animate-shimmer" />
-            <p className="text-[13.5px] leading-6 text-[var(--ink-soft)]">
-              牌面正在浮出几个补充问题，不影响你先看解读。
-            </p>
-          </div>
-        </div>
-      ) : null}
-
-      {isEmpty ? (
-        <>
-          <p className="rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-[13.5px] leading-7 text-[var(--ink-soft)]">
-            这次没有需要补充的问题，可以直接看解读。
-          </p>
-          <div className="flex justify-end pt-1">
-            <Button onClick={onSubmit} disabled={busy || phase === "reading"}>
-              {phase === "reading" ? "读牌中..." : "看解读"}
-            </Button>
-          </div>
-        </>
-      ) : null}
-
-      {!questionsLoading && totalCount > 0 ? (
-        <>
-          <WizardProgress
-            currentStep={currentStep}
-            totalCount={totalCount}
-            answeredCount={answeredCount}
-            isSummary={isSummary}
-            questions={adaptiveQuestions}
-            answers={adaptiveAnswers}
-          />
-
-          {hasContext ? (
-            <ContextDisclosure
-              expanded={showContext}
-              onToggle={() => setShowContext((value) => !value)}
-              coreTension={coreTension}
-              questionStrategy={questionStrategy}
-            />
-          ) : null}
-
-          {isSummary ? (
-            <WizardSummary
-              questions={adaptiveQuestions}
-              answers={adaptiveAnswers}
-              onJumpTo={goTo}
-            />
-          ) : currentQuestion ? (
-            <WizardQuestionCard
-              key={currentQuestion.id}
-              question={currentQuestion}
-              answer={currentAnswer}
-              onChoice={handleSelectChoice}
-              onFreeTextChange={(value) => onAnswer(currentQuestion.id, value)}
-              onFreeTextSubmit={goNext}
-            />
-          ) : null}
-
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-4">
-            {!isSummary ? (
-              <>
-                <Button
-                  variant="ghost"
-                  onClick={goBack}
-                  disabled={currentStep === 0}
-                >
-                  ← 上一题
-                </Button>
-                {currentQuestion?.answerType === "free_text" ? (
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={handleSkipCurrent}>
-                      空着
-                    </Button>
-                    <Button variant="secondary" onClick={goNext}>
-                      继续 →
-                    </Button>
-                  </div>
-                ) : (
-                  <Button variant="ghost" onClick={handleSkipCurrent}>
-                    空着 →
-                  </Button>
-                )}
-              </>
-            ) : (
-              <>
-                <Button variant="ghost" onClick={() => goTo(0)}>
-                  ← 回第一题
-                </Button>
-                <Button onClick={onSubmit} disabled={busy || phase === "reading"}>
-                  {phase === "reading" ? "塔罗正在低语..." : "看解读"}
-                </Button>
-              </>
-            )}
-          </div>
-        </>
-      ) : null}
+      <p className="border-t border-[var(--line)] pt-4 text-[12.5px] leading-6 text-[var(--ink-soft)]">
+        需要更有针对性的追问与临场判断时，可以把这次牌面记录留给后续的真人占卜预约。
+      </p>
     </Panel>
-  );
-}
-
-function WizardProgress({
-  currentStep,
-  totalCount,
-  answeredCount,
-  isSummary,
-  questions,
-  answers,
-}: {
-  currentStep: number;
-  totalCount: number;
-  answeredCount: number;
-  isSummary: boolean;
-  questions: AdaptiveQuestion[];
-  answers: AdaptiveAnswer[];
-}) {
-  const displayIndex = isSummary ? totalCount : currentStep + 1;
-  return (
-    <div className="space-y-2">
-      <div className="flex items-end justify-between">
-        <p className="font-mono text-[10.5px] uppercase tracking-[0.2em] text-[var(--ink-muted)]">
-          Q{String(displayIndex).padStart(2, "0")} / {String(totalCount).padStart(2, "0")}
-        </p>
-        <span className="font-mono text-[10.5px] tracking-[0.16em] text-[var(--ink-muted)]">
-          已记下 {answeredCount}
-        </span>
-      </div>
-      <div className="flex gap-1.5">
-        {Array.from({ length: totalCount }).map((_, idx) => {
-          const isPast = idx < currentStep || isSummary;
-          const isCurrent = !isSummary && idx === currentStep;
-          const question = questions[idx];
-          const isAnswered = answers.some(
-            (a) => a.questionId === question?.id && a.answer.trim() !== "",
-          );
-
-          return (
-            <span
-              key={idx}
-              className={cn(
-                "h-[3px] flex-1 rounded-full transition-all duration-500",
-                isCurrent
-                  ? "bg-[var(--coral)]"
-                  : isPast && isAnswered
-                    ? "bg-[var(--coral-deep)]"
-                    : "bg-[var(--line-strong)]",
-              )}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function ContextDisclosure({
-  expanded,
-  onToggle,
-  coreTension,
-  questionStrategy,
-}: {
-  expanded: boolean;
-  onToggle: () => void;
-  coreTension: string | null;
-  questionStrategy: string | null;
-}) {
-  return (
-    <div className="rounded-[12px] border border-[var(--line)] bg-[var(--surface)]">
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={expanded}
-        className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left"
-      >
-        <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
-          为什么问这些
-        </span>
-        <span
-          aria-hidden
-          className="text-[var(--ink-muted)] transition-transform duration-200"
-          style={{ transform: expanded ? "rotate(180deg)" : "rotate(0deg)" }}
-        >
-          ↓
-        </span>
-      </button>
-      {expanded ? (
-        <div className="space-y-2 border-t border-[var(--line)] px-4 py-3">
-          {coreTension ? (
-            <p className="text-[13px] leading-6 text-[var(--ink-soft)]">
-              <span className="font-medium text-[var(--ink)]">核心张力：</span>
-              {coreTension}
-            </p>
-          ) : null}
-          {questionStrategy ? (
-            <p className="text-[13px] leading-6 text-[var(--ink-soft)]">
-              <span className="font-medium text-[var(--ink)]">追问策略：</span>
-              {questionStrategy}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function WizardQuestionCard({
-  question,
-  answer,
-  onChoice,
-  onFreeTextChange,
-  onFreeTextSubmit,
-}: {
-  question: AdaptiveQuestion;
-  answer: AdaptiveAnswer | undefined;
-  onChoice: (questionId: string, value: string, label?: string) => void;
-  onFreeTextChange: (value: string) => void;
-  onFreeTextSubmit: () => void;
-}) {
-  return (
-    <div className="wizard-step-enter min-h-[220px] rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-5">
-      <p className="font-serif-display text-[20px] leading-[1.55] text-[var(--ink)]">
-        {question.question}
-      </p>
-      {question.answerType === "free_text" ? (
-        <input
-          autoFocus
-          value={answer?.answer ?? ""}
-          onChange={(event) => onFreeTextChange(event.target.value.slice(0, 120))}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              onFreeTextSubmit();
-            }
-          }}
-          placeholder="按直觉写一句就好，可以留空。"
-          className="mt-4 w-full rounded-[10px] border border-[var(--line-strong)] bg-[var(--surface-tint)] px-3.5 py-2.5 text-[14px] text-[var(--ink)] outline-none placeholder:text-[var(--ink-faint)] focus:border-[var(--coral)] focus:shadow-[0_0_0_3px_var(--coral-wash)]"
-        />
-      ) : (
-        <div className="mt-5 flex flex-wrap gap-2">
-          {question.options?.map((option) => {
-            const selected = answer?.answer === option.value;
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => onChoice(question.id, option.value, option.label)}
-                className={cn(
-                  "rounded-[10px] border px-3.5 py-1.5 text-[13px] transition-all duration-150",
-                  selected
-                    ? "border-[var(--coral)] bg-[var(--coral)] text-white shadow-[0_2px_8px_rgba(168,85,62,0.25)]"
-                    : "border-[var(--line-strong)] bg-transparent text-[var(--ink)] hover:border-[var(--coral)] hover:bg-[var(--coral-wash)] hover:text-[var(--coral-deep)]",
-                )}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function WizardSummary({
-  questions,
-  answers,
-  onJumpTo,
-}: {
-  questions: AdaptiveQuestion[];
-  answers: AdaptiveAnswer[];
-  onJumpTo: (index: number) => void;
-}) {
-  return (
-    <div className="wizard-step-enter space-y-1 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-4">
-      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
-        答题概览
-      </p>
-      <ul className="space-y-1">
-        {questions.map((question, index) => {
-          const answer = answers.find((item) => item.questionId === question.id);
-          const empty = !answer || !answer.answer.trim();
-          const label = empty ? "" : answer?.answerLabel || answer?.answer || "";
-          return (
-            <li key={question.id}>
-              <button
-                type="button"
-                onClick={() => onJumpTo(index)}
-                className="flex w-full items-start gap-3 rounded-[8px] px-2 py-2 text-left transition hover:bg-[var(--surface-raised)]"
-              >
-                <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--coral-wash)] font-mono text-[10px] text-[var(--coral-deep)]">
-                  {index + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="line-clamp-2 text-[13px] leading-6 text-[var(--ink)]">
-                    {question.question}
-                  </p>
-                  <p
-                    className={cn(
-                      "mt-0.5 text-[12.5px]",
-                      empty ? "italic text-[var(--ink-muted)]" : "text-[var(--coral-deep)]",
-                    )}
-                  >
-                    {empty ? "未作答 · 点击补答" : `你的回应：${label}`}
-                  </p>
-                </div>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
   );
 }

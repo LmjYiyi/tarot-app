@@ -52,13 +52,15 @@ export function SpreadRecommender({ spreads }: SpreadRecommenderProps) {
   if (!recommended) return null;
 
   return (
-    <section className="mx-auto mt-12 max-w-5xl rounded-[18px] border border-[var(--coral-edge)] bg-[var(--surface-tint)] p-5 sm:p-6">
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-end">
-        <div className="space-y-4">
+    <section className="mx-auto mt-14 w-full max-w-[1320px] px-5 sm:px-8 lg:px-12">
+      <div className="grid gap-8 border-y border-[var(--line)] py-9 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end lg:gap-12">
+        <div className="min-w-0 space-y-5">
           <div>
             <p className="eyebrow">不知道选哪个？</p>
-            <h2 className="mt-2 font-serif-display text-[28px] leading-tight text-[var(--ink)]">
-              先写下问题，让合适的牌阵自己浮出来
+            <h2 className="mt-2 w-full max-w-[350px] break-all font-serif-display text-[clamp(1.95rem,3vw,3rem)] leading-[1.08] text-[var(--ink)] sm:max-w-2xl">
+              先写下问题，
+              <br className="sm:hidden" />
+              让合适的牌阵自己浮出来
             </h2>
           </div>
 
@@ -69,10 +71,10 @@ export function SpreadRecommender({ spreads }: SpreadRecommenderProps) {
                 type="button"
                 onClick={() => setTopic(option.value)}
                 className={cn(
-                  "rounded-[8px] border px-3 py-1.5 text-[13px] transition-all",
+                  "rounded-full border px-3.5 py-1.5 text-[13px] transition-all",
                   topic === option.value
                     ? "border-[var(--ink)] bg-[var(--ink)] text-[var(--surface)]"
-                    : "border-[var(--line-strong)] text-[var(--ink-soft)] hover:border-[var(--ink-soft)] hover:text-[var(--ink)]",
+                    : "border-[var(--line-strong)] bg-transparent text-[var(--ink-soft)] hover:border-[var(--ink-soft)] hover:text-[var(--ink)]",
                 )}
               >
                 {option.label}
@@ -85,15 +87,15 @@ export function SpreadRecommender({ spreads }: SpreadRecommenderProps) {
             onChange={(event) => setQuestion(event.target.value.slice(0, 180))}
             rows={2}
             placeholder="例如：我该继续现在的工作，还是准备换方向？"
-            className="w-full resize-y rounded-[12px] border border-[var(--line-strong)] bg-[var(--surface)] px-4 py-3 text-[15px] leading-7 text-[var(--ink)] outline-none placeholder:text-[var(--ink-faint)] focus:border-[var(--coral)] focus:shadow-[0_0_0_3px_var(--coral-wash)]"
+            className="w-full max-w-[350px] resize-y border-0 border-b border-[var(--line-strong)] bg-transparent px-0 py-3 text-[16px] leading-7 text-[var(--ink)] outline-none placeholder:text-[var(--ink-faint)] focus:border-[var(--coral)] sm:max-w-full"
           />
         </div>
 
-        <div className="rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-4">
+        <div className="min-w-0 border-t border-[var(--line)] pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
           <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
             适合这一问
           </p>
-          <h3 className="mt-2 font-serif-display text-[24px] leading-tight text-[var(--ink)]">
+          <h3 className="mt-2 font-serif-display text-[28px] leading-tight text-[var(--ink)]">
             {recommended.nameZh}
           </h3>
           <p className="mt-2 text-[13px] leading-6 text-[var(--ink-soft)]">

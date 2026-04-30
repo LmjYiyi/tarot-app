@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 
 import { AnnotatedInterpretation } from "@/components/AnnotatedInterpretation";
 import { Button } from "@/components/ui/button";
+import { cleanInterpretationMarkdown } from "@/lib/interpretation/display";
 import { cn } from "@/lib/utils";
 import type { AdaptiveAnswer, TarotCard } from "@/lib/tarot/types";
 
@@ -53,7 +54,7 @@ export function StreamingInterpretation({
     if (typeof window === "undefined") return sharePath;
     return new URL(sharePath, window.location.origin).toString();
   }, [sharePath]);
-  const displayText = useMemo(() => cleanMarkdownForDisplay(text), [text]);
+  const displayText = useMemo(() => cleanInterpretationMarkdown(text), [text]);
 
   const plainText = useMemo(
     () => buildPlainText({ spreadName, question, cards, text: displayText, shareUrl }),
@@ -130,14 +131,16 @@ export function StreamingInterpretation({
             <Button variant="secondary" onClick={handleCopy} disabled={!hasContent || isStreaming}>
               {copied ? "已复制文字" : "复制文字"}
             </Button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="grid h-10 w-10 place-items-center rounded-[10px] text-[22px] leading-none text-[var(--ink-soft)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]"
-              aria-label="关闭"
-            >
-              ×
-            </button>
+            {!isStreaming && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="grid h-10 w-10 place-items-center rounded-[10px] text-[22px] leading-none text-[var(--ink-soft)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]"
+                aria-label="关闭"
+              >
+                ×
+              </button>
+            )}
           </div>
         </header>
 
@@ -298,24 +301,6 @@ function buildPlainText({
   ]
     .filter((line): line is string => line !== null)
     .join("\n");
-}
-
-function cleanMarkdownForDisplay(source: string) {
-  return source
-    .split("\n")
-    .map((line) =>
-      line
-        .replace(/^\s{0,3}#{1,6}\s*/, "")
-        .replace(/^\s{0,3}[-*+]\s+/, "")
-        .replace(/^\s{0,3}>\s?/, "")
-        .replace(/\*\*(.*?)\*\*/g, "$1")
-        .replace(/__(.*?)__/g, "$1")
-        .replace(/`([^`]+)`/g, "$1")
-        .trimEnd(),
-    )
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
 }
 
 async function copyText(text: string) {

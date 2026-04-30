@@ -1,7 +1,6 @@
 import { getKnowledgeProvider } from "@/lib/knowledge";
 import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
 import type {
-  AdaptiveAnswer,
   DrawLog,
   DrawnCard,
   ReadingIntent,
@@ -17,7 +16,6 @@ type BuildContextInput = {
   drawLog?: DrawLog;
   readingIntent?: ReadingIntent;
   userFeedback?: UserFeedback;
-  adaptiveAnswers?: AdaptiveAnswer[];
   locale: string;
 };
 
@@ -63,13 +61,12 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 直觉补充",
-          "3. 当前状态一句话",
-          "4. 逐张牌解读",
-          "5. 整组牌关系",
-          "6. 近期趋势",
-          "7. 注意事项与行动建议",
-          "8. 一句话总结",
+          "2. 当前状态一句话",
+          "3. 逐张牌解读",
+          "4. 整组牌关系",
+          "5. 近期趋势",
+          "6. 注意事项与行动建议",
+          "7. 一句话总结",
         ],
         instruction:
           "围绕事业问题整合现状、阻碍、优势、近期发展和建议，重点输出核心矛盾、短期趋势与可执行行动。",
@@ -79,11 +76,10 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 直觉补充",
-          "3. 关系现状",
-          "4. 双方与连接断裂点",
-          "5. 修复路径",
-          "6. 近期关系提醒",
+          "2. 关系现状",
+          "3. 双方与连接断裂点",
+          "4. 修复路径",
+          "5. 近期关系提醒",
         ],
         instruction:
           "说明双方状态如何错位、仍有什么连接资源，以及更现实的沟通修复路径。",
@@ -92,11 +88,10 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 直觉补充",
-          "3. 决策核心",
-          "4. A/B 路径对比",
-          "5. 情绪上的倾向",
-          "6. 建议方向",
+          "2. 决策核心",
+          "3. A/B 路径对比",
+          "4. 情绪上的倾向",
+          "5. 建议方向",
         ],
         instruction: "比较两条路径带来的感受、机会与代价，不替用户做绝对决定。",
       };
@@ -104,11 +99,10 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 直觉补充",
-          "3. 当前心理状态",
-          "4. 压力源与需求",
-          "5. 调整方向",
-          "6. 一句话总结",
+          "2. 当前心理状态",
+          "3. 压力源与需求",
+          "4. 调整方向",
+          "5. 一句话总结",
         ],
         instruction: "把问题外化为压力、需求和调整方向，避免给用户贴负面标签。",
       };
@@ -116,11 +110,10 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 直觉补充",
-          "3. 局势总览",
-          "4. 关键结构解读",
-          "5. 近期走向与结果趋势",
-          "6. 行动建议",
+          "2. 局势总览",
+          "3. 关键结构解读",
+          "4. 近期走向与结果趋势",
+          "5. 行动建议",
         ],
         instruction: "重点整合核心议题、挑战、内外部环境与趋势，避免逐张平铺。",
       };
@@ -128,11 +121,12 @@ function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprin
       return {
         sections: [
           "1. 牌面总览",
-          "2. 直觉补充",
-          "3. 整体概览",
-          "4. 分位置解读",
-          "5. 行动建议",
-          "6. 一句近期提醒",
+          "2. 整体关系",
+          "3. 分位置解读",
+          "4. 牌与牌之间",
+          "5. 近期趋势",
+          "6. 行动建议",
+          "7. 一句近期提醒",
         ],
         instruction: "结合问题、领域目标、位置、牌义和用户反馈做结构化中文解读。",
       };
@@ -249,43 +243,12 @@ function summarizeFeedback(
   ].join("\n");
 }
 
-function summarizeAdaptiveAnswers(answers: AdaptiveAnswer[] | undefined) {
-  if (!answers?.length) {
-    return "无额外补充回应。写作时不要说明用户未回答追问，也不要围绕缺席信息分析；直接依据牌面解读。";
-  }
-
-  return answers
-    .map(
-      (answer, index) =>
-        `- A${index + 1}：${answer.question}\n  用户感受：${answer.answerLabel || answer.answer}`,
-    )
-    .join("\n");
-}
-
-function buildAnnotationRule(answers: AdaptiveAnswer[] | undefined) {
-  if (!answers?.length) {
-    return null;
-  }
-
-  const ids = answers.map((_, index) => `A${index + 1}`).join("、");
-  return [
-    "回指标记（重要指令）：",
-    `- 本次解读包含用户的具体回应（编号 ${ids}）。`,
-    `- 当你的某段分析是直接基于某个回答（如 A1）推导出来时，请务必将该判断相关的「关键短语」用特定的标记包起来。`,
-    `- 格式示例：[[a:A1]]你提到的事业转折[[/a]]。其中 A1 对应具体的回答编号。`,
-    "- 标记要求：短语长度 4-20 字，必须是自然语句的一部分。严禁包裹整段文字或仅包裹一两个词。",
-    "- 数量限制：全篇总计标记 3-5 处即可，不要过度标记。同一自然段最多 2 处。",
-    "- 作用：这些标记将用于前端高亮展示，并允许用户悬停查看对应的原始回答。请确保被包裹的短语确实与该回答逻辑相关。",
-  ].join("\n");
-}
-
 export async function buildInterpretationPayload(input: BuildContextInput) {
   const provider = getKnowledgeProvider();
   const spread = getSpreadBySlug(input.spreadSlug);
   const responseBlueprint = getResponseBlueprint(spread);
   const selectedCards = resolveSelectedCards(spread, input.cards, input.readingIntent);
   const feedbackSummary = summarizeFeedback(selectedCards, input.userFeedback);
-  const adaptiveSummary = summarizeAdaptiveAnswers(input.adaptiveAnswers);
   const intentSummary = summarizeIntent(input.readingIntent);
   const combinationSummary = buildCombinationSummary(selectedCards);
   const context = await provider.getContext({
@@ -294,8 +257,6 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     cardIds: input.cards.map((card) => card.cardId),
     locale: input.locale,
   });
-
-  const annotationRule = buildAnnotationRule(input.adaptiveAnswers);
 
   const userPrompt = [
     `用户问题：${input.question || "我想看清自己当前最需要面对的课题。"}`,
@@ -331,23 +292,19 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     combinationSummary,
     "用户直觉反馈：",
     feedbackSummary,
-    "适配追问反馈：",
-    adaptiveSummary,
     "推理规则：",
-    "1. 每个关键判断都必须绑定至少一个依据：牌名、牌阵位置、正逆位、用户反馈或适配追问答案。",
+    "1. 每个关键判断都必须绑定至少一个依据：牌名、牌阵位置、正逆位或用户反馈。",
     "2. 先说明牌面事实，再整合用户反馈，再提炼心理状态、核心矛盾、趋势与建议。",
     "3. 若某张牌提供了「领域牌义」，优先用它回应用户选择的领域；基础牌义只作为背景补充，不要反客为主。",
     "4. 权重指令：若提供了「本次牌组组合意义」，应将其作为解读局势结构或核心矛盾的优先依据，而不是只平铺单牌解析。",
     "5. 元素、行星、星象和数字只作为辅助线索：当它们能解释重复模式（多张同号牌）、显著冲突、互补或趋势时再使用。禁止为了显得神秘而硬凑或堆砌这些术语。",
-    "6. 用户的适配追问答案只代表看牌后的感受，不要把它当作客观事实。",
-    "7. 如果用户没有填写直觉反馈或补充回应，严禁写“用户未填写”“未回答”“无法判断你是否认同/不安”等缺席说明；这类信息不应该呈现给用户。直接解读牌面即可。",
-    "8. 不要使用绝对预言（必然、一定、命中注定），用更像是、倾向于、需要注意的表达。",
-    "9. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
-    "10. 输出要克制精炼，不要写 Markdown 表格，不要逐项复制所有关键词。",
-    annotationRule,
+    "6. 如果用户没有填写直觉反馈，严禁写“用户未填写”“无法判断你是否认同/不安”等缺席说明；这类信息不应该呈现给用户。直接解读牌面即可。",
+    "7. 不要使用绝对预言（必然、一定、命中注定），用更像是、倾向于、需要注意的表达。",
+    "8. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
+    "9. 输出要克制精炼，不要写 Markdown 表格，不要逐项复制所有关键词。",
     selectedCards.length <= 5
-      ? "长度要求：700 到 1000 个中文字符，优先保留核心矛盾和行动建议。"
-      : "长度要求：1000 到 1400 个中文字符，复杂牌阵也要整合，不要平铺所有牌。",
+      ? "长度要求：1000 到 1500 个中文字符，必须保留牌面总览、分位置解读、牌与牌之间、近期趋势和行动建议。"
+      : "长度要求：1300 到 1800 个中文字符，复杂牌阵也要整合，不要平铺所有牌。",
     "必须完整结束，不要在句子中间截断；如果篇幅不够，优先压缩分位置解读，保留行动建议和一句总结。",
     "请严格按以下结构输出：",
     ...responseBlueprint.sections,
@@ -369,7 +326,6 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     citations: context.citations ?? [],
     selectedCards,
     feedbackSummary,
-    adaptiveSummary,
     responseBlueprint,
     spreadName: spread?.nameZh ?? input.spreadSlug,
   };

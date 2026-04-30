@@ -113,25 +113,6 @@ export type UserFeedback = {
   overallFeelingNote?: string;
 };
 
-export type AdaptiveQuestionOption = {
-  value: string;
-  label: string;
-};
-
-export type AdaptiveQuestion = {
-  id: string;
-  stage: "post_feedback";
-  domain?: ReadingDomain | "any";
-  goal?: ReadingGoal | "any";
-  trigger?: string;
-  question: string;
-  basis?: string;
-  purpose?: string;
-  answerType: "single_choice" | "free_text";
-  options?: AdaptiveQuestionOption[];
-  priority?: number;
-};
-
 export type AdaptiveAnswer = {
   questionId: string;
   question: string;

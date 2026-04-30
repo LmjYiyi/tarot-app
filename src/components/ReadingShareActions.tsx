@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { cleanInterpretationMarkdown } from "@/lib/interpretation/display";
 
 export type ReadingShareActionCard = {
   cardId: string;
@@ -23,14 +24,6 @@ type ReadingShareActionsProps = {
   drawModeLabel?: string | null;
 };
 
-type DrawLine = {
-  text: string;
-  font: string;
-  color: string;
-  lineHeight: number;
-  gapAfter?: number;
-};
-
 export function ReadingShareActions({
   spreadName,
   question,
@@ -49,7 +42,7 @@ export function ReadingShareActions({
   }, [sharePath]);
 
   const cleanInterpretation = useMemo(
-    () => cleanMarkdownForDisplay(interpretation),
+    () => cleanInterpretationMarkdown(interpretation),
     [interpretation],
   );
 
@@ -137,24 +130,6 @@ function buildPlainText({
   ]
     .filter((line): line is string => line !== null)
     .join("\n");
-}
-
-function cleanMarkdownForDisplay(source: string) {
-  return source
-    .split("\n")
-    .map((line) =>
-      line
-        .replace(/^\s{0,3}#{1,6}\s*/, "")
-        .replace(/^\s{0,3}[-*+]\s+/, "")
-        .replace(/^\s{0,3}>\s?/, "")
-        .replace(/\*\*(.*?)\*\*/g, "$1")
-        .replace(/__(.*?)__/g, "$1")
-        .replace(/`([^`]+)`/g, "$1")
-        .trimEnd(),
-    )
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
 }
 
 async function copyText(text: string) {

@@ -4,6 +4,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState, type ReactNode } from "react";
 
 import { Ornament } from "@/components/ui/ornament";
+import {
+  cleanInterpretationMarkdown,
+  interpretationSectionTitles,
+  isInterpretationSectionTitle,
+  stripSectionNumber,
+} from "@/lib/interpretation/display";
 import type { AdaptiveAnswer } from "@/lib/tarot/types";
 
 type AnnotatedInterpretationProps = {
@@ -11,17 +17,6 @@ type AnnotatedInterpretationProps = {
   adaptiveAnswers?: AdaptiveAnswer[];
   isStreaming?: boolean;
 };
-
-const inlineSectionTitles = [
-  "牌面总览",
-  "核心主题",
-  "直觉补充",
-  "分位置解读",
-  "逐张牌解读",
-  "关键结构解读",
-  "行动建议",
-  "一句近期提醒",
-];
 
 function hideInternalNotes(source: string) {
   return source
@@ -47,7 +42,7 @@ export function AnnotatedInterpretation({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const safeText = useMemo(() => {
-    const displayText = hideInternalNotes(text);
+    const displayText = cleanInterpretationMarkdown(hideInternalNotes(text));
     if (!isStreaming) return displayText;
     const lastOpenBracket = displayText.lastIndexOf("[");
     if (lastOpenBracket > displayText.length - 10) {
@@ -67,9 +62,10 @@ export function AnnotatedInterpretation({
           .replace(/反馈线索/g, "牌面线索")
           .replace(/用户反馈摘要/g, "直觉补充")
           .replace(/^[-*]\s+/gm, "")
-          .replace(/^\d+[.)]\s+/gm, ""),
+          .replace(/^\d+[.)、]\s+/gm, ""),
       )
       .filter((paragraph) => !isAbsenceExplanation(paragraph))
+      .filter((paragraph) => !/^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/.test(paragraph))
       .filter(Boolean);
   }, [safeText]);
 
@@ -158,36 +154,27 @@ export function AnnotatedInterpretation({
       {paragraphs.map((paragraph, index) => {
         const headingMatch = paragraph.match(/^(#{1,4})\s*(.+)$/);
         const inlineSectionMatch = paragraph.match(
-          new RegExp(`^(${inlineSectionTitles.join("|")})\\s*[：:]\\s*(.*)$`, "s"),
+          new RegExp(`^(${interpretationSectionTitles.join("|")})\\s*[：:]\\s*(.*)$`, "s"),
         );
-        const standaloneSectionTitle = inlineSectionTitles.includes(paragraph);
-        const softHeading =
-          !headingMatch &&
-          !inlineSectionMatch &&
-          !standaloneSectionTitle &&
-          paragraph.length <= 18 &&
-          !/[。？！.!?]/.test(paragraph) &&
-          index > 0;
+        const standaloneSectionTitle = isInterpretationSectionTitle(paragraph);
         const headingText =
-          headingMatch?.[2]?.trim() ??
+          (headingMatch?.[2]?.trim() ? stripSectionNumber(headingMatch[2]) : undefined) ??
           inlineSectionMatch?.[1]?.trim() ??
-          (standaloneSectionTitle || softHeading ? paragraph : "");
+          (standaloneSectionTitle ? stripSectionNumber(paragraph).replace(/[：:]\s*$/, "") : "");
         const inlineSectionBody = inlineSectionMatch?.[2]?.trim() ?? "";
         const isFirstHeading =
           Boolean(headingText) &&
           paragraphs.findIndex((other) => {
             const m = other.match(/^(#{1,4})\s*(.+)$/);
             const inline = other.match(
-              new RegExp(`^(${inlineSectionTitles.join("|")})\\s*[：:]\\s*(.*)$`, "s"),
+              new RegExp(`^(${interpretationSectionTitles.join("|")})\\s*[：:]\\s*(.*)$`, "s"),
             );
-            const standalone = inlineSectionTitles.includes(other);
-            const soft =
-              !m &&
-              !inline &&
-              !standalone &&
-              other.length <= 18 &&
-              !/[。？！.!?]/.test(other);
-            return Boolean(m?.[2]?.trim()) || Boolean(inline?.[1]?.trim()) || standalone || soft;
+            const standalone = isInterpretationSectionTitle(other);
+            return (
+              Boolean(m?.[2]?.trim() && isInterpretationSectionTitle(m[2])) ||
+              Boolean(inline?.[1]?.trim()) ||
+              standalone
+            );
           }) === index;
 
         if (headingText) {

@@ -175,7 +175,7 @@ export default async function CardDetailPage({ params }: CardPageProps) {
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[360px_minmax(0,1fr)] xl:grid-cols-[410px_minmax(0,1fr)]">
-          <div className="space-y-8 lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:pr-3 lg:pb-8 lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden">
+          <div className="space-y-8 lg:self-start lg:pr-3 lg:pb-8">
             <div className="relative mx-auto max-w-[340px]">
               <div className="relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[rgba(74,59,50,0.18)] shadow-[0_18px_36px_rgba(74,59,50,0.10)]">
                 {card.imageUrl ? (
@@ -211,7 +211,7 @@ export default async function CardDetailPage({ params }: CardPageProps) {
 
               <nav className="px-1 pb-5 pt-2">
                 <p className="eyebrow-ink mb-3">牌面目录 · Cards</p>
-                <div className="grid max-h-[42vh] grid-cols-2 gap-x-4 gap-y-2 overflow-y-auto pr-2 text-[13px] leading-6 text-[var(--ink-soft)]">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 pr-2 text-[13px] leading-6 text-[var(--ink-soft)]">
                   {allCards.map((item) => (
                     <Link
                       key={item.id}
@@ -297,7 +297,7 @@ export default async function CardDetailPage({ params }: CardPageProps) {
               </article>
 
               <aside className="hidden xl:block">
-                <div className="space-y-4 border-l border-[rgba(74,59,50,0.14)] py-1 pl-6 pr-2 text-[12px] leading-5 text-[var(--ink-muted)] xl:sticky xl:top-16 xl:max-h-[calc(100vh-4rem)] xl:overflow-y-auto xl:overscroll-contain xl:[scrollbar-width:none] xl:[&::-webkit-scrollbar]:hidden">
+                <div className="space-y-4 border-l border-[rgba(74,59,50,0.14)] py-1 pl-6 pr-2 text-[12px] leading-5 text-[var(--ink-muted)]">
                   <p className="eyebrow-ink">本页章节</p>
                   {contentSections.map((section, index) => (
                     <Link

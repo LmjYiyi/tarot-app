@@ -16,13 +16,6 @@ const userFeedbackSchema = z.object({
   overallFeelingNote: z.string().max(120).optional(),
 });
 
-const adaptiveAnswerSchema = z.object({
-  questionId: z.string().min(1),
-  question: z.string().min(1).max(300),
-  answer: z.string().min(1).max(500),
-  answerLabel: z.string().max(500).optional(),
-});
-
 const requestSchema = z.object({
   question: z.string().max(500).default(""),
   spreadSlug: z.string().min(1),
@@ -38,7 +31,6 @@ const requestSchema = z.object({
     .optional()
     .nullable(),
   userFeedback: userFeedbackSchema.optional(),
-  adaptiveAnswers: z.array(adaptiveAnswerSchema).optional(),
   cards: z
     .array(
       z.object({

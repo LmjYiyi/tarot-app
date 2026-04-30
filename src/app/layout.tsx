@@ -78,7 +78,9 @@ function SiteHeader() {
         inset: "0 0 auto 0",
         zIndex: 100,
         background:
-          "linear-gradient(180deg, rgba(251, 240, 200, 0.86) 0%, rgba(251, 240, 200, 0.72) 100%)",
+          "linear-gradient(180deg, rgba(251, 240, 200, 0.82) 0%, rgba(251, 240, 200, 0.66) 100%)",
+        backdropFilter: "blur(2px)",
+        WebkitBackdropFilter: "blur(2px)",
         textShadow: "0 1px 0 rgba(253,248,225,0.78)",
       }}
     >
@@ -156,7 +158,7 @@ function SiteFooter() {
         <div className="space-y-3 text-[13.5px]">
           <p className="eyebrow-ink">进度 · Phase</p>
           <p className="leading-[1.75]">
-            I · 抽牌、翻牌、直觉补充与牌面解读。
+            I · 抽牌、翻牌、牌阵展示与牌面解读。
             <br />
             II · 更完整的牌阵记录、会话与导出。
           </p>

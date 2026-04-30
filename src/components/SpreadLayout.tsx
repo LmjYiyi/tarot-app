@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 
 import { CardReveal } from "@/components/CardReveal";
@@ -15,14 +14,16 @@ type SpreadLayoutProps = {
     reversed: boolean;
     positionOrder: number;
   }>;
+  quiet?: boolean;
 };
 
-export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
+export function SpreadLayout({ spread, cards, quiet = false }: SpreadLayoutProps) {
   const preset = layoutPresets[spread.slug] || {
     aspectRatio: "aspect-[16/10]",
     cardWidth: "md:w-[12%]",
     positions: {},
   };
+  const isThreeCardTimeline = spread.slug === "three-card" && cards.length === 3;
 
   return (
     <div className="relative w-full">
@@ -41,10 +42,14 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
               transition={{ delay: index * 0.1 }}
             >
               <div className="flex flex-col items-center">
-                <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--ink-soft)] bg-[var(--surface)] px-3 py-1 rounded-full border border-[var(--line-strong)]">
-                  {position.name}
-                </span>
-                <div className="h-3 w-px bg-[var(--line-strong)] mt-1" />
+                {!quiet ? (
+                  <>
+                    <span className="border-b border-[var(--line-strong)] pb-1 font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--ink-soft)]">
+                      {position.name}
+                    </span>
+                    <div className="h-3 w-px bg-[var(--line-strong)] mt-1" />
+                  </>
+                ) : null}
               </div>
 
               <div className="w-full aspect-[2/3.5]">
@@ -56,17 +61,19 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
                 />
               </div>
 
+              {!quiet ? (
               <div className="flex flex-col items-center mt-2">
                 <p className="font-serif-display text-[17px] text-[var(--ink)] leading-tight">{card.nameZh}</p>
                 <span className={cn(
                   "mt-1 font-mono text-[9px] tracking-[0.18em] px-2 py-0.5 rounded-full border",
                   reversed
-                    ? "border-[rgba(184,92,110,0.45)] text-[#8a3447] bg-[rgba(184,92,110,0.08)]"
-                    : "border-[var(--coral-edge)] text-[var(--coral-deep)] bg-[var(--coral-wash)]"
+                    ? "border-[rgba(138,52,71,0.58)] bg-[rgba(184,92,110,0.14)] text-[#7b2c3e]"
+                    : "border-[rgba(200,90,60,0.58)] bg-[rgba(251,232,190,0.86)] text-[var(--coral-deep)]"
                 )}>
                   {reversed ? "逆位 · 受阻/内化" : "正位 · 顺流/外显"}
                 </span>
               </div>
+              ) : null}
             </motion.div>
           );
         })}
@@ -75,37 +82,28 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
       {/* --- Desktop chart canvas --- */}
       <div
         className={cn(
-          "hidden md:block relative mx-auto w-full overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--surface-tint)]",
+          "hidden md:block relative mx-auto mt-20 w-full overflow-visible",
           preset.aspectRatio,
         )}
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(204,120,92,0.05) 0%, transparent 70%)",
-        }}
       >
-        {/* faint astrological chart, dialed way back so the cards lead */}
-        <Image
-          src="/spreads/astrology-chart-background-v2.png"
-          alt=""
-          fill
-          priority
-          sizes="(max-width: 1280px) 100vw, 1024px"
-          className="object-cover opacity-[0.10] mix-blend-multiply"
-          aria-hidden
-        />
-
-        {/* gentle vignette that warms the center */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[88%] w-[92%] -translate-x-1/2 -translate-y-1/2"
           style={{
             background:
-              "radial-gradient(ellipse at center, rgba(250,249,245,0) 0%, rgba(236,231,216,0.35) 100%)",
+              "radial-gradient(ellipse at center, rgba(253,248,225,0.26) 0%, rgba(253,248,225,0.12) 42%, transparent 74%)",
           }}
         />
 
-        {/* hairline interior frame */}
-        <div className="pointer-events-none absolute inset-3 rounded-[14px] border border-[var(--line)]" />
+        {isThreeCardTimeline && !quiet ? (
+          <div className="pointer-events-none absolute inset-x-[12%] top-0 z-30 flex items-center justify-center gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--ink-soft)]">
+            <span>过去</span>
+            <span className="text-[var(--coral-deep)]">▸</span>
+            <span className="text-[var(--ink)]">现在</span>
+            <span className="text-[var(--coral-deep)]">▸</span>
+            <span>未来</span>
+          </div>
+        ) : null}
 
         {cards.map(({ card, reversed, positionOrder }, index) => {
           const position = spread.positions.find((item) => item.order === positionOrder);
@@ -118,6 +116,7 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
           const rotation = layoutPos.rotate || 0;
           const zIndex =
             rotation !== 0 && spread.slug === "celtic-cross" ? 30 : 10 + index;
+          const isFocusCard = isThreeCardTimeline && position.order === 2;
 
           return (
             <motion.div
@@ -129,7 +128,7 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
               initial={{ opacity: 0, scale: 0.8, y: 10 }}
               animate={{
                 opacity: 1,
-                scale: 1,
+                scale: isFocusCard ? 1.08 : 1,
                 x: "-50%",
                 y: "-50%",
                 left,
@@ -156,14 +155,26 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
                 />
 
                 {/* position label */}
-                <div className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap z-40">
+                {!quiet && !isThreeCardTimeline ? (
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap z-40">
                   <div className="flex flex-col items-center">
-                    <span className="font-mono text-[9px] tracking-[0.18em] uppercase text-[var(--ink-soft)] bg-[var(--surface)] px-2.5 py-0.5 rounded-full border border-[var(--line-strong)]">
+                    <span className="border-b border-[var(--line-strong)] pb-0.5 font-mono text-[9px] tracking-[0.18em] uppercase text-[var(--ink-soft)]">
                       {position.name}
                     </span>
-                    <div className="h-2 w-px bg-[var(--line-strong)] mt-0.5" />
+                    <div className="h-1.5 w-px bg-[var(--line-strong)] mt-0.5" />
                   </div>
-                </div>
+                  </div>
+                ) : !quiet && isFocusCard ? (
+                  <div className="absolute -top-7 left-1/2 z-40 -translate-x-1/2 whitespace-nowrap">
+                    <span className="border border-[rgba(150,106,46,0.56)] bg-[rgba(255,248,230,0.88)] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--coral-deep)]">
+                      焦点牌
+                    </span>
+                  </div>
+                ) : null}
+
+                {isFocusCard ? (
+                  <div className="pointer-events-none absolute -inset-2 border border-[rgba(150,106,46,0.60)] shadow-[0_18px_34px_rgba(74,59,50,0.18)]" />
+                ) : null}
 
                 <CardReveal
                   card={card}
@@ -173,6 +184,7 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
                 />
 
                 {/* card name */}
+                {!quiet ? (
                 <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap z-40 flex flex-col items-center pointer-events-none transition-opacity duration-300 opacity-90 group-hover:opacity-100">
                   <p className="font-serif-display text-[15px] text-[var(--ink)]">
                     {card.nameZh}
@@ -180,24 +192,27 @@ export function SpreadLayout({ spread, cards }: SpreadLayoutProps) {
                   <span className={cn(
                     "font-mono text-[8.5px] tracking-[0.18em] mt-0.5 px-2 py-0.5 rounded-full border",
                     reversed
-                      ? "border-[rgba(184,92,110,0.45)] text-[#8a3447] bg-[rgba(184,92,110,0.08)]"
-                      : "border-[var(--coral-edge)] text-[var(--coral-deep)] bg-[var(--coral-wash)]",
+                      ? "border-[rgba(138,52,71,0.58)] bg-[rgba(184,92,110,0.14)] text-[#7b2c3e]"
+                      : "border-[rgba(200,90,60,0.58)] bg-[rgba(251,232,190,0.86)] text-[var(--coral-deep)]",
                   )}>
                     {reversed ? "逆位 · 内化" : "正位 · 外显"}
                   </span>
                 </div>
+                ) : null}
               </div>
             </motion.div>
           );
         })}
       </div>
 
+      {!quiet ? (
       <div className="hidden md:flex mt-12 flex-col items-center justify-center text-center space-y-2">
         <div className="h-px w-16 bg-[var(--line-strong)]" />
         <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--ink-muted)]">
           {spread.cardCount} 张牌 · 已落位
         </p>
       </div>
+      ) : null}
     </div>
   );
 }
