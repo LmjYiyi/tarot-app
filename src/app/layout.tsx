@@ -184,7 +184,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <MouseTrail />
-        <div className="relative flex min-h-screen w-full max-w-full flex-col overflow-x-hidden sm:pt-[57px]">
+        <div className="relative flex min-h-screen w-full max-w-full flex-col sm:pt-[57px]">
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />

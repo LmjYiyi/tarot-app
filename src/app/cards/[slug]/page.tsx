@@ -144,7 +144,7 @@ export default async function CardDetailPage({ params }: CardPageProps) {
   const contentSections = textSections.slice(1);
 
   return (
-    <div className="relative isolate overflow-x-clip">
+    <div className="relative isolate">
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
         <Image
           src="/spreads/site-edge-background-clean.jpg"
@@ -175,7 +175,7 @@ export default async function CardDetailPage({ params }: CardPageProps) {
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[360px_minmax(0,1fr)] xl:grid-cols-[410px_minmax(0,1fr)]">
-          <div className="space-y-8 lg:self-start lg:pr-3 lg:pb-8">
+          <div className="space-y-8 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-3 lg:pb-8 no-scrollbar">
             <div className="relative mx-auto max-w-[340px]">
               <div className="relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[rgba(74,59,50,0.18)] shadow-[0_18px_36px_rgba(74,59,50,0.10)]">
                 {card.imageUrl ? (
@@ -211,18 +211,20 @@ export default async function CardDetailPage({ params }: CardPageProps) {
 
               <nav className="px-1 pb-5 pt-2">
                 <p className="eyebrow-ink mb-3">牌面目录 · Cards</p>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 pr-2 text-[13px] leading-6 text-[var(--ink-soft)]">
-                  {allCards.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/cards/${item.slug}`}
-                      className={`transition hover:text-[var(--coral-deep)] ${
-                        item.slug === card.slug ? "text-[var(--coral-deep)]" : ""
-                      }`}
-                    >
-                      {toRoman(item.number)} · {item.nameZh}
-                    </Link>
-                  ))}
+                <div className="max-h-[33vh] overflow-y-auto overscroll-contain no-scrollbar">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 pr-2 text-[13px] leading-6 text-[var(--ink-soft)]">
+                    {allCards.map((item) => (
+                      <Link
+                        key={item.id}
+                        href={`/cards/${item.slug}`}
+                        className={`transition hover:text-[var(--coral-deep)] ${
+                          item.slug === card.slug ? "text-[var(--coral-deep)]" : ""
+                        }`}
+                      >
+                        {toRoman(item.number)} · {item.nameZh}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </nav>
             </div>
@@ -297,7 +299,7 @@ export default async function CardDetailPage({ params }: CardPageProps) {
               </article>
 
               <aside className="hidden xl:block">
-                <div className="space-y-4 border-l border-[rgba(74,59,50,0.14)] py-1 pl-6 pr-2 text-[12px] leading-5 text-[var(--ink-muted)]">
+                <div className="sticky top-24 space-y-4 border-l border-[rgba(74,59,50,0.14)] py-1 pl-6 pr-2 text-[12px] leading-5 text-[var(--ink-muted)]">
                   <p className="eyebrow-ink">本页章节</p>
                   {contentSections.map((section, index) => (
                     <Link

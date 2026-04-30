@@ -5,10 +5,8 @@ import { useMemo, useState, type ReactNode } from "react";
 
 import { Ornament } from "@/components/ui/ornament";
 import {
+  buildInterpretationItems,
   cleanInterpretationMarkdown,
-  interpretationSectionTitles,
-  isInterpretationSectionTitle,
-  stripSectionNumber,
 } from "@/lib/interpretation/display";
 import type { AdaptiveAnswer } from "@/lib/tarot/types";
 
@@ -26,12 +24,6 @@ function hideInternalNotes(source: string) {
         !/知觉锚点|确认用户|后续解读的落点|避免被牌义牵着走|追问策略/.test(line),
     )
     .join("\n");
-}
-
-function isAbsenceExplanation(paragraph: string) {
-  return /用户未填写|未填写直觉反馈|未回答适配追问|未回答追问|无法判断你|不做任何投射式解读|没有回答任何|没有提供.*反馈|只能直接回到牌面本身/.test(
-    paragraph,
-  );
 }
 
 export function AnnotatedInterpretation({
@@ -52,22 +44,7 @@ export function AnnotatedInterpretation({
     return displayText;
   }, [text, isStreaming]);
 
-  const paragraphs = useMemo(() => {
-    return safeText
-      .split(/\n\s*\n/)
-      .map((paragraph) =>
-        paragraph
-          .trim()
-          .replace(/\*\*/g, "")
-          .replace(/反馈线索/g, "牌面线索")
-          .replace(/用户反馈摘要/g, "直觉补充")
-          .replace(/^[-*]\s+/gm, "")
-          .replace(/^\d+[.)、]\s+/gm, ""),
-      )
-      .filter((paragraph) => !isAbsenceExplanation(paragraph))
-      .filter((paragraph) => !/^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/.test(paragraph))
-      .filter(Boolean);
-  }, [safeText]);
+  const interpretationItems = useMemo(() => buildInterpretationItems(safeText), [safeText]);
 
   function renderAnnotatedText(source: string, keyPrefix: string) {
     const parts: ReactNode[] = [];
@@ -145,47 +122,24 @@ export function AnnotatedInterpretation({
     );
   }
 
-  if (paragraphs.length === 0) {
+  if (interpretationItems.length === 0) {
     return null;
   }
 
-  return (
-    <div className="interpretation-content space-y-7 text-[15.5px] leading-[1.95] tracking-[0.005em] text-[var(--ink)]">
-      {paragraphs.map((paragraph, index) => {
-        const headingMatch = paragraph.match(/^(#{1,4})\s*(.+)$/);
-        const inlineSectionMatch = paragraph.match(
-          new RegExp(`^(${interpretationSectionTitles.join("|")})\\s*[：:]\\s*(.*)$`, "s"),
-        );
-        const standaloneSectionTitle = isInterpretationSectionTitle(paragraph);
-        const headingText =
-          (headingMatch?.[2]?.trim() ? stripSectionNumber(headingMatch[2]) : undefined) ??
-          inlineSectionMatch?.[1]?.trim() ??
-          (standaloneSectionTitle ? stripSectionNumber(paragraph).replace(/[：:]\s*$/, "") : "");
-        const inlineSectionBody = inlineSectionMatch?.[2]?.trim() ?? "";
-        const isFirstHeading =
-          Boolean(headingText) &&
-          paragraphs.findIndex((other) => {
-            const m = other.match(/^(#{1,4})\s*(.+)$/);
-            const inline = other.match(
-              new RegExp(`^(${interpretationSectionTitles.join("|")})\\s*[：:]\\s*(.*)$`, "s"),
-            );
-            const standalone = isInterpretationSectionTitle(other);
-            return (
-              Boolean(m?.[2]?.trim() && isInterpretationSectionTitle(m[2])) ||
-              Boolean(inline?.[1]?.trim()) ||
-              standalone
-            );
-          }) === index;
+  const firstHeadingIndex = interpretationItems.findIndex((item) => item.kind === "heading");
 
-        if (headingText) {
+  return (
+    <div className="interpretation-content text-[15.5px] leading-[1.95] tracking-[0.005em] text-[var(--ink)]">
+      {interpretationItems.map((item, index) => {
+        if (item.kind === "heading") {
           return (
             <motion.div
-              key={`${headingText}-${index}`}
+              key={`${item.text}-${index}`}
               initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
               transition={{ duration: 0.55, ease: [0.22, 0.65, 0.2, 1] }}
-              className={isFirstHeading ? "pt-1" : "pt-9"}
+              className={index === firstHeadingIndex ? "pt-1" : "pt-10"}
             >
               <motion.div
                 aria-hidden
@@ -198,21 +152,31 @@ export function AnnotatedInterpretation({
                 <Ornament variant="rose" className="opacity-90" />
                 <span className="h-px flex-1 bg-gradient-to-r from-[var(--coral-edge)] via-[var(--coral-edge)] to-transparent" />
               </motion.div>
-              <h3 className="font-serif-display text-[26px] leading-[1.18] tracking-[-0.012em] text-[var(--ink)]">
-                {renderAnnotatedText(headingText, `heading-${index}`)}
+              <h3 className="font-serif-display text-[26px] leading-[1.18] text-[var(--ink)]">
+                {renderAnnotatedText(item.text, `heading-${index}`)}
               </h3>
-              {inlineSectionBody ? (
-                <p className="mt-5 whitespace-pre-wrap pl-[14px] indent-[1.4em] text-[15.5px] leading-[1.95] tracking-[0.005em] text-[var(--ink)]">
-                  {renderAnnotatedText(inlineSectionBody, `paragraph-${index}`)}
-                </p>
-              ) : null}
             </motion.div>
+          );
+        }
+
+        if (item.kind === "subheading") {
+          return (
+            <motion.h4
+              key={`${item.text}-${index}`}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
+              transition={{ duration: 0.48, ease: [0.22, 0.65, 0.2, 1] }}
+              className="mt-7 border-l-2 border-[var(--coral-edge)] pl-3 font-serif-display text-[20px] leading-tight text-[var(--ink)] first:mt-0"
+            >
+              {renderAnnotatedText(item.text, `subheading-${index}`)}
+            </motion.h4>
           );
         }
 
         return (
           <motion.p
-            key={`${paragraph.slice(0, 32)}-${index}`}
+            key={`${item.text.slice(0, 32)}-${index}`}
             initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
@@ -221,9 +185,9 @@ export function AnnotatedInterpretation({
               delay: Math.min(index * 0.04, 0.2),
               ease: [0.22, 0.65, 0.2, 1],
             }}
-            className="whitespace-pre-wrap pl-[14px] indent-[1.4em]"
+            className="mt-4 whitespace-pre-wrap pl-[14px] text-[15.5px] leading-[1.95] text-[var(--ink)] first:mt-0 sm:pl-5"
           >
-            {renderAnnotatedText(paragraph.replace(/^#{1,4}\s*/, ""), `paragraph-${index}`)}
+            {renderAnnotatedText(item.text, `paragraph-${index}`)}
           </motion.p>
         );
       })}

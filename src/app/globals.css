@@ -122,7 +122,6 @@ body {
     radial-gradient(ellipse 50% 40% at 92% 8%, rgba(122, 130, 90, 0.04) 0%, transparent 65%);
   background-attachment: fixed;
   position: relative;
-  overflow-x: hidden;
 }
 
 body::after {
