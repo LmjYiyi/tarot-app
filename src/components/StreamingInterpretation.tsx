@@ -131,16 +131,14 @@ export function StreamingInterpretation({
             <Button variant="secondary" onClick={handleCopy} disabled={!hasContent || isStreaming}>
               {copied ? "已复制文字" : "复制文字"}
             </Button>
-            {!isStreaming && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="grid h-10 w-10 place-items-center rounded-[10px] text-[22px] leading-none text-[var(--ink-soft)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]"
-                aria-label="关闭"
-              >
-                ×
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-10 w-10 place-items-center rounded-[10px] text-[22px] leading-none text-[var(--ink-soft)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]"
+              aria-label="关闭"
+            >
+              ×
+            </button>
           </div>
         </header>
 

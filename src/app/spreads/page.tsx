@@ -148,17 +148,36 @@ export default function SpreadsPage() {
                   {toRoman(index + 1)}
                 </span>
 
-                <div className="relative aspect-[16/10] w-full max-w-[300px] overflow-hidden mix-blend-multiply sm:max-w-none">
+                <div className="relative isolate aspect-[16/10] w-full max-w-[300px] overflow-hidden sm:max-w-none">
                   <Image
                     src={spreadThumbnails[spread.slug] ?? "/spreads/astrology-chart-background-v2.png"}
                     alt=""
                     fill
                     sizes="(max-width: 640px) 300px, (max-width: 1024px) 190px, 240px"
-                    className="object-cover opacity-[0.82] saturate-[0.96] transition duration-700 group-hover:scale-[1.035] group-hover:opacity-[0.96]"
+                    className="scale-[1.18] object-cover opacity-[0.24] blur-[12px] sepia-[0.26] saturate-[0.62] brightness-[1.08] transition duration-700 group-hover:scale-[1.22] group-hover:opacity-[0.30]"
+                    style={{
+                      maskImage:
+                        "radial-gradient(ellipse at center, black 0%, rgba(0,0,0,0.70) 44%, rgba(0,0,0,0.20) 68%, transparent 86%)",
+                      WebkitMaskImage:
+                        "radial-gradient(ellipse at center, black 0%, rgba(0,0,0,0.70) 44%, rgba(0,0,0,0.20) 68%, transparent 86%)",
+                    }}
+                  />
+                  <Image
+                    src={spreadThumbnails[spread.slug] ?? "/spreads/astrology-chart-background-v2.png"}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 300px, (max-width: 1024px) 190px, 240px"
+                    className="object-cover opacity-[0.88] sepia-[0.10] saturate-[0.86] brightness-[1.01] contrast-[1.14] mix-blend-multiply transition duration-700 group-hover:scale-[1.018] group-hover:opacity-[0.96]"
+                    style={{
+                      maskImage:
+                        "radial-gradient(ellipse at center, black 0%, black 50%, rgba(0,0,0,0.72) 62%, rgba(0,0,0,0.20) 72%, transparent 82%)",
+                      WebkitMaskImage:
+                        "radial-gradient(ellipse at center, black 0%, black 50%, rgba(0,0,0,0.72) 62%, rgba(0,0,0,0.20) 72%, transparent 82%)",
+                    }}
                   />
                   <span
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(251,240,200,0.04)_0%,rgba(251,240,200,0.40)_100%)]"
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(251,240,200,0)_0%,rgba(251,240,200,0.24)_42%,rgba(251,240,200,0.72)_68%,rgba(251,240,200,0.96)_100%)]"
                   />
                 </div>
 

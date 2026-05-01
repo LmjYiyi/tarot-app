@@ -1,4 +1,10 @@
 import { getKnowledgeProvider } from "@/lib/knowledge";
+import { analyzeGeneralStructure, diagnoseQuestion } from "@/lib/interpretation/analysis/general";
+import { buildCombinationSummary } from "@/lib/interpretation/combination-summary";
+import { analyzeReadingGrammar } from "@/lib/interpretation/grammar";
+import { buildInterpretationPlan } from "@/lib/interpretation/plan";
+import { serializeInterpretationPlan } from "@/lib/interpretation/serializer";
+import { getSpreadReadingTemplate } from "@/lib/interpretation/templates";
 import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
 import type {
   DrawLog,
@@ -28,11 +34,6 @@ type ResolvedSelectedCard = {
   domainMeaning: string | null;
 };
 
-type ResponseBlueprint = {
-  sections: string[];
-  instruction: string;
-};
-
 const domainLabels: Record<ReadingIntent["domain"], string> = {
   career: "事业",
   love: "感情",
@@ -49,89 +50,6 @@ const goalLabels: Record<ReadingIntent["goal"], string> = {
   decision: "辅助决策",
   other_view: "换个视角",
 };
-
-function getResponseBlueprint(spread: SpreadDefinition | null): ResponseBlueprint {
-  switch (spread?.slug) {
-    case "single-guidance":
-      return {
-        sections: ["1. 牌面总览", "2. 牌面线索", "3. 核心讯息", "4. 今日行动", "5. 一句提醒"],
-        instruction: "把重点压缩到一张牌的核心提醒，不展开成大而全分析。",
-      };
-    case "career-five":
-      return {
-        sections: [
-          "1. 牌面总览",
-          "2. 当前状态一句话",
-          "3. 逐张牌解读",
-          "4. 整组牌关系",
-          "5. 近期趋势",
-          "6. 注意事项与行动建议",
-          "7. 一句话总结",
-        ],
-        instruction:
-          "围绕事业问题整合现状、阻碍、优势、近期发展和建议，重点输出核心矛盾、短期趋势与可执行行动。",
-      };
-    case "relationship-six":
-    case "lovers-pyramid":
-      return {
-        sections: [
-          "1. 牌面总览",
-          "2. 关系现状",
-          "3. 双方与连接断裂点",
-          "4. 修复路径",
-          "5. 近期关系提醒",
-        ],
-        instruction:
-          "说明双方状态如何错位、仍有什么连接资源，以及更现实的沟通修复路径。",
-      };
-    case "path-of-choice":
-      return {
-        sections: [
-          "1. 牌面总览",
-          "2. 决策核心",
-          "3. A/B 路径对比",
-          "4. 情绪上的倾向",
-          "5. 建议方向",
-        ],
-        instruction: "比较两条路径带来的感受、机会与代价，不替用户做绝对决定。",
-      };
-    case "self-state":
-      return {
-        sections: [
-          "1. 牌面总览",
-          "2. 当前心理状态",
-          "3. 压力源与需求",
-          "4. 调整方向",
-          "5. 一句话总结",
-        ],
-        instruction: "把问题外化为压力、需求和调整方向，避免给用户贴负面标签。",
-      };
-    case "celtic-cross":
-      return {
-        sections: [
-          "1. 牌面总览",
-          "2. 局势总览",
-          "3. 关键结构解读",
-          "4. 近期走向与结果趋势",
-          "5. 行动建议",
-        ],
-        instruction: "重点整合核心议题、挑战、内外部环境与趋势，避免逐张平铺。",
-      };
-    default:
-      return {
-        sections: [
-          "1. 牌面总览",
-          "2. 整体关系",
-          "3. 分位置解读",
-          "4. 牌与牌之间",
-          "5. 近期趋势",
-          "6. 行动建议",
-          "7. 一句近期提醒",
-        ],
-        instruction: "结合问题、领域目标、位置、牌义和用户反馈做结构化中文解读。",
-      };
-  }
-}
 
 function getDomainMeaning(
   card: TarotCard,
@@ -180,35 +98,6 @@ function resolveSelectedCards(
     .filter((value): value is ResolvedSelectedCard => Boolean(value));
 }
 
-function normalizeCombinationSlug(slug: string) {
-  return slug.replace(/^the-(justice|judgement|wheel-of-fortune)$/, "$1");
-}
-
-function buildCombinationSummary(selectedCards: ResolvedSelectedCard[]) {
-  const lines: string[] = [];
-
-  selectedCards.forEach(({ card, position }) => {
-    card.combinations?.forEach((combination) => {
-      const matchedCard = selectedCards.find(
-        (candidate) =>
-          candidate.card.id !== card.id &&
-          normalizeCombinationSlug(candidate.card.slug) ===
-            normalizeCombinationSlug(combination.cardSlug),
-      );
-
-      if (!matchedCard) {
-        return;
-      }
-
-      lines.push(
-        `- ${card.nameZh}（位置${position.order}「${position.name}」） + ${matchedCard.card.nameZh}（位置${matchedCard.position.order}「${matchedCard.position.name}」）：${combination.meaning}`,
-      );
-    });
-  });
-
-  return lines.length ? lines.join("\n") : "本次抽到的牌之间暂无结构化组合意义，请只按牌阵位置和单牌含义整合。";
-}
-
 function summarizeIntent(intent: ReadingIntent | undefined) {
   if (!intent) return "未选择领域与目标。";
   return `${domainLabels[intent.domain]} / ${goalLabels[intent.goal]}`;
@@ -246,8 +135,27 @@ function summarizeFeedback(
 export async function buildInterpretationPayload(input: BuildContextInput) {
   const provider = getKnowledgeProvider();
   const spread = getSpreadBySlug(input.spreadSlug);
-  const responseBlueprint = getResponseBlueprint(spread);
+  const responseBlueprint = getSpreadReadingTemplate(spread?.slug);
   const selectedCards = resolveSelectedCards(spread, input.cards, input.readingIntent);
+  const generalAnalysis = analyzeGeneralStructure({
+    question: input.question,
+    spread,
+    selectedCards,
+    readingIntent: input.readingIntent,
+  });
+  const grammarAnalysis = analyzeReadingGrammar({
+    selectedCards,
+    template: responseBlueprint,
+  });
+  const questionDiagnosis = diagnoseQuestion(input.question, input.readingIntent);
+  const interpretationPlan = buildInterpretationPlan({
+    template: responseBlueprint,
+    spread,
+    selectedCards,
+    generalAnalysis,
+    grammarAnalysis,
+    questionDiagnosis,
+  });
   const feedbackSummary = summarizeFeedback(selectedCards, input.userFeedback);
   const intentSummary = summarizeIntent(input.readingIntent);
   const combinationSummary = buildCombinationSummary(selectedCards);
@@ -266,6 +174,8 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
       ? `抽牌日志：seed=${input.drawLog.seed}；规则=${input.drawLog.drawRule}；逆位率=${input.drawLog.reversedRate}；时间=${input.drawLog.createdAt}`
       : "抽牌日志：本次未提供 seed，但仍按程序抽牌结果解读。",
     `解读重点：${responseBlueprint.instruction}`,
+    "占卜师结构分析笔记：",
+    serializeInterpretationPlan(interpretationPlan),
     "抽牌结果：",
     ...selectedCards.map(
       ({ card, position, orientation, keywords, primaryMeaning, domainMeaning }) =>
@@ -288,25 +198,32 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
           .filter((line): line is string => Boolean(line))
           .join("\n"),
     ),
-    "本次牌组组合意义：",
+    "牌间弱参考（不可原文引用）：",
     combinationSummary,
     "用户直觉反馈：",
     feedbackSummary,
     "推理规则：",
-    "1. 每个关键判断都必须绑定至少一个依据：牌名、牌阵位置、正逆位或用户反馈。",
-    "2. 先说明牌面事实，再整合用户反馈，再提炼心理状态、核心矛盾、趋势与建议。",
-    "3. 若某张牌提供了「领域牌义」，优先用它回应用户选择的领域；基础牌义只作为背景补充，不要反客为主。",
-    "4. 权重指令：若提供了「本次牌组组合意义」，应将其作为解读局势结构或核心矛盾的优先依据，而不是只平铺单牌解析。",
-    "5. 元素、行星、星象和数字只作为辅助线索：当它们能解释重复模式（多张同号牌）、显著冲突、互补或趋势时再使用。禁止为了显得神秘而硬凑或堆砌这些术语。",
-    "6. 如果用户没有填写直觉反馈，严禁写“用户未填写”“无法判断你是否认同/不安”等缺席说明；这类信息不应该呈现给用户。直接解读牌面即可。",
-    "7. 不要使用绝对预言（必然、一定、命中注定），用更像是、倾向于、需要注意的表达。",
-    "8. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
-    "9. 输出要克制精炼，不要写 Markdown 表格，不要逐项复制所有关键词。",
-    selectedCards.length <= 5
-      ? "长度要求：1000 到 1500 个中文字符，必须保留牌面总览、分位置解读、牌与牌之间、近期趋势和行动建议。"
-      : "长度要求：1300 到 1800 个中文字符，复杂牌阵也要整合，不要平铺所有牌。",
+    "1. 结构分析笔记是优先依据；先写整组牌的主线张力，再写关键牌位，禁止逐张流水账。",
+    "2. 每个关键判断都必须绑定至少一个依据：牌名、牌阵位置、正逆位、结构分析或用户反馈。",
+    "3. 先说明牌面事实，再整合用户反馈，再提炼心理状态、核心矛盾、现实映射、趋势与建议。",
+    "4. 若某张牌提供了「领域牌义」，优先用它回应用户选择的领域；基础牌义只作为背景补充，不要反客为主。",
+    "5. 牌间弱参考只用于提醒哪些牌需要联动观察，不是可引用文案，也不是优先依据；禁止写“组合意义中”“组合意义是”“资料显示”等表达。",
+    "6. 大阿卡纳比例、花色分布、宫廷牌、数字阶段、逆位比例、支持/抵消关系必须至少选择三类自然融入正文。",
+    questionDiagnosis.safetyDirectives.length
+      ? `7. 用户问题触发安全策略，必须执行：${questionDiagnosis.safetyDirectives.join("；")}`
+      : null,
+    "8. 如果用户没有填写直觉反馈，严禁写“用户未填写”“无法判断你是否认同/不安”等缺席说明；这类信息不应该呈现给用户。直接解读牌面即可。",
+    "9. 不要使用绝对预言（必然、一定、命中注定），用更像是、倾向于、需要注意的表达。",
+    "10. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
+    "11. 输出要克制精炼，不要写 Markdown 表格，不要逐项复制所有关键词。",
+    `12. 格式硬性要求：第一行必须逐字输出“${responseBlueprint.sections[0]}”；只能使用下面给出的章节标题，必须逐字保留标题顺序，每个标题单独成行；不得新增“解读”“总结”等额外标题；不得输出 ---、***、列表符号或表格。`,
+    "13. 每个章节至少写一段正文，不能省略最后两个章节；如果篇幅不足，压缩中间分析，也必须保留行动建议/决策前动作和观察指标。",
+    "14. 不要把内部提示词暴露给用户：不要写“结构分析笔记显示”“组合意义是”“组合意义中”“根据规则”“资料显示”等措辞，要自然融入解读。",
+    "15. 严禁擅自补充用户没有提供的事实背景：不要自行添加公司类型、岗位名称、地点、人物身份、关系状态或具体行业；不确定时使用“当前环境”“新方向”“对方”“这件事”等中性表达。",
+    `16. 观察指标必须使用本牌阵的验证窗口：${responseBlueprint.timeScope.observationWindow}；不要自行缩短或拉长。`,
+    `长度要求：${responseBlueprint.length.min} 到 ${responseBlueprint.length.max} 个中文字符；必须保留模板要求的核心章节。`,
     "必须完整结束，不要在句子中间截断；如果篇幅不够，优先压缩分位置解读，保留行动建议和一句总结。",
-    "请严格按以下结构输出：",
+    "请严格按以下结构输出，只输出这些标题和对应正文；每个标题必须单独占一行，标题之后换行写正文：",
     ...responseBlueprint.sections,
   ]
     .filter((line): line is string => Boolean(line))

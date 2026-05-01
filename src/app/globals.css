@@ -192,6 +192,29 @@ a {
   letter-spacing: 0;
 }
 
+.journal-hand {
+  font-family: var(--font-fraunces), "Tiempos", "Source Serif Pro", Georgia, serif;
+  font-style: italic;
+  font-feature-settings: "ss01";
+  letter-spacing: 0;
+}
+
+.journal-label {
+  font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--coral-deep);
+}
+
+.journal-writing-area {
+  background-image:
+    linear-gradient(transparent calc(100% - 1px), rgba(74, 59, 50, 0.12) 1px);
+  background-size: 100% 2.25rem;
+  background-position: 0 2.25rem;
+}
+
 .gilt-text {
   color: var(--coral);
 }

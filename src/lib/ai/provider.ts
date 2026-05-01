@@ -1,6 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
 
 import { buildInterpretationPayload } from "@/lib/interpretation/context";
+import {
+  sanitizeInterpretationStreamSegment,
+  sanitizeInterpretationText,
+} from "@/lib/interpretation/output";
 import type { DrawLog, DrawnCard, ReadingIntent, UserFeedback } from "@/lib/tarot/types";
 
 const DEFAULT_MODEL = process.env.MINIMAX_MODEL ?? "MiniMax-M2.7";
@@ -11,6 +15,9 @@ const DEFAULT_TIMEOUT_MS = Number(process.env.MINIMAX_TIMEOUT_MS ?? 15000);
 const DEFAULT_MAX_RETRIES = Number(process.env.MINIMAX_MAX_RETRIES ?? 0);
 const INTERPRETATION_MAX_TOKENS = Number(process.env.MINIMAX_INTERPRETATION_MAX_TOKENS ?? 2400);
 const INTERPRETATION_TIMEOUT_MS = Number(process.env.MINIMAX_INTERPRETATION_TIMEOUT_MS ?? 45000);
+const INTERPRETATION_IDLE_TIMEOUT_MS = Number(
+  process.env.MINIMAX_INTERPRETATION_IDLE_TIMEOUT_MS ?? 25000,
+);
 
 type GenerateInput = {
   question: string;
@@ -150,6 +157,26 @@ function createMockStream(text: string) {
   });
 }
 
+function createTextStream(text: string) {
+  const encoder = new TextEncoder();
+
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoder.encode(text));
+      controller.close();
+    },
+  });
+}
+
+function resolveInterpretationMaxTokens(
+  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+) {
+  const envLimit = Number.isFinite(INTERPRETATION_MAX_TOKENS) ? INTERPRETATION_MAX_TOKENS : 1200;
+  const templateLimit = payload.responseBlueprint.maxTokens;
+
+  return Math.max(envLimit, templateLimit);
+}
+
 export async function generateInterpretation(input: GenerateInput) {
   const startedAt = Date.now();
   const payload = await buildInterpretationPayload({
@@ -164,8 +191,10 @@ export async function generateInterpretation(input: GenerateInput) {
   const client = getClient();
 
   if (!client) {
+    const text = sanitizeInterpretationText(mockInterpretation(payload), payload.responseBlueprint);
+
     return {
-      stream: createMockStream(mockInterpretation(payload)),
+      stream: createMockStream(text),
       citations: payload.citations,
       model: "mock-static-reader",
       pipeline: "local_fallback",
@@ -177,35 +206,40 @@ export async function generateInterpretation(input: GenerateInput) {
   }
 
   const timings: Record<string, number> = {};
+  const idleTimeoutMs = Number.isFinite(INTERPRETATION_IDLE_TIMEOUT_MS)
+    ? INTERPRETATION_IDLE_TIMEOUT_MS
+    : 25000;
+  const abortController = new AbortController();
 
   try {
     const generationStart = Date.now();
     const messageStream = await withTimeout(
-      client.messages.create({
-        model: DEFAULT_MODEL,
-        max_tokens: Number.isFinite(INTERPRETATION_MAX_TOKENS)
-          ? INTERPRETATION_MAX_TOKENS
-          : 1200,
-        temperature: Number.isFinite(DEFAULT_TEMPERATURE) ? DEFAULT_TEMPERATURE : 0.8,
-        system: [
-          {
-            type: "text",
-            text: payload.systemPrompt,
-          },
-          {
-            type: "text",
-            text: payload.knowledgeText,
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        messages: [
-          {
-            role: "user",
-            content: [{ type: "text", text: payload.userPrompt }],
-          },
-        ],
-        stream: true,
-      }),
+      client.messages.create(
+        {
+          model: DEFAULT_MODEL,
+          max_tokens: resolveInterpretationMaxTokens(payload),
+          temperature: Number.isFinite(DEFAULT_TEMPERATURE) ? DEFAULT_TEMPERATURE : 0.8,
+          system: [
+            {
+              type: "text",
+              text: payload.systemPrompt,
+            },
+            {
+              type: "text",
+              text: payload.knowledgeText,
+              cache_control: { type: "ephemeral" },
+            },
+          ],
+          messages: [
+            {
+              role: "user",
+              content: [{ type: "text", text: payload.userPrompt }],
+            },
+          ],
+          stream: true,
+        },
+        { signal: abortController.signal },
+      ),
       Number.isFinite(INTERPRETATION_TIMEOUT_MS) ? INTERPRETATION_TIMEOUT_MS : 35000,
       "interpretation stream start",
     );
@@ -215,17 +249,76 @@ export async function generateInterpretation(input: GenerateInput) {
     const readableStream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
+        let pending = "";
+        let emittedAnything = false;
+        let idleTimer: ReturnType<typeof setTimeout> | undefined;
+
+        const armIdleTimer = () => {
+          if (idleTimer) clearTimeout(idleTimer);
+          idleTimer = setTimeout(() => {
+            abortController.abort(
+              new Error(`interpretation stream idle for ${idleTimeoutMs}ms`),
+            );
+          }, idleTimeoutMs);
+        };
+
+        armIdleTimer();
+
         try {
           for await (const chunk of messageStream) {
-            if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-              controller.enqueue(encoder.encode(chunk.delta.text));
+            if (chunk.type !== "content_block_delta") continue;
+            if (chunk.delta.type !== "text_delta") continue;
+
+            armIdleTimer();
+            pending += chunk.delta.text;
+
+            const lastNewline = pending.lastIndexOf("\n");
+            if (lastNewline < 0) continue;
+
+            const stable = pending.slice(0, lastNewline + 1);
+            pending = pending.slice(lastNewline + 1);
+            const sanitized = sanitizeInterpretationStreamSegment(stable);
+            if (sanitized) {
+              controller.enqueue(encoder.encode(sanitized));
+              emittedAnything = true;
             }
           }
-        } catch (err) {
-          controller.error(err);
-        } finally {
+
+          if (pending) {
+            const sanitized = sanitizeInterpretationStreamSegment(pending);
+            if (sanitized) {
+              controller.enqueue(encoder.encode(sanitized));
+              emittedAnything = true;
+            }
+          }
+
           controller.close();
+        } catch (err) {
+          if (!emittedAnything) {
+            try {
+              const text = sanitizeInterpretationText(
+                mockInterpretation(payload),
+                payload.responseBlueprint,
+              );
+              controller.enqueue(encoder.encode(text));
+              controller.close();
+              return;
+            } catch {
+              controller.error(err);
+              return;
+            }
+          }
+          try {
+            controller.close();
+          } catch {
+            // already closed
+          }
+        } finally {
+          if (idleTimer) clearTimeout(idleTimer);
         }
+      },
+      cancel(reason) {
+        abortController.abort(reason);
       },
     });
 
@@ -237,16 +330,18 @@ export async function generateInterpretation(input: GenerateInput) {
       debug: timings,
     };
   } catch (error) {
+    abortController.abort(error);
     timings.total_ms = Date.now() - startedAt;
+    const text = sanitizeInterpretationText(mockInterpretation(payload), payload.responseBlueprint);
 
     return {
-      stream: createMockStream(mockInterpretation(payload)),
+      stream: createTextStream(text),
       citations: payload.citations,
       model: "local-interpretation-fallback",
       pipeline: "ai_failed_fallback",
       debug: {
         ...timings,
-        fallbackReason: "exception",
+        fallbackReason: "stream_start_exception",
         error: error instanceof Error ? error.message : "Unknown interpretation error",
       },
     };

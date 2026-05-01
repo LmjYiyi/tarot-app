@@ -9,7 +9,6 @@ import { MobileStickyDeck } from "@/components/MobileStickyDeck";
 import { SpreadLayout } from "@/components/SpreadLayout";
 import { StreamingInterpretation } from "@/components/StreamingInterpretation";
 import { Button } from "@/components/ui/button";
-import { Panel } from "@/components/ui/panel";
 import {
   getDefaultIntentForSpread,
   getDefaultQuestionForIntent,
@@ -145,6 +144,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const ritualRef = useRef<HTMLDivElement | null>(null);
   const mainSpreadRef = useRef<HTMLDivElement | null>(null);
   const revealPauseTimeoutRef = useRef<number | null>(null);
+  const interpretAbortControllerRef = useRef<AbortController | null>(null);
 
   const isSingleCard = spread.cardCount <= 1;
   const phaseLabel = isSingleCard ? phaseLabelSingle : phaseLabelFull;
@@ -227,15 +227,19 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         return;
       }
 
-      setQuestion(typeof snapshot.question === "string" ? snapshot.question : "");
-      if (snapshot.readingIntent) setReadingIntent(snapshot.readingIntent);
-      setCards(snapshot.cards);
-      setDrawLog(snapshot.drawLog ?? null);
-      setInterpretation(snapshot.interpretation);
-      setSharePath(snapshot.sharePath ?? null);
-      setPhase("done");
-      setPostRevealContentVisible(true);
-      setResultDialogOpen(true);
+      const frameId = window.requestAnimationFrame(() => {
+        setQuestion(typeof snapshot.question === "string" ? snapshot.question : "");
+        if (snapshot.readingIntent) setReadingIntent(snapshot.readingIntent);
+        setCards(snapshot.cards ?? []);
+        setDrawLog(snapshot.drawLog ?? null);
+        setInterpretation(snapshot.interpretation ?? "");
+        setSharePath(snapshot.sharePath ?? null);
+        setPhase("done");
+        setPostRevealContentVisible(true);
+        setResultDialogOpen(true);
+      });
+
+      return () => window.cancelAnimationFrame(frameId);
     } catch {
       window.sessionStorage.removeItem(returnDialogStorageKey);
     }
@@ -269,6 +273,9 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       if (revealPauseTimeoutRef.current !== null) {
         window.clearTimeout(revealPauseTimeoutRef.current);
       }
+      if (interpretAbortControllerRef.current) {
+        interpretAbortControllerRef.current.abort();
+      }
     };
   }, []);
 
@@ -297,6 +304,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     if (revealPauseTimeoutRef.current !== null) {
       window.clearTimeout(revealPauseTimeoutRef.current);
       revealPauseTimeoutRef.current = null;
+    }
+    if (interpretAbortControllerRef.current) {
+      interpretAbortControllerRef.current.abort();
+      interpretAbortControllerRef.current = null;
     }
   }
 
@@ -360,6 +371,9 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   }
 
   async function handleInterpret() {
+    const controller = new AbortController();
+    interpretAbortControllerRef.current = controller;
+
     try {
       const finalQuestion = resolveQuestion();
 
@@ -372,6 +386,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       const response = await fetch("/api/interpret", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           question: finalQuestion,
           spreadSlug: spread.slug,
@@ -398,9 +413,12 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         setInterpretation(fullText);
       }
 
+      if (controller.signal.aborted) return;
+
       const saveResponse = await fetch("/api/readings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           question: finalQuestion,
           spreadSlug: spread.slug,
@@ -412,16 +430,24 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         }),
       });
 
-      if (saveResponse.ok) {
+      if (saveResponse.ok && !controller.signal.aborted) {
         const payload = (await saveResponse.json()) as { sharePath?: string };
         if (payload.sharePath) setSharePath(payload.sharePath);
       }
 
       setPhase("done");
     } catch (caughtError) {
+      if (caughtError instanceof Error && caughtError.name === "AbortError") {
+        console.log("Interpretation aborted by user.");
+        return;
+      }
       const message = caughtError instanceof Error ? caughtError.message : "这次解读没有顺利展开。";
       setError(message);
       setPhase("revealed");
+    } finally {
+      if (interpretAbortControllerRef.current === controller) {
+        interpretAbortControllerRef.current = null;
+      }
     }
   }
 
@@ -471,7 +497,15 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
 
       <StreamingInterpretation
         open={resultDialogOpen || phase === "reading"}
-        onClose={() => setResultDialogOpen(false)}
+        onClose={() => {
+          setResultDialogOpen(false);
+          if (phase === "reading") {
+            if (interpretAbortControllerRef.current) {
+              interpretAbortControllerRef.current.abort();
+            }
+            setPhase("revealed");
+          }
+        }}
         text={interpretation}
         isStreaming={phase === "reading"}
         sharePath={sharePath}
@@ -572,9 +606,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
             </RitualShell>
           </div>
 
-          <aside className="min-w-0 space-y-6 xl:sticky xl:top-24 xl:self-start">
+          <aside className="min-w-0 xl:sticky xl:top-20 xl:max-h-[calc(100vh-6rem)] xl:self-start xl:overflow-y-auto xl:pr-2">
             {postRevealContentVisible ? (
-              <div className="animate-fade-in space-y-6">
+              <div className="animate-fade-in relative space-y-5 before:absolute before:left-0 before:top-2 before:hidden before:h-[calc(100%-1rem)] before:w-px before:bg-[linear-gradient(180deg,var(--coral-edge),var(--line),transparent)] xl:pl-6 xl:before:block">
+                <CardOpenTip />
                 {preliminaryOverview ? (
                   <PreliminaryOverview overview={preliminaryOverview} />
                 ) : null}
@@ -645,13 +680,14 @@ function IdleSetup({
           </div>
         </div>
 
-        <div className="relative min-w-0 lg:pt-8">
-          <div className="sticky top-24 space-y-10">
-            <Panel className="border-[var(--line-strong)] bg-[var(--surface-tint)]/80 shadow-xl backdrop-blur-sm">
-              <div className="space-y-6">
+        <div className="relative min-w-0 lg:pt-[22rem] xl:pt-[24rem]">
+          <div className="top-20 space-y-9 lg:sticky lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:pr-2">
+            <div className="relative space-y-8 px-1 py-2">
+              <div className="absolute -left-5 top-1 hidden h-[calc(100%-0.5rem)] w-px bg-[linear-gradient(180deg,var(--coral-edge),var(--line),transparent)] lg:block" />
+              <div className="space-y-7">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="eyebrow !text-[10px]">YOUR INQUIRY · 提问</p>
+                  <div className="flex items-end justify-between gap-4 border-b border-[var(--line)] pb-2">
+                    <p className="journal-label">YOUR INQUIRY · 提问</p>
                     <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--ink-faint)]">
                       {questionLength} / 280
                     </span>
@@ -662,12 +698,12 @@ function IdleSetup({
                       onChange={(event) => onQuestionChange(event.target.value.slice(0, 280))}
                       rows={6}
                       placeholder="例如：这段关系接下来最需要看清什么？"
-                      className="w-full resize-none rounded-xl border border-[var(--line-strong)] bg-[var(--surface)]/50 px-5 py-6 font-serif-display text-[22px] leading-[1.6] text-[var(--ink)] outline-none transition-all placeholder:text-[rgba(74,59,50,0.25)] focus:border-[var(--coral)] focus:bg-[var(--surface)] focus:shadow-[0_0_0_4px_var(--coral-wash)]"
+                      className="journal-hand journal-writing-area w-full resize-none border-0 bg-transparent px-0 py-2 text-[25px] leading-[2.25rem] text-[var(--ink)] outline-none transition placeholder:text-[rgba(74,59,50,0.30)] focus:text-[var(--ink)]"
                     />
                   </label>
                 </div>
 
-                <div className="space-y-6 pt-2">
+                <div className="space-y-5 pt-1">
                   <IntentRibbon
                     label="关注领域"
                     value={readingIntent.domain}
@@ -682,21 +718,21 @@ function IdleSetup({
                   />
                 </div>
 
-                <div className="border-t border-[var(--line)] pt-6">
+                <div className="border-t border-[var(--line)] pt-5">
                   <Button
                     onClick={onStart}
-                    className="w-full py-7 text-[16px] font-medium tracking-wide shadow-lg transition-all hover:shadow-xl"
+                    className="journal-hand w-full !rounded-none !border-x-0 !border-y !border-[var(--line-strong)] !bg-transparent py-4 text-[22px] !font-normal !text-[var(--coral-deep)] !shadow-none transition hover:!border-[var(--coral-edge)] hover:!bg-transparent hover:!text-[var(--coral)]"
                   >
                     开始洗牌 · START RITUAL
                   </Button>
-                  <p className="mt-4 text-center text-[12.5px] leading-relaxed text-[var(--ink-muted)]">
+                  <p className="journal-hand mt-4 text-center text-[16px] leading-relaxed text-[var(--ink-muted)]">
                     即便留空，我也会为这副牌阵注入最契合的通用意图。
                   </p>
                 </div>
               </div>
-            </Panel>
+            </div>
 
-            <div className="flex items-center gap-3 px-4 py-2 text-[12px] italic text-[var(--ink-faint)]">
+            <div className="journal-hand flex items-center gap-3 px-1 py-2 text-[15px] text-[var(--ink-faint)]">
               <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--coral)] opacity-30" />
               <p>提问越具体，牌阵的能量指向越明确。</p>
             </div>
@@ -714,12 +750,12 @@ function SpreadPreview({ spread }: { spread: SpreadDefinition }) {
 
   return (
     <div className="relative">
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <div className="mb-16 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-serif-display text-[26px] leading-tight text-[var(--ink)]">
+          <p className="font-serif-display text-[28px] leading-tight text-[var(--ink)]">
             {spread.nameZh}
           </p>
-          <p className="mt-1 text-[13.5px] leading-6 text-[var(--ink-muted)]">
+          <p className="mt-1.5 text-[13.5px] leading-6 text-[var(--ink-muted)]">
             {spread.hero}
           </p>
         </div>
@@ -856,11 +892,11 @@ function IntentRibbon({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="mr-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+    <div className="space-y-2">
+      <span className="journal-label block text-[var(--ink-muted)]">
         {label}
       </span>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="journal-hand flex flex-wrap gap-x-4 gap-y-1">
         {options.map((option) => {
           const active = option.value === value;
           return (
@@ -869,10 +905,10 @@ function IntentRibbon({
               key={option.value}
               onClick={() => onChange(option.value)}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-[12.5px] transition-all",
+                "relative border-b py-0.5 text-[17px] leading-7 transition-all",
                 active
-                  ? "border-[var(--ink)] bg-[var(--ink)] text-[var(--surface)]"
-                  : "border-[rgba(74,59,50,0.20)] bg-transparent text-[var(--ink-soft)] hover:border-[var(--coral-edge)] hover:text-[var(--coral-deep)]",
+                  ? "border-[var(--coral)] text-[var(--coral-deep)]"
+                  : "border-transparent text-[var(--ink-soft)] hover:border-[var(--coral-edge)] hover:text-[var(--coral-deep)]",
               )}
             >
               {option.label}
@@ -908,6 +944,14 @@ function RitualShell({
   );
 }
 
+function CardOpenTip() {
+  return (
+    <p className="journal-hand border-t border-[var(--line)] pt-4 text-[16px] leading-7 text-[var(--ink-muted)]">
+      小提示：洗牌完成后，可以点击任意一张牌，打开完整牌面细看。
+    </p>
+  );
+}
+
 function PreliminaryOverview({
   overview,
 }: {
@@ -918,32 +962,32 @@ function PreliminaryOverview({
   };
 }) {
   return (
-    <Panel className="space-y-4 border-[var(--coral-edge)] bg-[var(--surface)]">
+    <section className="space-y-4 border-t border-[var(--line)] py-5">
       <div>
-        <p className="eyebrow">初步概览</p>
-        <h2 className="mt-1.5 font-serif-display text-[22px] leading-tight text-[var(--ink)]">
+        <p className="journal-label">初步概览</p>
+        <h2 className="journal-hand mt-1.5 text-[28px] leading-tight text-[var(--ink)]">
           先给你一句牌面提示
         </h2>
       </div>
 
-      <p className="font-serif-display text-[20px] leading-[1.55] text-[var(--ink)]">
+      <p className="journal-hand text-[23px] leading-[1.55] text-[var(--ink)]">
         {overview.oneLine}
       </p>
-      <p className="text-[13.5px] leading-7 text-[var(--ink-soft)]">{overview.tone}</p>
+      <p className="journal-hand text-[17px] leading-7 text-[var(--ink-soft)]">{overview.tone}</p>
 
       {overview.themes.length > 0 ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="journal-hand flex flex-wrap gap-x-4 gap-y-1 text-[16px] text-[var(--coral-deep)]">
           {overview.themes.map((theme) => (
             <span
               key={theme}
-              className="rounded-full border border-[var(--coral-edge)] bg-[var(--coral-wash)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--coral-deep)]"
+              className="border-b border-[var(--coral-edge)] leading-6"
             >
               {theme}
             </span>
           ))}
         </div>
       ) : null}
-    </Panel>
+    </section>
   );
 }
 
@@ -957,24 +1001,24 @@ function DirectReadingPanel({
   phase: FlowPhase;
 }) {
   return (
-    <Panel className="space-y-5">
+    <section className="space-y-5 border-t border-[var(--line)] py-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-[520px]">
-          <p className="eyebrow">牌面解读</p>
-          <h2 className="mt-2 font-serif-display text-[28px] leading-tight text-[var(--ink)]">
+          <p className="journal-label">牌面解读</p>
+          <h2 className="journal-hand mt-1.5 text-[31px] leading-tight text-[var(--ink)]">
             牌面已经展开
           </h2>
-          <p className="mt-2 text-[13.5px] leading-7 text-[var(--ink-muted)]">
+          <p className="journal-hand mt-2 text-[17px] leading-7 text-[var(--ink-muted)]">
             接下来会基于你的问题、牌阵位置和这次抽出的牌面展开完整读牌。
           </p>
         </div>
-        <Button onClick={onSubmit} disabled={busy || phase === "reading"} className="shrink-0">
+        <Button onClick={onSubmit} disabled={busy || phase === "reading"} className="journal-hand shrink-0 !rounded-none !border-x-0 !border-y !border-[var(--line-strong)] !bg-transparent px-5 py-2 text-[19px] !font-normal !text-[var(--coral-deep)] !shadow-none hover:!border-[var(--coral-edge)] hover:!bg-transparent hover:!text-[var(--coral)]">
           {phase === "reading" ? "读牌中..." : "看解读"}
         </Button>
       </div>
-      <p className="border-t border-[var(--line)] pt-4 text-[12.5px] leading-6 text-[var(--ink-soft)]">
+      <p className="journal-hand border-t border-[var(--line)] pt-4 text-[15.5px] leading-7 text-[var(--ink-soft)]">
         需要更有针对性的追问与临场判断时，可以把这次牌面记录留给后续的真人占卜预约。
       </p>
-    </Panel>
+    </section>
   );
 }
