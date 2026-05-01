@@ -97,6 +97,9 @@ function SiteHeader() {
           <Link className="hidden rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)] sm:inline-flex" href="/cards/the-fool">
             牌义
           </Link>
+          <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)]" href="/booking">
+            预约作者
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -153,6 +156,7 @@ function SiteFooter() {
           <ul className="space-y-2">
             <li><Link className="transition hover:text-[var(--coral-deep)]" href="/spreads">牌阵索引</Link></li>
             <li><Link className="transition hover:text-[var(--coral-deep)]" href="/cards/the-fool">牌义图册</Link></li>
+            <li><Link className="transition hover:text-[var(--coral-deep)]" href="/booking">预约作者</Link></li>
           </ul>
         </div>
         <div className="space-y-3 text-[13.5px]">

@@ -33,6 +33,7 @@ export function SpreadLayout({ spread, cards, quiet = false }: SpreadLayoutProps
   const readingCardWidth = preset.readingCardWidth ?? preset.cardWidth;
   const isThreeCardTimeline = spread.slug === "three-card" && cards.length === 3;
   const isCompactSpread = spread.cardCount > 6;
+  const isSingleCardSpread = spread.cardCount <= 1;
 
   const [focused, setFocused] = useState<FocusedCard | null>(null);
 
@@ -44,7 +45,12 @@ export function SpreadLayout({ spread, cards, quiet = false }: SpreadLayoutProps
   return (
     <div className="relative w-full">
       {/* --- Mobile flow stack --- */}
-      <div className="md:hidden flex flex-col gap-10 items-center w-full px-4">
+      <div
+        className={cn(
+          "md:hidden flex flex-col gap-10 items-center w-full px-4",
+          isSingleCardSpread ? "pt-10" : null,
+        )}
+      >
         {cards.map(({ card, reversed, positionOrder }, index) => {
           const position = spread.positions.find((item) => item.order === positionOrder);
           if (!position) return null;
@@ -101,7 +107,8 @@ export function SpreadLayout({ spread, cards, quiet = false }: SpreadLayoutProps
       {/* --- Desktop chart canvas --- */}
       <div
         className={cn(
-          "hidden md:block relative mx-auto mt-24 w-full overflow-visible",
+          "hidden md:block relative mx-auto w-full overflow-visible",
+          isSingleCardSpread ? "mt-36 lg:mt-40" : "mt-24",
           readingAspectRatio,
         )}
       >
@@ -113,16 +120,6 @@ export function SpreadLayout({ spread, cards, quiet = false }: SpreadLayoutProps
               "radial-gradient(ellipse at center, rgba(253,248,225,0.26) 0%, rgba(253,248,225,0.12) 42%, transparent 74%)",
           }}
         />
-
-        {isThreeCardTimeline && !quiet ? (
-          <div className="pointer-events-none absolute inset-x-[12%] top-0 z-30 flex items-center justify-center gap-4 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--ink-soft)]">
-            <span>过去</span>
-            <span className="text-[var(--coral-deep)]">▸</span>
-            <span className="text-[var(--ink)]">现在</span>
-            <span className="text-[var(--coral-deep)]">▸</span>
-            <span>未来</span>
-          </div>
-        ) : null}
 
         {cards.map(({ card, reversed, positionOrder }, index) => {
           const position = spread.positions.find((item) => item.order === positionOrder);
@@ -243,15 +240,6 @@ export function SpreadLayout({ spread, cards, quiet = false }: SpreadLayoutProps
           );
         })}
       </div>
-
-      {!quiet ? (
-        <div className="hidden md:flex mt-10 flex-col items-center justify-center text-center space-y-2">
-          <div className="h-px w-16 bg-[var(--line-strong)]" />
-          <p className="font-mono text-[10.5px] tracking-[0.2em] uppercase text-[var(--ink-muted)]">
-            {spread.cardCount} 张牌 · 已落位 · 点击查看完整牌面
-          </p>
-        </div>
-      ) : null}
 
       <CardZoomModal
         focused={focused}

@@ -2,6 +2,19 @@ import type { SpreadDefinition } from "@/lib/tarot/types";
 
 export const spreads: SpreadDefinition[] = [
   {
+    slug: "single-guidance",
+    nameZh: "单张建议牌",
+    summary: "只抽一张，用于今日能量、当下提醒或一个问题的简单指引。",
+    detail:
+      "单张牌阵适合快速聚焦。它不负责回答复杂因果，而是给出当下最值得看见的一条讯息：此刻该注意什么、该调整什么、该先做什么。",
+    hero: "今日建议、当下提醒、低负担占卜",
+    suitableFor: ["今日牌", "心情映照", "简单指引"],
+    cardCount: 1,
+    positions: [
+      { order: 1, name: "核心讯息", focus: "此刻最需要看见的主题", promptHint: "把这张牌压缩成一个明确提醒和一个可执行动作。" },
+    ],
+  },
+  {
     slug: "career-five",
     nameZh: "五张事业牌阵",
     summary: "拆开现状、阻碍、优势、近期发展和建议，适合看三个月内的事业趋势。",
@@ -31,19 +44,6 @@ export const spreads: SpreadDefinition[] = [
       { order: 1, name: "过去/背景", focus: "形成当前局面的背景因素", promptHint: "说明过去或背景如何塑造现在，不要停留在历史叙述。" },
       { order: 2, name: "现在/现状", focus: "当前最真实的状态", promptHint: "聚焦此刻正在发生的情绪、关系或现实条件。" },
       { order: 3, name: "未来/走向", focus: "按当前路径继续发展的趋势", promptHint: "用倾向、主题、可能性表达，并给出调整空间。" },
-    ],
-  },
-  {
-    slug: "single-guidance",
-    nameZh: "单张建议牌",
-    summary: "只抽一张，用于今日能量、当下提醒或一个问题的简单指引。",
-    detail:
-      "单张牌阵适合快速聚焦。它不负责回答复杂因果，而是给出当下最值得看见的一条讯息：此刻该注意什么、该调整什么、该先做什么。",
-    hero: "今日建议、当下提醒、低负担占卜",
-    suitableFor: ["今日牌", "心情映照", "简单指引"],
-    cardCount: 1,
-    positions: [
-      { order: 1, name: "核心讯息", focus: "此刻最需要看见的主题", promptHint: "把这张牌压缩成一个明确提醒和一个可执行动作。" },
     ],
   },
   {

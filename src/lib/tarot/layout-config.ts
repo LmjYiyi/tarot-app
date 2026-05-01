@@ -14,7 +14,7 @@ export const layoutPresets: Record<string, LayoutPreset> = {
   "single-guidance": {
     aspectRatio: "aspect-[3/2]",
     cardWidth: "md:w-[24%] lg:w-[20%]",
-    readingCardWidth: balancedReadingCardWidth,
+    readingCardWidth: "md:w-[160px] lg:w-[200px]",
     positions: { 1: { x: 50, y: 50 } },
   },
   "three-card": {

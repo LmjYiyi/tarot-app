@@ -586,22 +586,25 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
                 quiet={!postRevealContentVisible}
               />
               {postRevealContentVisible ? (
-                <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-2 rounded-full bg-[var(--coral-wash)] px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--coral-deep)]">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--coral)]" />
-                      已翻开 {resolvedCards.length} 张
-                    </span>
-                    {drawLog ? (
-                      <span className="rounded-full border border-[var(--line)] px-3 py-1 font-mono text-[10px] tracking-[0.16em] text-[var(--ink-muted)]">
-                        牌纹 · {drawLog.seed.slice(0, 10)}
+                <>
+                  <CardOpenTip />
+                  <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line)] pt-5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-[var(--coral-wash)] px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--coral-deep)]">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--coral)]" />
+                        已翻开 {resolvedCards.length} 张
                       </span>
-                    ) : null}
+                      {drawLog ? (
+                        <span className="rounded-full border border-[var(--line)] px-3 py-1 font-mono text-[10px] tracking-[0.16em] text-[var(--ink-muted)]">
+                          牌纹 · {drawLog.seed.slice(0, 10)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <Button variant="ghost" onClick={handleReshuffle} disabled={interactionBusy}>
+                      重新开始
+                    </Button>
                   </div>
-                  <Button variant="ghost" onClick={handleReshuffle} disabled={interactionBusy}>
-                    重新开始
-                  </Button>
-                </div>
+                </>
               ) : null}
             </RitualShell>
           </div>
@@ -609,7 +612,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           <aside className="min-w-0 xl:sticky xl:top-20 xl:max-h-[calc(100vh-6rem)] xl:self-start xl:overflow-y-auto xl:pr-2">
             {postRevealContentVisible ? (
               <div className="animate-fade-in relative space-y-5 before:absolute before:left-0 before:top-2 before:hidden before:h-[calc(100%-1rem)] before:w-px before:bg-[linear-gradient(180deg,var(--coral-edge),var(--line),transparent)] xl:pl-6 xl:before:block">
-                <CardOpenTip />
                 {preliminaryOverview ? (
                   <PreliminaryOverview overview={preliminaryOverview} />
                 ) : null}
@@ -686,19 +688,22 @@ function IdleSetup({
               <div className="absolute -left-5 top-1 hidden h-[calc(100%-0.5rem)] w-px bg-[linear-gradient(180deg,var(--coral-edge),var(--line),transparent)] lg:block" />
               <div className="space-y-7">
                 <div className="space-y-4">
-                  <div className="flex items-end justify-between gap-4 border-b border-[var(--line)] pb-2">
-                    <p className="journal-label">YOUR INQUIRY · 提问</p>
-                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--ink-faint)]">
-                      {questionLength} / 280
-                    </span>
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <p className="journal-label max-w-full leading-tight">YOUR INQUIRY · 提问</p>
+                      <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--ink-faint)] leading-tight">
+                        {questionLength} / 280
+                      </span>
+                    </div>
+                    <div className="h-px w-full bg-[var(--line)]" />
                   </div>
                   <label className="block group">
                     <textarea
                       value={question}
                       onChange={(event) => onQuestionChange(event.target.value.slice(0, 280))}
-                      rows={6}
+                      rows={5}
                       placeholder="例如：这段关系接下来最需要看清什么？"
-                      className="journal-hand journal-writing-area w-full resize-none border-0 bg-transparent px-0 py-2 text-[25px] leading-[2.25rem] text-[var(--ink)] outline-none transition placeholder:text-[rgba(74,59,50,0.30)] focus:text-[var(--ink)]"
+                      className="journal-hand journal-writing-area w-full resize-none border-0 bg-transparent py-2 pl-5 pr-0 text-[23px] leading-[3rem] text-[var(--ink)] outline-none transition placeholder:text-[rgba(74,59,50,0.30)] focus:text-[var(--ink)]"
                     />
                   </label>
                 </div>
@@ -946,8 +951,8 @@ function RitualShell({
 
 function CardOpenTip() {
   return (
-    <p className="journal-hand border-t border-[var(--line)] pt-4 text-[16px] leading-7 text-[var(--ink-muted)]">
-      小提示：洗牌完成后，可以点击任意一张牌，打开完整牌面细看。
+    <p className="journal-hand mt-6 border-t border-[var(--line)] pt-4 text-[16px] leading-7 text-[var(--ink-muted)]">
+      小提示：点击某个牌面可以查看牌面描述。
     </p>
   );
 }
