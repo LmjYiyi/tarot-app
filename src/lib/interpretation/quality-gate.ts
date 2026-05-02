@@ -1,0 +1,343 @@
+import type { QuestionDiagnosis } from "@/lib/interpretation/analysis/types";
+import type { SpreadReadingTemplate } from "@/lib/interpretation/templates";
+
+type ChoiceLabels = {
+  a: string;
+  b: string;
+};
+
+export type QualityRequirement = {
+  id: string;
+  severity: "repairable" | "retry";
+  description: string;
+};
+
+export type QualityGateInput = {
+  question: string;
+  template: SpreadReadingTemplate;
+  diagnosis: QuestionDiagnosis;
+};
+
+export type QualityGateResult = {
+  text: string;
+  requirements: QualityRequirement[];
+  issues: QualityIssue[];
+  repaired: boolean;
+  needsRetry: boolean;
+};
+
+export type QualityIssue = {
+  id: string;
+  severity: "repairable" | "retry";
+  message: string;
+};
+
+const absolutePredictionPattern =
+  /(?:一定会|一定能|一定是|必然|必定|注定|命中注定|绝对会|绝对不会|保证|肯定会|肯定不会)/;
+const preciseDatePattern =
+  /(?:\d{1,2}\s*(?:月|号|日)|明天|后天|下周[一二三四五六日天]?|周[一二三四五六日天]|星期[一二三四五六日天])/;
+
+const safeAbsoluteSentence =
+  "这次解读只讨论趋势、条件和可观察信号，不做绝对承诺，也不提供精确日期。";
+const highRiskSentence =
+  "如果涉及现实里的高成本决定，请先核对现金流、时间线、替代方案和止损点，再决定是否行动。";
+const mindReadingSentence =
+  "关于他人的想法，我不会替对方内心下结论，只把重点放在互动模式和可观察行为上。";
+
+function stripSectionNumber(section: string) {
+  return section.replace(/^\d+\.\s*/, "").trim();
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function headingPattern(section: string) {
+  const title = stripSectionNumber(section);
+  return new RegExp(`^\\s*(?:\\d+\\.\\s*)?${escapeRegExp(title)}\\s*$`);
+}
+
+function findSection(text: string, section: string) {
+  const lines = text.split("\n");
+  const pattern = headingPattern(section);
+  let offset = 0;
+
+  for (const line of lines) {
+    if (pattern.test(line.trim())) {
+      return { index: offset, end: offset + line.length + 1 };
+    }
+    offset += line.length + 1;
+  }
+
+  return null;
+}
+
+function getSectionBody(text: string, sections: string[], sectionIndex: number) {
+  const section = sections[sectionIndex];
+  const current = findSection(text, section);
+  if (!current) return "";
+
+  const nextSection = sections
+    .slice(sectionIndex + 1)
+    .map((candidate) => findSection(text, candidate))
+    .find((match): match is { index: number; end: number } => Boolean(match));
+
+  return text.slice(current.end, nextSection?.index ?? text.length).trim();
+}
+
+function insertAfterFirstHeading(text: string, template: SpreadReadingTemplate, sentence: string) {
+  if (text.includes(sentence)) return text;
+
+  const first = template.sections[0];
+  const match = first ? findSection(text, first) : null;
+  if (!match) return `${first ?? "1. 一句话结论"}\n${sentence}\n\n${text}`.trim();
+
+  return `${text.slice(0, match.end)}${sentence}\n${text.slice(match.end)}`.replace(
+    /\n{3,}/g,
+    "\n\n",
+  );
+}
+
+function appendMissingSection(text: string, template: SpreadReadingTemplate, section: string) {
+  if (findSection(text, section)) return text;
+  const title = stripSectionNumber(section);
+  let body = "这一节用于把前面的判断落回现实观察，不新增用户没有提供的背景。";
+
+  if (/行动|决策前动作|建议/.test(title)) {
+    body = "行动上先做小步验证：确认现金流或可用资源、列出时间线、准备替代方案，并提前写下止损点。";
+  } else if (/观察/.test(title)) {
+    body = `观察窗口放在${template.timeScope.observationWindow}，重点看现实反馈是否变清晰，而不是把牌面当成绝对结论。`;
+  } else if (/风险|提醒/.test(title)) {
+    body = "风险在于把趋势误读成命令。请保留现实验证，避免冲动推进不可逆决定。";
+  }
+
+  return `${text.trim()}\n\n${section}\n${body}`;
+}
+
+function extractChoiceLabels(question: string): ChoiceLabels | null {
+  const normalized = question.replace(/\s+/g, " ").trim();
+  const patterns = [
+    /A\s*(?:是|:|：)\s*([^，。；;,.]+?)[，。；;,.]\s*B\s*(?:是|:|：)\s*([^，。；;,.]+)/i,
+    /A\s*(?:选项|路径)?\s*(?:是|:|：)\s*([^，。；;,.]+?)[，。；;,.]\s*B\s*(?:选项|路径)?\s*(?:是|:|：)\s*([^，。；;,.]+)/i,
+    /(?:选择|路径)\s*A\s*([^，。；;,.]+?)[，。；;,.]\s*(?:选择|路径)\s*B\s*([^，。；;,.]+)/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = normalized.match(pattern);
+    if (match?.[1] && match?.[2]) {
+      return { a: match[1].trim(), b: match[2].trim() };
+    }
+  }
+
+  return null;
+}
+
+function hasHighRiskChecklist(text: string) {
+  return [
+    /现金流|资源|预算|储蓄/,
+    /时间线|期限|节奏|周期/,
+    /替代方案|备选|Plan B|退路/,
+    /止损|退出|暂停|边界/,
+  ].every((pattern) => pattern.test(text));
+}
+
+export function buildQualityRequirements(input: QualityGateInput): QualityRequirement[] {
+  const requirements: QualityRequirement[] = [
+    ...input.template.sections.map((section) => ({
+      id: `section:${stripSectionNumber(section)}`,
+      severity: "repairable" as const,
+      description: `必须包含章节：${section}`,
+    })),
+    {
+      id: "first-section-body",
+      severity: "repairable",
+      description: "第一节必须有正文，不能只有标题。",
+    },
+    {
+      id: "no-absolute-promise",
+      severity: "retry",
+      description: "不得输出绝对预测、命定承诺或精确日期。",
+    },
+  ];
+
+  if (input.diagnosis.flags.absolutePrediction || input.diagnosis.flags.preciseTiming) {
+    requirements.push({
+      id: "absolute-safety-sentence",
+      severity: "repairable",
+      description: `第一节必须包含安全句：${safeAbsoluteSentence}`,
+    });
+  }
+
+  if (input.diagnosis.flags.highRiskDecision) {
+    requirements.push({
+      id: "high-risk-checklist",
+      severity: "repairable",
+      description: "决策前动作必须包含现金流、时间线、替代方案、止损点。",
+    });
+  }
+
+  if (input.diagnosis.flags.mindReading) {
+    requirements.push({
+      id: "mind-reading-safety",
+      severity: "repairable",
+      description: `必须包含读心纠偏：${mindReadingSentence}`,
+    });
+  }
+
+  const labels = extractChoiceLabels(input.question);
+  if (input.template.slug === "path-of-choice" && labels) {
+    requirements.push({
+      id: "choice-labels",
+      severity: "repairable",
+      description: `路径 A 必须称为「${labels.a}」，路径 B 必须称为「${labels.b}」。`,
+    });
+  }
+
+  return requirements;
+}
+
+function validateText(
+  text: string,
+  input: QualityGateInput,
+  requirements: QualityRequirement[],
+): QualityIssue[] {
+  const issues: QualityIssue[] = [];
+
+  if (text.trim().length < Math.max(180, input.template.length.min * 0.35)) {
+    issues.push({
+      id: "too-short",
+      severity: "retry",
+      message: "输出明显过短，可能被截断。",
+    });
+  }
+
+  input.template.sections.forEach((section, index) => {
+    if (!findSection(text, section)) {
+      issues.push({
+        id: `missing-section:${stripSectionNumber(section)}`,
+        severity: index >= input.template.sections.length - 2 ? "retry" : "repairable",
+        message: `缺少章节：${section}`,
+      });
+      return;
+    }
+
+    if (index === 0 && !getSectionBody(text, input.template.sections, 0)) {
+      issues.push({
+        id: "first-section-body",
+        severity: "repairable",
+        message: "第一节正文为空。",
+      });
+    }
+  });
+
+  if (absolutePredictionPattern.test(text) || preciseDatePattern.test(text)) {
+    issues.push({
+      id: "absolute-language",
+      severity: "retry",
+      message: "包含绝对预测或精确日期表达。",
+    });
+  }
+
+  if (
+    requirements.some((item) => item.id === "absolute-safety-sentence") &&
+    !/不做绝对|不是绝对|只讨论趋势|只看趋势|不提供精确/.test(text)
+  ) {
+    issues.push({
+      id: "absolute-safety-sentence",
+      severity: "repairable",
+      message: "缺少绝对预测纠偏安全句。",
+    });
+  }
+
+  if (input.diagnosis.flags.highRiskDecision && !hasHighRiskChecklist(text)) {
+    issues.push({
+      id: "high-risk-checklist",
+      severity: "repairable",
+      message: "高风险决策缺少现金流、时间线、替代方案或止损点。",
+    });
+  }
+
+  if (
+    input.diagnosis.flags.mindReading &&
+    !/不替.*内心|不会替.*内心|可观察行为|互动模式/.test(text)
+  ) {
+    issues.push({
+      id: "mind-reading-safety",
+      severity: "repairable",
+      message: "缺少读心纠偏。",
+    });
+  }
+
+  const labels = extractChoiceLabels(input.question);
+  if (input.template.slug === "path-of-choice" && labels) {
+    if (!text.includes(labels.a) || !text.includes(labels.b)) {
+      issues.push({
+        id: "choice-labels",
+        severity: "repairable",
+        message: "A/B 路径没有保留用户原始标签。",
+      });
+    }
+  }
+
+  return issues;
+}
+
+function repairText(text: string, input: QualityGateInput, issues: QualityIssue[]) {
+  let repaired = text.trim();
+
+  input.template.sections.forEach((section) => {
+    repaired = appendMissingSection(repaired, input.template, section);
+  });
+
+  if (issues.some((issue) => issue.id === "first-section-body")) {
+    repaired = insertAfterFirstHeading(
+      repaired,
+      input.template,
+      "这次牌面先给出一个可验证的方向，而不是替你把现实决定一次性定死。",
+    );
+  }
+
+  if (issues.some((issue) => issue.id === "absolute-safety-sentence")) {
+    repaired = insertAfterFirstHeading(repaired, input.template, safeAbsoluteSentence);
+  }
+
+  if (issues.some((issue) => issue.id === "high-risk-checklist")) {
+    repaired = insertAfterFirstHeading(repaired, input.template, highRiskSentence);
+  }
+
+  if (issues.some((issue) => issue.id === "mind-reading-safety")) {
+    repaired = insertAfterFirstHeading(repaired, input.template, mindReadingSentence);
+  }
+
+  const labels = extractChoiceLabels(input.question);
+  if (labels && issues.some((issue) => issue.id === "choice-labels")) {
+    repaired = insertAfterFirstHeading(
+      repaired,
+      input.template,
+      `本次对比中，路径 A 指「${labels.a}」，路径 B 指「${labels.b}」。`,
+    );
+  }
+
+  return repaired.replace(/\n{3,}/g, "\n\n").trim();
+}
+
+export function runQualityGate(text: string, input: QualityGateInput): QualityGateResult {
+  const requirements = buildQualityRequirements(input);
+  const issues = validateText(text, input, requirements);
+  const repairableIssues = issues.filter((issue) => issue.severity === "repairable");
+  const repairedText = repairableIssues.length ? repairText(text, input, repairableIssues) : text;
+  const postRepairIssues = validateText(repairedText, input, requirements);
+  const retryIssues = postRepairIssues.filter((issue) => issue.severity === "retry");
+
+  return {
+    text: repairedText,
+    requirements,
+    issues: postRepairIssues,
+    repaired: repairedText !== text,
+    needsRetry: retryIssues.length > 0,
+  };
+}
+
+export function summarizeQualityRequirements(requirements: QualityRequirement[]) {
+  return requirements.map((requirement) => `- ${requirement.description}`).join("\n");
+}

@@ -1,4 +1,5 @@
 import type { SpreadReadingTemplate } from "./templates";
+import type { ReadingIntent } from "@/lib/tarot/types";
 
 const dividerPattern = /^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/gm;
 
@@ -20,6 +21,41 @@ const unsafeSentenceReplacements: Array<[RegExp, string]> = [
     "这组牌更适合被理解为对自我要求、外在评价和内在力量使用方式的提醒。",
   ],
 ];
+
+type SanitizeInterpretationOptions = {
+  neutralizeRelationshipPronouns?: boolean;
+};
+
+const explicitGenderPatterns = [
+  /她|女朋友|女友|前女友|老婆|妻子|太太|女生|女孩|女性|女方/,
+  /(^|[^其])他(?!人)|男朋友|男友|前男友|老公|丈夫|先生|男生|男孩|男性|男方/,
+];
+
+const relationshipContextPattern = /关系|感情|恋爱|暧昧|伴侣|对象|对方|复合|分手|喜欢|爱/;
+
+export function shouldNeutralizeRelationshipPronouns(
+  question: string,
+  intent?: ReadingIntent,
+) {
+  if (explicitGenderPatterns.some((pattern) => pattern.test(question))) {
+    return false;
+  }
+
+  return (
+    intent?.domain === "love" ||
+    intent?.domain === "relationship" ||
+    relationshipContextPattern.test(question)
+  );
+}
+
+function neutralizeRelationshipPronouns(text: string) {
+  return text
+    .replace(/她\/他|他\/她|她或他|他或她|她和他|他和她/g, "TA")
+    .replace(/男方|女方/g, "TA")
+    .replace(/((?:对方|伴侣|对象|暧昧对象)的?)[他她]/g, "$1TA")
+    .replace(/(^|[^其])他(?=的|会|是|在|可能|也|更|还|不|想|需要|正在|有|没有|把|被|对|给|从|能|愿意|应该|仍|并)/g, "$1TA")
+    .replace(/(^|[^其])她(?=的|会|是|在|可能|也|更|还|不|想|需要|正在|有|没有|把|被|对|给|从|能|愿意|应该|仍|并)/g, "$1TA");
+}
 
 function stripSectionNumber(section: string) {
   return section.replace(/^\d+\.\s*/, "").trim();
@@ -121,7 +157,10 @@ function ensureFirstSectionBody(text: string, template: SpreadReadingTemplate) {
   return `${text.slice(0, firstBodyStart)}${conclusion}\n\n${text.slice(firstBodyStart).trimStart()}`;
 }
 
-export function sanitizeInterpretationStreamSegment(text: string) {
+export function sanitizeInterpretationStreamSegment(
+  text: string,
+  options: SanitizeInterpretationOptions = {},
+) {
   let sanitized = text.replace(dividerPattern, "");
 
   leakedPromptPatterns.forEach((pattern) => {
@@ -132,11 +171,19 @@ export function sanitizeInterpretationStreamSegment(text: string) {
     sanitized = sanitized.replace(pattern, replacement);
   });
 
+  if (options.neutralizeRelationshipPronouns) {
+    sanitized = neutralizeRelationshipPronouns(sanitized);
+  }
+
   return sanitized.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n");
 }
 
-export function sanitizeInterpretationText(text: string, template: SpreadReadingTemplate) {
-  const sanitized = sanitizeInterpretationStreamSegment(text).trim();
+export function sanitizeInterpretationText(
+  text: string,
+  template: SpreadReadingTemplate,
+  options: SanitizeInterpretationOptions = {},
+) {
+  const sanitized = sanitizeInterpretationStreamSegment(text, options).trim();
 
   return ensureFirstSectionBody(ensureFirstSection(sanitized, template), template);
 }

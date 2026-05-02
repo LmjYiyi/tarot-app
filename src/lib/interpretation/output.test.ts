@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { getSpreadReadingTemplate } from "./templates";
-import { sanitizeInterpretationText } from "./output";
+import { sanitizeInterpretationText, shouldNeutralizeRelationshipPronouns } from "./output";
 
 describe("sanitizeInterpretationText", () => {
   it("removes prompt leakage, markdown dividers and unsafe combination copy", () => {
@@ -41,5 +41,36 @@ describe("sanitizeInterpretationText", () => {
       "1. 一句话结论\n你目前处于一种表面还在维持，内心已经透支的阶段。",
     );
     expect(sanitized).toContain("当前心理结构");
+  });
+
+  it("neutralizes relationship pronouns when the question does not specify gender", () => {
+    const template = getSpreadReadingTemplate("relationship-six");
+    const text = [
+      "1. 一句话结论",
+      "对方他的节奏还不稳定，她可能也在观察关系里的边界。",
+    ].join("\n");
+
+    const sanitized = sanitizeInterpretationText(text, template, {
+      neutralizeRelationshipPronouns: true,
+    });
+
+    expect(sanitized).toContain("对方TA的节奏");
+    expect(sanitized).toContain("TA可能也在观察");
+  });
+
+  it("keeps gendered pronouns when the user names a gender", () => {
+    expect(
+      shouldNeutralizeRelationshipPronouns("我和她接下来会怎样？", {
+        domain: "relationship",
+        goal: "trend",
+      }),
+    ).toBe(false);
+
+    expect(
+      shouldNeutralizeRelationshipPronouns("这段关系接下来会怎样？", {
+        domain: "relationship",
+        goal: "trend",
+      }),
+    ).toBe(true);
   });
 });

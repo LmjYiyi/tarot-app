@@ -11,6 +11,32 @@ import { cn } from "@/lib/utils";
 
 const TOTAL_CARDS = 78;
 
+function pickUniqueDeckIndices(count: number) {
+  const indices = Array.from({ length: TOTAL_CARDS }, (_, index) => index);
+
+  for (let i = indices.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+
+  return indices.slice(0, Math.min(count, TOTAL_CARDS)).sort((a, b) => a - b);
+}
+
+function resolveUniqueNumberIndices(values: number[]) {
+  const used = new Set<number>();
+
+  return values.map((value) => {
+    let index = Math.max(0, Math.min(TOTAL_CARDS - 1, value - 1));
+
+    while (used.has(index)) {
+      index = (index + 1) % TOTAL_CARDS;
+    }
+
+    used.add(index);
+    return index;
+  });
+}
+
 export type RitualPhase =
   | "idle"
   | "shuffling"
@@ -267,23 +293,40 @@ function ShuffleStage({
   onDone: () => void;
 }) {
   const [closing, setClosing] = useState(false);
+  const [manualActive, setManualActive] = useState(false);
+  const [canFinish, setCanFinish] = useState(false);
   const reduceMotion = useReducedMotion() ?? false;
+  const finishTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!active) return;
-
-    const closeTimeout = window.setTimeout(() => {
-      setClosing(true);
-    }, Math.max(0, durationMs - SHUFFLE_CLOSE_MS));
-    const timeout = window.setTimeout(() => {
-      onDone();
-    }, durationMs);
-
     return () => {
-      window.clearTimeout(closeTimeout);
-      window.clearTimeout(timeout);
+      if (finishTimerRef.current !== null) {
+        window.clearTimeout(finishTimerRef.current);
+        finishTimerRef.current = null;
+      }
     };
-  }, [active, durationMs, onDone]);
+  }, [active]);
+
+  function startManualShuffle() {
+    if (!active || closing) return;
+    triggerHaptic(10);
+    setManualActive(true);
+    setCanFinish(false);
+    if (finishTimerRef.current !== null) window.clearTimeout(finishTimerRef.current);
+    finishTimerRef.current = window.setTimeout(() => {
+      setCanFinish(true);
+      triggerHaptic([6, 14, 6]);
+    }, Math.min(durationMs, 2200));
+  }
+
+  function finishManualShuffle() {
+    if (!active || closing || !manualActive || !canFinish) return;
+    triggerHaptic([10, 20, 14]);
+    setClosing(true);
+    window.setTimeout(() => {
+      onDone();
+    }, SHUFFLE_CLOSE_MS);
+  }
 
   return (
     <StageLayout
@@ -304,12 +347,25 @@ function ShuffleStage({
         )
       }
     >
-      <ShuffleAura
-        active={active}
-        closing={closing}
-        reduceMotion={reduceMotion}
-        previewCards={previewCards}
-      />
+      <p className="mb-3 text-center text-[13px] text-[var(--ink-muted)]">
+        {manualActive ? (canFinish ? "松手完成洗牌" : "继续按住") : "按住牌堆洗牌"}
+      </p>
+      <div
+        className="w-full touch-none"
+        onPointerDown={startManualShuffle}
+        onPointerUp={finishManualShuffle}
+        onPointerCancel={() => setManualActive(false)}
+        onPointerLeave={() => {
+          if (!canFinish) setManualActive(false);
+        }}
+      >
+        <ShuffleAura
+          active={active && manualActive}
+          closing={closing}
+          reduceMotion={reduceMotion}
+          previewCards={previewCards}
+        />
+      </div>
     </StageLayout>
   );
 }
@@ -759,22 +815,19 @@ function SelectStage({
 
 /* ---------------- Focus picker (single-card draw) ---------------- */
 
-const FOCUS_VISIBLE = 7;
+const FOCUS_VISIBLE = 21;
 
 function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
-  // Pre-pick which deck indices the visible cards correspond to.
-  // The deck is already shuffled, so any 7 indices give different cards;
-  // we spread them across 0..77 so the visible options feel evenly drawn from the deck.
-  const offsets = useMemo(() => {
-    const step = TOTAL_CARDS / FOCUS_VISIBLE;
-    return Array.from({ length: FOCUS_VISIBLE }, (_, i) =>
-      Math.min(TOTAL_CARDS - 1, Math.floor(i * step + step / 2)),
-    );
-  }, []);
-
+  const [offsets, setOffsets] = useState(() => pickUniqueDeckIndices(FOCUS_VISIBLE));
   const reduceMotion = useReducedMotion() ?? false;
   const [pickedSlot, setPickedSlot] = useState<number | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
+
+  function refreshOptions() {
+    if (pickedSlot !== null) return;
+    triggerHaptic(8);
+    setOffsets(pickUniqueDeckIndices(FOCUS_VISIBLE));
+  }
 
   function handlePick(slotIndex: number) {
     if (pickedSlot !== null) return;
@@ -797,13 +850,13 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
       </div>
 
       <div
-        className="relative flex h-[280px] w-full max-w-[640px] items-end justify-center sm:h-[320px]"
+        className="relative flex h-[300px] w-full max-w-[820px] items-end justify-center sm:h-[340px]"
         style={{ perspective: "1200px" }}
       >
         {offsets.map((_, slotIndex) => {
           const t = slotIndex / (FOCUS_VISIBLE - 1) - 0.5;
-          const angle = t * 14;
-          const lift = -Math.cos(t * Math.PI) * 24;
+          const angle = t * 30;
+          const lift = -Math.cos(t * Math.PI) * 34;
           const isPicked = pickedSlot === slotIndex;
           const someoneElsePicked = pickedSlot !== null && !isPicked;
           const isHovered = hovered === slotIndex;
@@ -817,7 +870,7 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
               onPointerLeave={() => setHovered((current) => (current === slotIndex ? null : current))}
               className="absolute bottom-6 origin-bottom focus:outline-none"
               style={{
-                left: `calc(50% + ${t * 280}px)`,
+                left: `calc(50% + ${t * 620}px)`,
                 transform: `translateX(-50%) rotate(${angle}deg)`,
                 zIndex: isPicked ? 50 : isHovered ? 40 : 10 + slotIndex,
               }}
@@ -835,7 +888,7 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
               aria-label={`抽出第 ${slotIndex + 1} 张可选牌`}
             >
               <motion.div
-                className="relative h-[200px] w-[124px] sm:h-[224px] sm:w-[140px]"
+                className="relative h-[142px] w-[86px] sm:h-[164px] sm:w-[98px]"
                 animate={
                   reduceMotion || pickedSlot !== null
                     ? { y: 0 }
@@ -885,9 +938,19 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
         />
       </div>
 
-      <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--ink-faint)]">
+      <div className="flex flex-col items-center gap-3">
+        <Button
+          variant="ghost"
+          className="text-[13px]"
+          onClick={refreshOptions}
+          disabled={pickedSlot !== null}
+        >
+          {"换一组"}
+        </Button>
+        <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--ink-faint)]">
         {pickedSlot !== null ? "正在翻开" : "Trust the first one your eye returns to"}
-      </p>
+        </p>
+      </div>
     </div>
   );
 }
@@ -1168,22 +1231,18 @@ function PilePicker({
 }) {
   const [chosenPile, setChosenPile] = useState<number | null>(null);
   const [picks, setPicks] = useState<number[]>([]);
+  const [pileCards, setPileCards] = useState<number[]>([]);
   const piles = [
-    { label: "\u5de6 / \u81ea\u6211", range: [0, 26] },
-    { label: "\u4e2d / \u60c5\u5883", range: [26, 52] },
-    { label: "\u53f3 / \u5916\u754c", range: [52, 78] },
+    { label: "\u5de6 / \u81ea\u6211" },
+    { label: "\u4e2d / \u60c5\u5883" },
+    { label: "\u53f3 / \u5916\u754c" },
   ];
   const selectedPile = chosenPile === null ? null : piles[chosenPile];
-  const pileCards = selectedPile
-    ? Array.from(
-        { length: selectedPile.range[1] - selectedPile.range[0] },
-        (_, index) => selectedPile.range[0] + index,
-      )
-    : [];
 
   function choosePile(index: number) {
     triggerHaptic(12);
     setChosenPile(index);
+    setPileCards(pickUniqueDeckIndices(26));
     setPicks([]);
   }
 
@@ -1373,16 +1432,23 @@ function NumberPicker({
   cardCount: number;
   onDone: (indices: number[]) => void;
 }) {
-  const [value, setValue] = useState<number>(Math.floor(TOTAL_CARDS / 2));
+  const [activeSlot, setActiveSlot] = useState(0);
+  const [values, setValues] = useState<number[]>(() =>
+    Array.from({ length: cardCount }, () => Math.floor(TOTAL_CARDS / 2)),
+  );
+  const value = values[activeSlot];
+
+  function updateActiveValue(updater: (value: number) => number) {
+    setValues((current) =>
+      current.map((value, index) =>
+        index === activeSlot ? Math.max(1, Math.min(TOTAL_CARDS, updater(value))) : value,
+      ),
+    );
+  }
 
   function confirm() {
     triggerHaptic([10, 20, 14]);
-    const indices: number[] = [];
-    const start = Math.max(0, Math.min(TOTAL_CARDS - cardCount, value - 1));
-    for (let i = 0; i < cardCount; i += 1) {
-      indices.push((start + i) % TOTAL_CARDS);
-    }
-    onDone(indices);
+    onDone(resolveUniqueNumberIndices(values));
   }
 
   return (
@@ -1394,13 +1460,31 @@ function NumberPicker({
         <p className="text-[12.5px] text-[var(--ink-muted)]">1 到 78 之间，不需要任何解释。</p>
       </div>
 
+      <div className="flex flex-wrap justify-center gap-2">
+        {values.map((number, index) => (
+          <button
+            key={index}
+            type="button"
+            onClick={() => setActiveSlot(index)}
+            className={cn(
+              "h-9 min-w-12 border px-3 font-mono text-[12px] transition",
+              activeSlot === index
+                ? "border-[var(--coral)] bg-[var(--coral-wash)] text-[var(--coral-deep)]"
+                : "border-[var(--line-strong)] text-[var(--ink-soft)] hover:border-[var(--coral-edge)]",
+            )}
+          >
+            {index + 1}: {number}
+          </button>
+        ))}
+      </div>
+
       <div className="flex items-center gap-8">
         <motion.button
           type="button"
           whileTap={{ scale: 0.9 }}
           onClick={() => {
             triggerHaptic(8);
-            setValue((v) => Math.max(1, v - 1));
+            updateActiveValue((value) => value - 1);
           }}
           className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--line-strong)] text-[var(--ink-soft)] transition-all hover:border-[var(--coral)] hover:bg-[var(--coral-wash)] hover:text-[var(--coral-deep)]"
         >
@@ -1413,7 +1497,7 @@ function NumberPicker({
           <div className="absolute -inset-4 rounded-[24px] bg-[var(--coral-wash)] opacity-50 blur-xl transition-opacity group-hover:opacity-100" />
           <div className="relative flex h-36 w-36 items-center justify-center rounded-[24px] border-2 border-[var(--coral-edge)] bg-[var(--surface-tint)] shadow-[0_8px_24px_rgba(168,85,62,0.12)]">
             <span className="font-serif-display text-[72px] leading-none text-[var(--coral-deep)]">
-              {value}
+              {values[activeSlot]}
             </span>
           </div>
         </div>
@@ -1423,7 +1507,7 @@ function NumberPicker({
           whileTap={{ scale: 0.9 }}
           onClick={() => {
             triggerHaptic(8);
-            setValue((v) => Math.min(TOTAL_CARDS, v + 1));
+            updateActiveValue((value) => value + 1);
           }}
           className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--line-strong)] text-[var(--ink-soft)] transition-all hover:border-[var(--coral)] hover:bg-[var(--coral-wash)] hover:text-[var(--coral-deep)]"
         >
@@ -1438,10 +1522,10 @@ function NumberPicker({
           type="range"
           min={1}
           max={TOTAL_CARDS}
-          value={value}
+          value={values[activeSlot]}
           onChange={(event) => {
             triggerHaptic(4);
-            setValue(Number(event.target.value));
+            updateActiveValue(() => Number(event.target.value));
           }}
           className="w-full h-1.5 appearance-none rounded-full bg-[var(--line-strong)] accent-[var(--coral)] cursor-pointer"
         />

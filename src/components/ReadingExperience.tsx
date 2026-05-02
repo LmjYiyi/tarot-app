@@ -132,6 +132,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   );
   const [phase, setPhase] = useState<FlowPhase>("idle");
   const [selectMode, setSelectMode] = useState<SelectMode>(() => defaultModeFor(spread));
+  const [includeReversals, setIncludeReversals] = useState(true);
   const [shuffled, setShuffled] = useState<ShuffledDeck | null>(null);
   const [cards, setCards] = useState<DrawnCard[]>([]);
   const [drawLog, setDrawLog] = useState<DrawLog | null>(null);
@@ -315,7 +316,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     resetReadingState();
     resolveQuestion();
 
-    const reversedRate = getConfiguredReversedRate();
+    const reversedRate = includeReversals ? getConfiguredReversedRate() : 0;
     const newDeck = shuffleDeck({ reversedRate });
     setShuffled(newDeck);
     setPhase("shuffling");
@@ -511,6 +512,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         sharePath={sharePath}
         spreadName={spread.nameZh}
         question={question}
+        readingIntent={readingIntent}
         onShareNavigate={preserveResultDialogForBackNavigation}
         cards={resolvedCards.map(({ card, reversed, positionOrder }) => ({
           card,
@@ -552,6 +554,8 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           spread={spread}
           onQuestionChange={setQuestion}
           onIntentChange={updateIntent}
+          includeReversals={includeReversals}
+          onIncludeReversalsChange={setIncludeReversals}
           onStart={handleStartShuffle}
         />
       ) : null}
@@ -641,6 +645,8 @@ function IdleSetup({
   spread,
   onQuestionChange,
   onIntentChange,
+  includeReversals,
+  onIncludeReversalsChange,
   onStart,
 }: {
   question: string;
@@ -649,8 +655,12 @@ function IdleSetup({
   spread: SpreadDefinition;
   onQuestionChange: (question: string) => void;
   onIntentChange: (intent: Partial<ReadingIntent>) => void;
+  includeReversals: boolean;
+  onIncludeReversalsChange: (includeReversals: boolean) => void;
   onStart: () => void;
 }) {
+  const hasQuestion = question.trim().length > 0;
+
   return (
     <section className="relative border-t border-[var(--line)] pt-16">
       <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start xl:grid-cols-[minmax(0,1fr)_460px]">
@@ -724,6 +734,15 @@ function IdleSetup({
                 </div>
 
                 <div className="border-t border-[var(--line)] pt-5">
+                  <label className="mb-4 flex cursor-pointer items-center justify-between gap-4 border-b border-[var(--line)] pb-4 text-[14px] text-[var(--ink-soft)]">
+                    <span className="journal-hand text-[17px]">{"包含逆位"}</span>
+                    <input
+                      type="checkbox"
+                      checked={includeReversals}
+                      onChange={(event) => onIncludeReversalsChange(event.target.checked)}
+                      className="h-4 w-4 accent-[var(--coral)]"
+                    />
+                  </label>
                   <Button
                     onClick={onStart}
                     className="journal-hand w-full !rounded-none !border-x-0 !border-y !border-[var(--line-strong)] !bg-transparent py-4 text-[22px] !font-normal !text-[var(--coral-deep)] !shadow-none transition hover:!border-[var(--coral-edge)] hover:!bg-transparent hover:!text-[var(--coral)]"
@@ -731,6 +750,9 @@ function IdleSetup({
                     开始洗牌 · START RITUAL
                   </Button>
                   <p className="journal-hand mt-4 text-center text-[16px] leading-relaxed text-[var(--ink-muted)]">
+                    {hasQuestion ? "洗牌前先把问题留在牌桌上。" : "留空也可以，我会使用默认问题开始洗牌。"}
+                  </p>
+                  <p className="hidden">
                     即便留空，我也会为这副牌阵注入最契合的通用意图。
                   </p>
                 </div>

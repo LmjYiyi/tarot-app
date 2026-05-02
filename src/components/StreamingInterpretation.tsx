@@ -9,7 +9,7 @@ import { AnnotatedInterpretation } from "@/components/AnnotatedInterpretation";
 import { Button } from "@/components/ui/button";
 import { cleanInterpretationMarkdown } from "@/lib/interpretation/display";
 import { cn } from "@/lib/utils";
-import type { AdaptiveAnswer, TarotCard } from "@/lib/tarot/types";
+import type { AdaptiveAnswer, ReadingIntent, TarotCard } from "@/lib/tarot/types";
 
 type ResultCard = {
   card: TarotCard;
@@ -28,6 +28,7 @@ type StreamingInterpretationProps = {
   spreadName: string;
   question: string;
   cards: ResultCard[];
+  readingIntent?: ReadingIntent;
   onShareNavigate?: () => void;
 };
 
@@ -41,6 +42,7 @@ export function StreamingInterpretation({
   spreadName,
   question,
   cards,
+  readingIntent,
   onShareNavigate,
 }: StreamingInterpretationProps) {
   const [copied, setCopied] = useState(false);
@@ -55,6 +57,18 @@ export function StreamingInterpretation({
     return new URL(sharePath, window.location.origin).toString();
   }, [sharePath]);
   const displayText = useMemo(() => cleanInterpretationMarkdown(text), [text]);
+  const previewKey = useMemo(
+    () =>
+      [
+        readingIntent?.domain,
+        readingIntent?.goal,
+        question,
+        ...cards.map(({ card, reversed, positionOrder }) =>
+          `${card.id}:${positionOrder}:${reversed ? "r" : "u"}`,
+        ),
+      ].join("|"),
+    [cards, question, readingIntent],
+  );
 
   const plainText = useMemo(
     () => buildPlainText({ spreadName, question, cards, text: displayText, shareUrl }),
@@ -162,89 +176,100 @@ export function StreamingInterpretation({
         ) : null}
 
         <div className="relative z-10 min-h-0 overflow-y-auto px-5 py-6 sm:px-7">
-          {!hasContent ? (
-            <LoadingState />
-          ) : (
-            <div className="grid gap-7 xl:grid-cols-[400px_minmax(0,1fr)]">
-              <aside className="space-y-8">
-                <section className="border-t border-[var(--line)] pt-5">
-                  <p className="eyebrow-ink">你的问题</p>
-                  <p className="mt-2 font-fraunces text-[19px] italic leading-8 text-[var(--ink-soft)]">
-                    “{question || "我想看清自己当前最需要面对的课题。"}”
-                  </p>
-                </section>
+          <div className="grid gap-7 xl:grid-cols-[400px_minmax(0,1fr)]">
+            <aside className="space-y-8">
+              <section className="border-t border-[var(--line)] pt-5">
+                <p className="eyebrow-ink">你的问题</p>
+                <p className="mt-2 font-fraunces text-[19px] italic leading-8 text-[var(--ink-soft)]">
+                  “{question || "我想看清自己当前最需要面对的课题。"}”
+                </p>
+              </section>
 
-                <section className="border-t border-[var(--line)] pt-5">
-                  <div className="mb-5 flex items-center justify-between gap-3">
-                    <p className="eyebrow-ink">抽到的牌</p>
-                    <span className="text-[12px] text-[var(--ink-muted)]">{cards.length} 张</span>
-                  </div>
-                  <div className={singleCard ? "flex justify-center" : "grid grid-cols-2 gap-3"}>
-                    {cards.map(({ card, reversed, positionOrder, positionName }) => (
-                      <article
-                        key={`${card.id}-${positionOrder}`}
+              <section className="border-t border-[var(--line)] pt-5">
+                <div className="mb-5 flex items-center justify-between gap-3">
+                  <p className="eyebrow-ink">抽到的牌</p>
+                  <span className="text-[12px] text-[var(--ink-muted)]">{cards.length} 张</span>
+                </div>
+                <div className={singleCard ? "flex justify-center" : "grid grid-cols-2 gap-3"}>
+                  {cards.map(({ card, reversed, positionOrder, positionName }) => (
+                    <article
+                      key={`${card.id}-${positionOrder}`}
+                      className={cn(
+                        "p-1",
+                        singleCard
+                          ? "flex w-full max-w-[250px] flex-col items-center gap-4 text-center"
+                          : "flex min-w-0 flex-col items-center gap-2.5 text-center",
+                      )}
+                    >
+                      <div
                         className={cn(
-                          "p-1",
-                          singleCard
-                            ? "flex w-full max-w-[250px] flex-col items-center gap-4 text-center"
-                            : "flex min-w-0 flex-col items-center gap-2.5 text-center",
+                          "relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[var(--gilt)]/35 bg-[var(--vellum-1)] shadow-[0_8px_20px_rgba(42,32,18,0.12)]",
+                          singleCard ? "w-[132px] max-w-full" : "w-full max-w-[116px]",
                         )}
                       >
-                        <div
-                          className={cn(
-                            "relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[var(--gilt)]/35 bg-[var(--vellum-1)] shadow-[0_8px_20px_rgba(42,32,18,0.12)]",
-                            singleCard ? "w-[132px] max-w-full" : "w-full max-w-[116px]",
-                          )}
-                        >
-                          {card.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={card.imageUrl}
-                              alt={card.nameZh}
-                              className={`h-full w-full object-cover ${reversed ? "rotate-180" : ""}`}
-                            />
-                          ) : null}
-                        </div>
-                        <div className="min-w-0 self-center">
-                          <p className="truncate text-[10px] uppercase tracking-[0.12em] text-[var(--ink-muted)]" title={positionName ?? `牌位 ${positionOrder}`}>
-                            {positionName ?? `牌位 ${positionOrder}`}
-                          </p>
-                          <p className={cn(
-                            "mt-1 font-serif-display leading-tight text-[var(--ink)]",
-                            singleCard ? "text-[20px]" : "text-[18px]",
-                          )}>
-                            {card.nameZh}
-                          </p>
-                          <p className="mt-0.5 text-[12px] text-[var(--ink-muted)]">
-                            {reversed ? "逆位" : "正位"}
-                          </p>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              </aside>
-
-              <article className="border-t border-[var(--line)] px-1 pt-6 sm:px-3">
-                <div className="mb-6">
-                  <p className="eyebrow-ink">完整解读</p>
-                  <h3 className="mt-2 font-serif-display text-[clamp(1.9rem,3vw,2.8rem)] leading-tight text-[var(--ink)]">
-                    这副牌想说的话
-                  </h3>
+                        {card.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={card.imageUrl}
+                            alt={card.nameZh}
+                            className={`h-full w-full object-cover ${reversed ? "rotate-180" : ""}`}
+                          />
+                        ) : null}
+                      </div>
+                      <div className="min-w-0 self-center">
+                        <p className="truncate text-[10px] uppercase tracking-[0.12em] text-[var(--ink-muted)]" title={positionName ?? `牌位 ${positionOrder}`}>
+                          {positionName ?? `牌位 ${positionOrder}`}
+                        </p>
+                        <p className={cn(
+                          "mt-1 font-serif-display leading-tight text-[var(--ink)]",
+                          singleCard ? "text-[20px]" : "text-[18px]",
+                        )}>
+                          {card.nameZh}
+                        </p>
+                        <p className="mt-0.5 text-[12px] text-[var(--ink-muted)]">
+                          {reversed ? "逆位" : "正位"}
+                        </p>
+                      </div>
+                    </article>
+                  ))}
                 </div>
-                <AnnotatedInterpretation
-                  text={displayText}
-                  isStreaming={isStreaming}
-                  adaptiveAnswers={adaptiveAnswers}
+              </section>
+            </aside>
+
+            <article className="space-y-8 border-t border-[var(--line)] px-1 pt-6 sm:px-3">
+              {isStreaming ? (
+                <CardMeaningPreview
+                  key={previewKey}
+                  cards={cards}
+                  question={question}
+                  readingIntent={readingIntent}
                 />
-                {shareUrl ? (
-                  <div className="mt-6 rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-[13px] leading-6 text-[var(--ink-muted)]">
-                    分享链接：{shareUrl}
+              ) : null}
+
+              {hasContent ? (
+                <section>
+                  <div className="mb-6">
+                    <p className="eyebrow-ink">完整解读</p>
+                    <h3 className="mt-2 font-serif-display text-[clamp(1.9rem,3vw,2.8rem)] leading-tight text-[var(--ink)]">
+                      这副牌想说的话
+                    </h3>
                   </div>
-                ) : null}
-              </article>
-            </div>
-          )}
+                  <AnnotatedInterpretation
+                    text={displayText}
+                    isStreaming={isStreaming}
+                    adaptiveAnswers={adaptiveAnswers}
+                  />
+                  {shareUrl ? (
+                    <div className="mt-6 rounded-[12px] border border-[var(--line)] bg-[var(--surface)] px-4 py-3 text-[13px] leading-6 text-[var(--ink-muted)]">
+                      分享链接：{shareUrl}
+                    </div>
+                  ) : null}
+                </section>
+              ) : (
+                <WaitingForInterpretation />
+              )}
+            </article>
+          </div>
         </div>
       </div>
     </div>,
@@ -252,19 +277,194 @@ export function StreamingInterpretation({
   );
 }
 
-function LoadingState() {
+function WaitingForInterpretation() {
   return (
-    <div className="flex min-h-[340px] flex-col items-center justify-center gap-4 text-center">
-      <span className="relative flex h-12 w-12">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--coral)] opacity-30" />
-        <span className="relative inline-flex h-12 w-12 rounded-full border border-[var(--coral-edge)] bg-[var(--coral-wash)]" />
-      </span>
-      <p className="font-serif-display text-[22px] text-[var(--ink)]">正在整理牌面结果</p>
-      <p className="max-w-sm text-[13px] leading-6 text-[var(--ink-muted)]">
-        完成后会在这个窗口里出现完整分享卡片。
-      </p>
-    </div>
+    <section className="border-t border-[var(--line)] pt-6">
+      <p className="eyebrow-ink">完整解读</p>
+      <div className="mt-4 flex items-center gap-3 text-[14px] leading-7 text-[var(--ink-muted)]">
+        <span className="relative flex h-3 w-3 flex-shrink-0">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--coral)] opacity-30" />
+          <span className="relative inline-flex h-3 w-3 rounded-full bg-[var(--coral)]" />
+        </span>
+        正在把牌位、正逆位和整组结构合成最终解读。
+      </div>
+    </section>
   );
+}
+
+function CardMeaningPreview({
+  cards,
+  question,
+  readingIntent,
+}: {
+  cards: ResultCard[];
+  question: string;
+  readingIntent?: ReadingIntent;
+}) {
+  const entries = useMemo(
+    () => cards.map((card) => buildCardMeaningPreview(card, question, readingIntent)),
+    [cards, question, readingIntent],
+  );
+  const totalCharacters = entries.reduce((sum, entry) => sum + entry.body.length, 0);
+  const [visibleCharacters, setVisibleCharacters] = useState(0);
+
+  useEffect(() => {
+    if (totalCharacters === 0) return;
+
+    let frameId: number | null = null;
+    let timeoutId: number | null = null;
+    const startedAt = performance.now();
+    const charactersPerSecond = 34;
+
+    function tick(now: number) {
+      const elapsedSeconds = (now - startedAt) / 1000;
+      setVisibleCharacters(Math.min(totalCharacters, Math.floor(elapsedSeconds * charactersPerSecond)));
+
+      if (elapsedSeconds * charactersPerSecond < totalCharacters) {
+        timeoutId = window.setTimeout(() => {
+          frameId = window.requestAnimationFrame(tick);
+        }, 28);
+      }
+    }
+
+    frameId = window.requestAnimationFrame(tick);
+
+    return () => {
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+    };
+  }, [entries, totalCharacters]);
+
+  return (
+    <section className="border-t border-[var(--line)] pt-6">
+      <div className="mb-6">
+        <p className="eyebrow-ink">本次牌义预览</p>
+        <h3 className="mt-2 font-serif-display text-[clamp(1.8rem,3vw,2.5rem)] leading-tight text-[var(--ink)]">
+          先看每张牌落在这里的意思
+        </h3>
+      </div>
+      <div className="space-y-5">
+        {entries.map((entry, index) => {
+          const consumedCharacters = entries
+            .slice(0, index)
+            .reduce((sum, current) => sum + current.body.length, 0);
+          const visibleBodyLength = Math.max(
+            0,
+            Math.min(entry.body.length, visibleCharacters - consumedCharacters),
+          );
+          const visibleBody = entry.body.slice(0, visibleBodyLength);
+
+          return (
+            <article
+              key={`${entry.title}-${index}`}
+              className="relative border-l border-[var(--coral-edge)]/45 pl-5"
+            >
+              <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border border-[var(--coral-edge)] bg-[var(--vellum-1)]" />
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--ink-faint)]">
+                {entry.position}
+              </p>
+              <h4 className="mt-1 font-serif-display text-[22px] leading-tight text-[var(--ink)]">
+                {entry.title}
+              </h4>
+              <p className="mt-2 min-h-[3.5rem] whitespace-pre-wrap text-[14.5px] leading-7 text-[var(--ink-soft)]">
+                {visibleBody}
+                {visibleBodyLength < entry.body.length ? (
+                  <span className="ml-0.5 inline-block h-4 w-px translate-y-0.5 animate-pulse bg-[var(--coral)]" />
+                ) : null}
+              </p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function buildCardMeaningPreview(
+  { card, reversed, positionName, positionOrder }: ResultCard,
+  question: string,
+  readingIntent?: ReadingIntent,
+) {
+  const orientation = reversed ? "逆位" : "正位";
+  const baseMeaning = reversed ? card.meaningReversed : card.meaningUpright;
+  const domainMeaning = getDomainMeaning(card, reversed, readingIntent);
+  const keywords = (reversed ? card.keywordsReversed : card.keywordsUpright).slice(0, 3);
+  const position = positionName ?? `牌位 ${positionOrder}`;
+  const body = normalizePreviewPronouns(
+    [
+      `在“${position}”这个位置，${card.nameZh}的${orientation}先把注意力放到${keywords.join("、") || "当前状态"}上。`,
+      domainMeaning ?? baseMeaning,
+      getPositionBridge(position, readingIntent),
+    ]
+      .filter(Boolean)
+      .join(""),
+    question,
+    readingIntent,
+  );
+
+  return {
+    position,
+    title: `${card.nameZh} · ${orientation}`,
+    body,
+  };
+}
+
+function getDomainMeaning(card: TarotCard, reversed: boolean, readingIntent?: ReadingIntent) {
+  const suffix = reversed ? "Reversed" : "Upright";
+
+  switch (readingIntent?.domain) {
+    case "love":
+    case "relationship":
+      return card[`loveMeaning${suffix}` as const] ?? card.loveMeaning ?? null;
+    case "career":
+    case "study":
+      return card[`careerMeaning${suffix}` as const] ?? card.careerMeaning ?? null;
+    default:
+      return null;
+  }
+}
+
+function getPositionBridge(position: string, readingIntent?: ReadingIntent) {
+  if (readingIntent?.domain === "love" || readingIntent?.domain === "relationship") {
+    if (/对方/.test(position)) {
+      return "放在对方位置时，它更适合被看作TA当下呈现出的互动方式，而不是替TA内心下定论。";
+    }
+    if (/关系|现状|连接/.test(position)) {
+      return "放在关系位置时，它说的是你们之间正在形成的互动结构。";
+    }
+  }
+
+  if (/建议|行动|提醒/.test(position)) {
+    return "放在建议位置时，它更像一个可以先尝试的小动作，而不是最终判决。";
+  }
+
+  return "这只是等待完整解读前的牌义预览，最终仍会结合整组牌的结构来判断。";
+}
+
+function normalizePreviewPronouns(
+  text: string,
+  question: string,
+  readingIntent?: ReadingIntent,
+) {
+  const hasExplicitGender =
+    /她|女朋友|女友|前女友|老婆|妻子|太太|女生|女孩|女性|女方/.test(question) ||
+    /(^|[^其])他(?!人)|男朋友|男友|前男友|老公|丈夫|先生|男生|男孩|男性|男方/.test(question);
+
+  if (
+    hasExplicitGender ||
+    (readingIntent?.domain !== "love" &&
+      readingIntent?.domain !== "relationship" &&
+      !/关系|感情|恋爱|暧昧|伴侣|对象|对方/.test(question))
+  ) {
+    return text;
+  }
+
+  return text
+    .replace(/她\/他|他\/她|她或他|他或她|她和他|他和她/g, "TA")
+    .replace(/男方|女方/g, "TA")
+    .replace(/((?:对方|伴侣|对象|暧昧对象)的?)[他她]/g, "$1TA")
+    .replace(/(^|[^其])他(?=的|会|是|在|可能|也|更|还|不|想|需要|正在|有|没有|把|被|对|给|从|能|愿意|应该|仍|并)/g, "$1TA")
+    .replace(/(^|[^其])她(?=的|会|是|在|可能|也|更|还|不|想|需要|正在|有|没有|把|被|对|给|从|能|愿意|应该|仍|并)/g, "$1TA");
 }
 
 function buildPlainText({

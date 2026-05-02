@@ -4,7 +4,12 @@ import { buildInterpretationPayload } from "@/lib/interpretation/context";
 import {
   sanitizeInterpretationStreamSegment,
   sanitizeInterpretationText,
+  shouldNeutralizeRelationshipPronouns,
 } from "@/lib/interpretation/output";
+import {
+  runQualityGate,
+  summarizeQualityRequirements,
+} from "@/lib/interpretation/quality-gate";
 import type { DrawLog, DrawnCard, ReadingIntent, UserFeedback } from "@/lib/tarot/types";
 
 const DEFAULT_MODEL = process.env.MINIMAX_MODEL ?? "MiniMax-M2.7";
@@ -159,11 +164,24 @@ function createMockStream(text: string) {
 
 function createTextStream(text: string) {
   const encoder = new TextEncoder();
+  const chunks = text.split(/(\n{2,}|\n|。|！|？)/).filter(Boolean);
 
   return new ReadableStream({
     start(controller) {
-      controller.enqueue(encoder.encode(text));
-      controller.close();
+      let index = 0;
+
+      function push() {
+        if (index >= chunks.length) {
+          controller.close();
+          return;
+        }
+
+        controller.enqueue(encoder.encode(chunks[index]));
+        index += 1;
+        setTimeout(push, 18);
+      }
+
+      push();
     },
   });
 }
@@ -188,10 +206,20 @@ export async function generateInterpretation(input: GenerateInput) {
     userFeedback: input.userFeedback,
     locale: input.locale ?? "zh-CN",
   });
+  const sanitizeOptions = {
+    neutralizeRelationshipPronouns: shouldNeutralizeRelationshipPronouns(
+      input.question,
+      input.readingIntent,
+    ),
+  };
   const client = getClient();
 
   if (!client) {
-    const text = sanitizeInterpretationText(mockInterpretation(payload), payload.responseBlueprint);
+    const text = sanitizeInterpretationText(
+      mockInterpretation(payload),
+      payload.responseBlueprint,
+      sanitizeOptions,
+    );
 
     return {
       stream: createMockStream(text),
@@ -210,129 +238,134 @@ export async function generateInterpretation(input: GenerateInput) {
     ? INTERPRETATION_IDLE_TIMEOUT_MS
     : 25000;
   const abortController = new AbortController();
+  const aiClient = client;
 
   try {
-    const generationStart = Date.now();
-    const messageStream = await withTimeout(
-      client.messages.create(
-        {
-          model: DEFAULT_MODEL,
-          max_tokens: resolveInterpretationMaxTokens(payload),
-          temperature: Number.isFinite(DEFAULT_TEMPERATURE) ? DEFAULT_TEMPERATURE : 0.8,
-          system: [
-            {
-              type: "text",
-              text: payload.systemPrompt,
-            },
-            {
-              type: "text",
-              text: payload.knowledgeText,
-              cache_control: { type: "ephemeral" },
-            },
-          ],
-          messages: [
-            {
-              role: "user",
-              content: [{ type: "text", text: payload.userPrompt }],
-            },
-          ],
-          stream: true,
-        },
-        { signal: abortController.signal },
-      ),
-      Number.isFinite(INTERPRETATION_TIMEOUT_MS) ? INTERPRETATION_TIMEOUT_MS : 35000,
-      "interpretation stream start",
+    const qualityInput = {
+      question: input.question,
+      template: payload.responseBlueprint,
+      diagnosis: payload.questionDiagnosis,
+    };
+    const qualityRequirements = summarizeQualityRequirements(
+      runQualityGate("", qualityInput).requirements,
     );
-    timings.generation_ms = Date.now() - generationStart;
-    timings.total_ms = Date.now() - startedAt;
+    let text = "";
+    let quality = runQualityGate("", qualityInput);
+    let retryCount = 0;
 
-    const readableStream = new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder();
-        let pending = "";
-        let emittedAnything = false;
-        let idleTimer: ReturnType<typeof setTimeout> | undefined;
+    async function generateText(attempt: number) {
+      const generationStart = Date.now();
+      const messageStream = await withTimeout(
+        aiClient.messages.create(
+          {
+            model: DEFAULT_MODEL,
+            max_tokens: resolveInterpretationMaxTokens(payload),
+            temperature: Number.isFinite(DEFAULT_TEMPERATURE) ? DEFAULT_TEMPERATURE : 0.8,
+            system: [
+              {
+                type: "text",
+                text: payload.systemPrompt,
+              },
+              {
+                type: "text",
+                text: payload.knowledgeText,
+                cache_control: { type: "ephemeral" },
+              },
+            ],
+            messages: [
+              {
+                role: "user",
+                content: [
+                  {
+                    type: "text",
+                    text:
+                      attempt === 0
+                        ? `${payload.userPrompt}\n\n质量验收要求：\n${qualityRequirements}`
+                        : `${payload.userPrompt}\n\n上一次输出没有通过质量验收。请重新生成，必须满足：\n${qualityRequirements}`,
+                  },
+                ],
+              },
+            ],
+            stream: true,
+          },
+          { signal: abortController.signal },
+        ),
+        Number.isFinite(INTERPRETATION_TIMEOUT_MS) ? INTERPRETATION_TIMEOUT_MS : 35000,
+        "interpretation generation",
+      );
 
-        const armIdleTimer = () => {
-          if (idleTimer) clearTimeout(idleTimer);
-          idleTimer = setTimeout(() => {
-            abortController.abort(
-              new Error(`interpretation stream idle for ${idleTimeoutMs}ms`),
-            );
-          }, idleTimeoutMs);
-        };
+      let pending = "";
+      let fullText = "";
+      let idleTimer: ReturnType<typeof setTimeout> | undefined;
 
-        armIdleTimer();
+      const armIdleTimer = () => {
+        if (idleTimer) clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          abortController.abort(new Error(`interpretation stream idle for ${idleTimeoutMs}ms`));
+        }, idleTimeoutMs);
+      };
 
-        try {
-          for await (const chunk of messageStream) {
-            if (chunk.type !== "content_block_delta") continue;
-            if (chunk.delta.type !== "text_delta") continue;
+      armIdleTimer();
 
-            armIdleTimer();
-            pending += chunk.delta.text;
+      try {
+        for await (const chunk of messageStream) {
+          if (chunk.type !== "content_block_delta") continue;
+          if (chunk.delta.type !== "text_delta") continue;
 
-            const lastNewline = pending.lastIndexOf("\n");
-            if (lastNewline < 0) continue;
+          armIdleTimer();
+          pending += chunk.delta.text;
 
-            const stable = pending.slice(0, lastNewline + 1);
-            pending = pending.slice(lastNewline + 1);
-            const sanitized = sanitizeInterpretationStreamSegment(stable);
-            if (sanitized) {
-              controller.enqueue(encoder.encode(sanitized));
-              emittedAnything = true;
-            }
-          }
+          const lastNewline = pending.lastIndexOf("\n");
+          if (lastNewline < 0) continue;
 
-          if (pending) {
-            const sanitized = sanitizeInterpretationStreamSegment(pending);
-            if (sanitized) {
-              controller.enqueue(encoder.encode(sanitized));
-              emittedAnything = true;
-            }
-          }
-
-          controller.close();
-        } catch (err) {
-          if (!emittedAnything) {
-            try {
-              const text = sanitizeInterpretationText(
-                mockInterpretation(payload),
-                payload.responseBlueprint,
-              );
-              controller.enqueue(encoder.encode(text));
-              controller.close();
-              return;
-            } catch {
-              controller.error(err);
-              return;
-            }
-          }
-          try {
-            controller.close();
-          } catch {
-            // already closed
-          }
-        } finally {
-          if (idleTimer) clearTimeout(idleTimer);
+          const stable = pending.slice(0, lastNewline + 1);
+          pending = pending.slice(lastNewline + 1);
+          fullText += sanitizeInterpretationStreamSegment(stable, sanitizeOptions);
         }
-      },
-      cancel(reason) {
-        abortController.abort(reason);
-      },
-    });
+
+        if (pending) {
+          fullText += sanitizeInterpretationStreamSegment(pending, sanitizeOptions);
+        }
+      } finally {
+        if (idleTimer) clearTimeout(idleTimer);
+      }
+
+      timings[`generation_${attempt + 1}_ms`] = Date.now() - generationStart;
+      return sanitizeInterpretationText(fullText, payload.responseBlueprint, sanitizeOptions);
+    }
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      text = await generateText(attempt);
+      quality = runQualityGate(text, qualityInput);
+      text = quality.text;
+
+      if (!quality.needsRetry) break;
+      retryCount += 1;
+    }
+
+    timings.generation_ms = timings.generation_1_ms ?? 0;
+    timings.total_ms = Date.now() - startedAt;
+    timings.quality_issues = quality.issues.length;
+    timings.quality_retries = retryCount;
 
     return {
-      stream: readableStream,
+      stream: createTextStream(text),
       citations: payload.citations,
       model: DEFAULT_MODEL,
-      pipeline: "ai_generated",
-      debug: timings,
+      pipeline: quality.repaired || retryCount > 0 ? "ai_quality_gated" : "ai_generated",
+      debug: {
+        ...timings,
+        qualityIssueIds: quality.issues.map((issue) => issue.id),
+      },
     };
   } catch (error) {
     abortController.abort(error);
     timings.total_ms = Date.now() - startedAt;
-    const text = sanitizeInterpretationText(mockInterpretation(payload), payload.responseBlueprint);
+    const text = sanitizeInterpretationText(
+      mockInterpretation(payload),
+      payload.responseBlueprint,
+      sanitizeOptions,
+    );
 
     return {
       stream: createTextStream(text),
