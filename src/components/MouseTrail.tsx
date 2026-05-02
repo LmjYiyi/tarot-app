@@ -39,7 +39,7 @@ export function MouseTrail() {
       className="pointer-events-none fixed left-0 top-0 z-[9999] h-64 w-64 -translate-x-1/2 -translate-y-1/2"
       style={{
         background:
-          "radial-gradient(circle, rgba(197,154,76,0.18) 0%, rgba(197,154,76,0.06) 40%, transparent 70%)",
+          "radial-gradient(circle, rgba(200,90,60,0.16) 0%, rgba(200,90,60,0.05) 42%, transparent 72%)",
         filter: "blur(8px)",
         opacity: 0,
         transition: "opacity 200ms ease",

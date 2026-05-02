@@ -230,7 +230,7 @@ function StageLayout({
   headerAddon?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center w-full min-h-[460px] justify-between gap-6 py-6 lg:py-8">
+    <div className="flex flex-col items-center w-full min-h-[460px] justify-between py-6 lg:py-8">
       <div className="flex flex-col items-center gap-4 text-center w-full shrink-0 px-4">
         {headerAddon}
         <div className="flex items-center gap-2.5">
@@ -249,13 +249,15 @@ function StageLayout({
         </p>
       </div>
 
-      <div className="flex-1 flex w-full items-center justify-center relative my-4">
+      <div className="flex flex-1 w-full items-center justify-center my-2">
         {children}
       </div>
 
-      <div className="flex flex-col items-center justify-center w-full min-h-[48px] shrink-0 px-4">
-        {action}
-      </div>
+      {action ? (
+        <div className="flex flex-col items-center justify-center w-full min-h-[48px] shrink-0 px-4">
+          {action}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -347,24 +349,44 @@ function ShuffleStage({
         )
       }
     >
-      <p className="mb-3 text-center text-[13px] text-[var(--ink-muted)]">
-        {manualActive ? (canFinish ? "松手完成洗牌" : "继续按住") : "按住牌堆洗牌"}
-      </p>
-      <div
-        className="w-full touch-none"
-        onPointerDown={startManualShuffle}
-        onPointerUp={finishManualShuffle}
-        onPointerCancel={() => setManualActive(false)}
-        onPointerLeave={() => {
-          if (!canFinish) setManualActive(false);
-        }}
-      >
-        <ShuffleAura
-          active={active && manualActive}
-          closing={closing}
-          reduceMotion={reduceMotion}
-          previewCards={previewCards}
-        />
+      <div className="flex flex-col items-center justify-center w-full min-h-[460px] sm:min-h-[520px]">
+        <div className="mb-8 flex flex-col items-center gap-2">
+          <p className={cn(
+            "text-center text-[13px] font-medium tracking-wider transition-all duration-300",
+            manualActive ? "text-[var(--coral)]" : "text-[var(--ink-muted)]"
+          )}>
+            {manualActive 
+              ? (canFinish ? "✨ 差不多了，松开手！" : "🧘 能量交换中，再按一会儿...") 
+              : "👉 长按牌堆，把念头揉进牌里"}
+          </p>
+          {manualActive && !canFinish && (
+            <div className="h-0.5 w-12 overflow-hidden rounded-full bg-[var(--coral-wash)]">
+              <motion.div 
+                className="h-full bg-[var(--coral)]"
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: Math.min(durationMs, 2200) / 1000, ease: "linear" }}
+              />
+            </div>
+          )}
+        </div>
+        
+        <div
+          className="w-full flex justify-center touch-none cursor-pointer active:scale-[0.99] transition-transform"
+          onPointerDown={startManualShuffle}
+          onPointerUp={finishManualShuffle}
+          onPointerCancel={() => setManualActive(false)}
+          onPointerLeave={() => {
+            if (!canFinish) setManualActive(false);
+          }}
+        >
+          <ShuffleAura
+            active={active && manualActive}
+            closing={closing}
+            reduceMotion={reduceMotion}
+            previewCards={previewCards}
+          />
+        </div>
       </div>
     </StageLayout>
   );

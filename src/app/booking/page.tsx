@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { BookingForm } from "@/components/BookingForm";
+import { WeChatCopy } from "@/components/WeChatCopy";
 import { Ornament } from "@/components/ui/ornament";
 
 export const metadata: Metadata = {
@@ -102,10 +103,7 @@ export default function BookingPage() {
                   WeChat
                 </p>
                 <span className="h-px w-6 bg-[var(--line)]" />
-                <p className="font-mono text-[15px] text-[var(--coral-deep)]">
-                  {wechatId}
-                </p>
-                <CopyHint id={wechatId} />
+                <WeChatCopy wechatId={wechatId} />
               </div>
               <p className="text-[13.5px] leading-relaxed text-[var(--ink-soft)]">
                 添加好友请对暗号「<span className="text-[var(--coral-deep)]">预约占卜</span>」，方便我火速通过。或者直接填个表单丢过来，我会主动加你。
@@ -195,11 +193,11 @@ export default function BookingPage() {
                 <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--ink-muted)]">
                   Reach · 联络
                 </p>
-                <p className="mt-3 text-[13.5px] leading-6 text-[var(--ink-soft)]">
-                  如果有些着急，不妨直接加微信
-                  <span className="mx-1 font-mono text-[var(--coral-deep)]">{wechatId}</span>
+                <div className="mt-3 text-[13.5px] leading-6 text-[var(--ink-soft)]">
+                  如果有些着急，不妨直接点击复制微信
+                  <WeChatCopy wechatId={wechatId} className="inline-flex ml-2" />
                   备注「预约占卜」。平时填表即可，我会按顺序慢慢回复。
-                </p>
+                </div>
               </div>
             </div>
           </aside>
@@ -222,17 +220,3 @@ function Stat({ figure, caption }: { figure: string; caption: string }) {
   );
 }
 
-function CopyHint({ id }: { id: string }) {
-  return (
-    <span
-      aria-hidden
-      title={id}
-      className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[var(--line-strong)] text-[var(--coral)] transition-colors hover:border-[var(--coral)] hover:bg-[var(--coral-wash)] cursor-pointer"
-    >
-      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <rect x="8" y="8" width="12" height="12" rx="2" />
-        <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
-      </svg>
-    </span>
-  );
-}

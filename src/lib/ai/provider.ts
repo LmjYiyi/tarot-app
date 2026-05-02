@@ -69,10 +69,43 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: str
 function mockInterpretation(
   payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
 ) {
+  if (payload.responseBlueprint.slug === "single-guidance" && payload.selectedCards[0]) {
+    const { card, position, orientation, keywords, domainMeaning, primaryMeaning } =
+      payload.selectedCards[0];
+    const cardLabel = `${card.nameZh}（${orientation}）`;
+    const mainKeyword = keywords[0] ?? "现实确认";
+    const questionText = payload.question?.trim();
+    const isInterviewQuestion = Boolean(questionText && /面试|求职|应聘/.test(questionText));
+    const scenarioName = isInterviewQuestion ? "这场面试" : "这件事";
+    const contextualMeaning = isInterviewQuestion
+      ? `${card.nameZh}在这里更像把旧压力、失败预期和过度担心推到台前：它提醒你结束反复想象最坏结果的循环，把注意力放回准备材料、现场表达和可调整的细节。`
+      : (domainMeaning ?? primaryMeaning);
+    const actionText = isInterviewQuestion
+      ? "面试前做三件小事：第一，把最重要的三段经历各整理成“背景、行动、结果、反思”四句话；第二，准备一个解释挫折或项目收尾的案例，重点说你学到了什么；第三，留出休息时间，避免把自己逼到精力透支。今天最该做的不是求一个保证，而是让自己在现场能更稳地接住问题。"
+      : "今天做三件小事：第一，把当前最担心的点写成一个具体问题；第二，列出你已经能控制的三个动作；第三，先完成其中成本最低、反馈最快的一步。今天最该做的不是求一个保证，而是把压力转成现实里的小步推进。";
+
+    return [
+      payload.responseBlueprint.sections[0] ?? "1. 牌面先说",
+      `抽到${cardLabel}，这张牌先把焦点放在“${mainKeyword}”上。${questionText ? `针对你问的“${questionText}”，` : ""}它不是在替结果下判决，而是在提醒：当前最需要处理的是压力到顶点后的收束感。${card.nameZh}的牌面很重，但它的重点不是恐吓，而是让你承认紧张、疲惫或担心失利已经占了太多心力；越是这种时候，越要把注意力拉回还能准备、还能表达、还能澄清的部分。`,
+      "",
+      payload.responseBlueprint.sections[1] ?? "2. 牌面线索",
+      `${position.name}落在${card.nameZh}，说明${scenarioName}的关键不在“会不会百分百顺利”，而在你能否把一个旧阶段的压力收好。${contextualMeaning}放到当前语境里，可以读成：某个消耗你的阶段正在临界，真正有用的不是继续脑内预演最坏结果，而是把经验整理成清楚的表达。${orientation === "逆位" ? "逆位会更强调恢复信心和重新调整节奏。" : "正位会更强调事情已经到达需要收尾、复盘和重新站起的位置。"} `,
+      "",
+      payload.responseBlueprint.sections[2] ?? "3. 当前提醒",
+      `${card.nameZh}提醒你，不要把“我很焦虑”误读成“结果已经坏了”。它更像在说：压力已经足够高，继续反复想象失败只会消耗表现。现在要做的是承认担心存在，然后整理成可执行的准备：哪些依据最能支持你，哪些问题最可能出现，哪些地方需要一句更稳的解释。`,
+      "",
+      payload.responseBlueprint.sections[3] ?? "4. 今日行动",
+      actionText,
+      "",
+      payload.responseBlueprint.sections[4] ?? "5. 观察指标",
+      `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看三个信号：你是否能把表达说得更具体；面对压力问题时是否能保持节奏；以及结束后，你是否清楚知道自己哪里发挥稳定、哪里还要补。若这三个信号变清楚，${card.nameZh}就不是“失败预告”，而是一次把旧压力收尾、重新整理表达的提醒。`,
+    ].join("\n");
+  }
+
   const overview = payload.selectedCards
     .map(
-      ({ card, position, orientation, primaryMeaning }) =>
-        `${position.name}落在${card.nameZh}（${orientation}），提示${primaryMeaning}`,
+      ({ card, position, orientation, domainMeaning, primaryMeaning }) =>
+        `${position.name}落在${card.nameZh}（${orientation}），提示${domainMeaning ?? primaryMeaning}`,
     )
     .join("；");
 
@@ -80,22 +113,22 @@ function mockInterpretation(
     ({ card, position, orientation, keywords, primaryMeaning, domainMeaning }, index) =>
       [
         `${index + 1}. ${position.name}：${card.nameZh}（${orientation}）`,
-        `这个位置的任务是：${position.focus}。`,
-        `牌面给出的关键词是：${keywords.slice(0, 4).join("、")}。${primaryMeaning}`,
-        domainMeaning ? `放到你选择的领域里，它还指向：${domainMeaning}` : null,
-        `因此这里更像是在提醒你：${position.promptHint}`,
+        `${position.focus}：${keywords.slice(0, 3).join("、")}。${domainMeaning ?? primaryMeaning}`,
       ]
         .filter((line): line is string => Boolean(line))
         .join("\n"),
   );
 
   const suggestion =
-    payload.selectedCards[0]?.position.promptHint ??
+    payload.selectedCards[0]?.domainMeaning ??
+    payload.selectedCards[0]?.primaryMeaning ??
     "先把问题拆回现实动作、边界和节奏，再决定下一步。";
   const reminder =
-    payload.selectedCards.at(-1)?.card.keywordsUpright[0] ??
-    payload.selectedCards.at(-1)?.card.keywordsReversed[0] ??
+    (payload.selectedCards.at(-1)?.orientation === "逆位"
+      ? payload.selectedCards.at(-1)?.card.keywordsReversed[0]
+      : payload.selectedCards.at(-1)?.card.keywordsUpright[0]) ??
     "回到现实";
+  const finalCard = payload.selectedCards.at(-1);
   const middleCard = payload.selectedCards[Math.floor(payload.selectedCards.length / 2)];
   const trendCard = payload.selectedCards.at(-1);
   const positionSection =
@@ -107,7 +140,11 @@ function mockInterpretation(
     "6. 行动建议";
   const reminderSection =
     payload.responseBlueprint.sections.find((section) => /提醒|总结/.test(section)) ??
-    "7. 一句提醒";
+    payload.responseBlueprint.sections.at(-1) ??
+    "7. 观察指标";
+  const finalReminder = finalCard
+    ? `${finalCard.position.name}里的${finalCard.card.nameZh}（${finalCard.orientation}）把收尾重点放在“${reminder}”上：接下来先观察这个主题在现实里怎样出现，再决定要推进、停下，还是重新沟通。`
+    : "接下来先观察现实里的反馈，而不是急着把这次牌面当成最终定论。";
 
   return [
     payload.responseBlueprint.sections[0] ?? "1. 牌面总览",
@@ -131,10 +168,10 @@ function mockInterpretation(
     `近期更适合采取“小步确认”的策略。先不要急着证明一切都会好，或担心一切都会坏；你可以先观察${reminder}这个主题在现实里如何出现，再决定下一步的节奏。`,
     "",
     actionSection,
-    `先抓住最关键的一张牌和一个位置任务。${suggestion}如果暂时做不到全部调整，至少先完成一个最具体的动作。`,
+    `先抓住最关键的一张牌和一个现实动作。${suggestion}如果暂时做不到全部调整，至少先完成一个最具体的动作。`,
     "",
     reminderSection,
-    `近期提醒：别忽视“${reminder}”这个信号，真正的变化会从你停止重复旧节奏开始。`,
+    finalReminder,
   ].join("\n");
 }
 
@@ -245,6 +282,8 @@ export async function generateInterpretation(input: GenerateInput) {
       question: input.question,
       template: payload.responseBlueprint,
       diagnosis: payload.questionDiagnosis,
+      requiredCardNames: payload.selectedCards.map(({ card }) => card.nameZh),
+      intentDomain: input.readingIntent?.domain,
     };
     const qualityRequirements = summarizeQualityRequirements(
       runQualityGate("", qualityInput).requirements,
@@ -252,6 +291,7 @@ export async function generateInterpretation(input: GenerateInput) {
     let text = "";
     let quality = runQualityGate("", qualityInput);
     let retryCount = 0;
+    let usedQualityFallback = false;
 
     async function generateText(attempt: number) {
       const generationStart = Date.now();
@@ -343,6 +383,16 @@ export async function generateInterpretation(input: GenerateInput) {
       retryCount += 1;
     }
 
+    if (quality.needsRetry) {
+      text = sanitizeInterpretationText(
+        mockInterpretation(payload),
+        payload.responseBlueprint,
+        sanitizeOptions,
+      );
+      quality = runQualityGate(text, qualityInput);
+      usedQualityFallback = true;
+    }
+
     timings.generation_ms = timings.generation_1_ms ?? 0;
     timings.total_ms = Date.now() - startedAt;
     timings.quality_issues = quality.issues.length;
@@ -351,8 +401,17 @@ export async function generateInterpretation(input: GenerateInput) {
     return {
       stream: createTextStream(text),
       citations: payload.citations,
-      model: DEFAULT_MODEL,
-      pipeline: quality.repaired || retryCount > 0 ? "ai_quality_gated" : "ai_generated",
+      model: usedQualityFallback ? "local-interpretation-fallback" : DEFAULT_MODEL,
+      pipeline:
+        usedQualityFallback && quality.needsRetry
+          ? "ai_quality_fallback_unresolved"
+          : usedQualityFallback
+            ? "ai_quality_fallback"
+            : retryCount > 0
+              ? "ai_quality_gated_retry"
+            : quality.repaired
+              ? "ai_quality_gated"
+              : "ai_generated",
       debug: {
         ...timings,
         qualityIssueIds: quality.issues.map((issue) => issue.id),

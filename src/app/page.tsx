@@ -100,10 +100,16 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="mt-12 grid max-w-[540px] grid-cols-3 gap-6 border-t border-[var(--line)] pt-6">
-            <Stat figure="78" caption="Rider-Waite 牌面" />
-            <Stat figure="9" caption="高频牌阵" />
-            <Stat figure="∞" caption="匿名翻牌" />
+          <div className="mt-12 relative pt-8">
+            <div className="absolute top-0 left-0 right-0 flex items-center justify-start gap-3 opacity-70">
+              <span className="text-[var(--coral-soft)] text-xs animate-float">✦</span>
+              <div className="h-[1.5px] w-48 bg-gradient-to-r from-[var(--coral-edge)] to-transparent" />
+            </div>
+            <div className="grid max-w-[540px] grid-cols-3 gap-6">
+              <Stat figure="78" caption="Rider-Waite 牌面" />
+              <Stat figure="9" caption="高频牌阵" />
+              <Stat figure="∞" caption="匿名翻牌" />
+            </div>
           </div>
         </div>
 
@@ -192,18 +198,28 @@ export default function HomePage() {
       </section>
 
       <section className="relative isolate mx-auto w-full max-w-[1320px] px-5 pb-28 pt-6 sm:px-8 lg:px-12">
-        <div className="mb-14 grid gap-6 border-t border-[rgba(74,59,50,0.18)] pt-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div>
-            <p className="eyebrow">Arcana Minora · 小阿卡那</p>
-            <h2 className="mt-3 font-serif-display text-[clamp(2.3rem,4vw,3.5rem)] leading-[1.06] tracking-[-0.018em] text-[var(--ink)]">
-              四种元素，<br />
-              日常生活的细小回声。
-            </h2>
+        <div className="mb-14 relative pt-12">
+          <div className="absolute top-0 left-0 right-0 flex items-center justify-center gap-4 opacity-80">
+            <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-[var(--coral-edge)] to-transparent" />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[var(--coral-soft)] animate-float">
+              <circle cx="12" cy="12" r="3" fill="currentColor" />
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-[var(--coral-edge)] to-transparent" />
           </div>
-          <p className="max-w-2xl text-[15.5px] leading-8 text-[var(--ink-soft)]">
-            如果大阿卡那像命运转折，小阿卡那更像每天会遇见的风、火、水、土：
-            一次对话、一点犹豫、一股行动的冲动，或一件必须落地的现实小事。
-          </p>
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <p className="eyebrow">Arcana Minora · 小阿卡那</p>
+              <h2 className="mt-3 font-serif-display text-[clamp(2.3rem,4vw,3.5rem)] leading-[1.06] tracking-[-0.018em] text-[var(--ink)]">
+                四种元素，<br />
+                日常生活的细小回声。
+              </h2>
+            </div>
+            <p className="max-w-2xl text-[15.5px] leading-8 text-[var(--ink-soft)]">
+              如果大阿卡那像命运转折，小阿卡那更像每天会遇见的风、火、水、土：
+              一次对话、一点犹豫、一股行动的冲动，或一件必须落地的现实小事。
+            </p>
+          </div>
         </div>
 
         <div className="relative grid gap-x-7 gap-y-16 sm:grid-cols-2 lg:gap-x-10 xl:grid-cols-4 xl:items-start">

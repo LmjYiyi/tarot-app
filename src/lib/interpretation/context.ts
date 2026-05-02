@@ -222,6 +222,9 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     "15. 严禁擅自补充用户没有提供的事实背景：不要自行添加公司类型、岗位名称、地点、人物身份、关系状态或具体行业；不确定时使用“当前环境”“新方向”“对方”“这件事”等中性表达。",
     `16. 观察指标必须使用本牌阵的验证窗口：${responseBlueprint.timeScope.observationWindow}；不要自行缩短或拉长。`,
     "17. 关系、感情、暧昧、人际语境中，除非用户问题明确写出“他/她/男友/女友/老公/老婆/男方/女方”等性别信息，否则称呼对方时统一使用“TA”或“对方”，不要擅自写成“他”或“她”。",
+    /面试|求职|应聘|候选|岗位/.test(input.question)
+      ? "18. 用户问的是面试/求职场景：必须具体回应面试准备、现场表达、压力管理和面试后可观察反馈；不要把事业牌义直接套成当前工作要结束、职场关系出问题或正在离职。"
+      : null,
     `长度要求：${responseBlueprint.length.min} 到 ${responseBlueprint.length.max} 个中文字符；必须保留模板要求的核心章节。`,
     "必须完整结束，不要在句子中间截断；如果篇幅不够，优先压缩分位置解读，保留行动建议和一句总结。",
     "请严格按以下结构输出，只输出这些标题和对应正文；每个标题必须单独占一行，标题之后换行写正文：",
@@ -238,6 +241,7 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     .join("\n\n");
 
   return {
+    question: input.question,
     systemPrompt: context.systemPrompt,
     knowledgeText,
     userPrompt,

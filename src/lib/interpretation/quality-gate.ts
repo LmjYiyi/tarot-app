@@ -16,6 +16,8 @@ export type QualityGateInput = {
   question: string;
   template: SpreadReadingTemplate;
   diagnosis: QuestionDiagnosis;
+  requiredCardNames?: string[];
+  intentDomain?: "career" | "love" | "study" | "relationship" | "self" | "decision";
 };
 
 export type QualityGateResult = {
@@ -35,7 +37,11 @@ export type QualityIssue = {
 const absolutePredictionPattern =
   /(?:一定会|一定能|一定是|必然|必定|注定|命中注定|绝对会|绝对不会|保证|肯定会|肯定不会)/;
 const preciseDatePattern =
-  /(?:\d{1,2}\s*(?:月|号|日)|明天|后天|下周[一二三四五六日天]?|周[一二三四五六日天]|星期[一二三四五六日天])/;
+  /(?:\d{1,2}\s*(?:月|号|日)|后天|下周[一二三四五六日天]?|周[一二三四五六日天]|星期[一二三四五六日天])[^。！？\n]{0,18}(?:会|将|出现|发生|通过|失败|成功|联系|回来|录用|淘汰)/;
+const promptLeakagePattern =
+  /(?:把这张牌压缩成|放到你选择的领域里|这个位置的任务是|牌面给出的关键词是|先抓住最关键的一张牌|结构分析笔记|占卜师结构分析|领域牌义|用户未填写)/;
+const impossibleSingleCardPattern =
+  /(?:整组牌|牌与牌之间|从第一张牌到|四种花色全部缺席|没有明显的花色主导|没有抽到对应牌位)/;
 
 const safeAbsoluteSentence =
   "这次解读只讨论趋势、条件和可观察信号，不做绝对承诺，也不提供精确日期。";
@@ -141,6 +147,10 @@ function hasHighRiskChecklist(text: string) {
   ].every((pattern) => pattern.test(text));
 }
 
+function isInterviewQuestion(question: string) {
+  return /面试|求职|应聘|候选|岗位/.test(question);
+}
+
 export function buildQualityRequirements(input: QualityGateInput): QualityRequirement[] {
   const requirements: QualityRequirement[] = [
     ...input.template.sections.map((section) => ({
@@ -156,9 +166,25 @@ export function buildQualityRequirements(input: QualityGateInput): QualityRequir
     {
       id: "no-absolute-promise",
       severity: "retry",
-      description: "不得输出绝对预测、命定承诺或精确日期。",
+      description: "不得输出绝对预测、命定承诺或精确结果日期；可以承接用户原问题里的时间背景，但不能把它写成保证。",
     },
   ];
+
+  if (input.requiredCardNames?.length) {
+    requirements.push({
+      id: "card-grounding",
+      severity: "retry",
+      description: `必须明确解读抽到的牌：${input.requiredCardNames.join("、")}。`,
+    });
+  }
+
+  if (isInterviewQuestion(input.question)) {
+    requirements.push({
+      id: "interview-grounding",
+      severity: "retry",
+      description: "面试问题必须落到面试准备、现场表达、压力管理和可观察反馈，不得泛化成当前工作要结束。",
+    });
+  }
 
   if (input.diagnosis.flags.absolutePrediction || input.diagnosis.flags.preciseTiming) {
     requirements.push({
@@ -236,6 +262,57 @@ function validateText(
       severity: "retry",
       message: "包含绝对预测或精确日期表达。",
     });
+  }
+
+  if (promptLeakagePattern.test(text)) {
+    issues.push({
+      id: "prompt-leakage",
+      severity: "retry",
+      message: "输出暴露了内部提示、模板任务或资料拼接痕迹。",
+    });
+  }
+
+  const requiredCardNames = input.requiredCardNames ?? [];
+  if (requiredCardNames.length && !requiredCardNames.every((cardName) => text.includes(cardName))) {
+    issues.push({
+      id: "missing-card-grounding",
+      severity: "retry",
+      message: "输出没有明确引用并解读抽到的牌。",
+    });
+  }
+
+  if (input.template.slug === "single-guidance" && impossibleSingleCardPattern.test(text)) {
+    issues.push({
+      id: "single-card-structure-drift",
+      severity: "retry",
+      message: "单张牌解读出现多牌阵结构或明显脱离抽牌事实的表述。",
+    });
+  }
+
+  if (input.intentDomain === "career" && /(?:感情[：:]|在感情占卜中|有伴侣者|单身者)/.test(text)) {
+    issues.push({
+      id: "wrong-domain-copy",
+      severity: "retry",
+      message: "事业问题混入了感情领域的资料化释义。",
+    });
+  }
+
+  if (isInterviewQuestion(input.question)) {
+    if (!/(?:面试|求职|应聘|简历|面试官|回答)/.test(text)) {
+      issues.push({
+        id: "missing-interview-grounding",
+        severity: "retry",
+        message: "面试问题没有回到面试场景。",
+      });
+    }
+
+    if (/(?:当前工作阶段|工作阶段已经走到|某个工作节奏|某个项目方向|当前工作或事业中|事业中让你感到疲惫|一份工作已经无法|一份工作或一个方向|职场关系出现问题|当前工作中最让我感到疲惫)/.test(text)) {
+      issues.push({
+        id: "interview-domain-drift",
+        severity: "retry",
+        message: "面试问题被误读成当前工作结束或职场关系问题。",
+      });
+    }
   }
 
   if (

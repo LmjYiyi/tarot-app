@@ -1,7 +1,7 @@
 const markdownDividerPattern = /^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/;
 
 export const interpretationSectionTitles = [
-  "一句话结论",
+  "牌面先说",
   "牌阵结构",
   "关键矛盾",
   "现实映射",
@@ -58,6 +58,7 @@ export const interpretationSectionTitles = [
   "近期走向与结果趋势",
   "行动建议",
   "注意事项与行动建议",
+  "最后看这里",
   "一句近期提醒",
   "一句话总结",
   "一句提醒",
@@ -103,6 +104,8 @@ function cleanDisplayLine(line: string) {
   return line
     .trim()
     .replace(/\*\*/g, "")
+    .replace(/^一句(?:近期)?提醒$/, "最后看这里")
+    .replace(/^一句话总结$/, "最后看这里")
     .replace(/反馈线索/g, "牌面线索")
     .replace(/用户反馈摘要/g, "直觉补充")
     .replace(/^[-*]\s+/, "")

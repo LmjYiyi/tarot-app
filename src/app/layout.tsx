@@ -97,6 +97,9 @@ function SiteHeader() {
           <Link className="hidden rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)] sm:inline-flex" href="/cards/the-fool">
             牌义
           </Link>
+          <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)]" href="/history">
+            记录
+          </Link>
           <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)]" href="/booking">
             预约作者
           </Link>
@@ -156,6 +159,7 @@ function SiteFooter() {
           <ul className="space-y-2">
             <li><Link className="transition hover:text-[var(--coral-deep)]" href="/spreads">牌阵索引</Link></li>
             <li><Link className="transition hover:text-[var(--coral-deep)]" href="/cards/the-fool">牌义图册</Link></li>
+            <li><Link className="transition hover:text-[var(--coral-deep)]" href="/history">占卜记录</Link></li>
             <li><Link className="transition hover:text-[var(--coral-deep)]" href="/booking">预约作者</Link></li>
           </ul>
         </div>
@@ -183,6 +187,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
+      suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${bodyFont.variable} ${displayFont.variable} ${occultFont.variable} ${frauncesFont.variable} ${monoFont.variable} h-full antialiased`}
     >

@@ -20,6 +20,10 @@ const unsafeSentenceReplacements: Array<[RegExp, string]> = [
     /[^。！？\n]*超凡脱俗的个性[^。！？\n]*[。！？]?/g,
     "这组牌更适合被理解为对自我要求、外在评价和内在力量使用方式的提醒。",
   ],
+  [
+    /[^。！？\n]*别忽视[“「][^”」]+[”」]这个信号，真正的变化会从你停止重复旧节奏开始[。！？]?/g,
+    "接下来先把牌面指向的主题落到一个可观察的动作上，再看现实是否给出回应。",
+  ],
 ];
 
 type SanitizeInterpretationOptions = {

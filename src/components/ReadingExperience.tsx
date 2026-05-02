@@ -9,6 +9,7 @@ import { MobileStickyDeck } from "@/components/MobileStickyDeck";
 import { SpreadLayout } from "@/components/SpreadLayout";
 import { StreamingInterpretation } from "@/components/StreamingInterpretation";
 import { Button } from "@/components/ui/button";
+import { addLocalReading } from "@/lib/readings/local-history";
 import {
   getDefaultIntentForSpread,
   getDefaultQuestionForIntent,
@@ -433,7 +434,31 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
 
       if (saveResponse.ok && !controller.signal.aborted) {
         const payload = (await saveResponse.json()) as { sharePath?: string };
-        if (payload.sharePath) setSharePath(payload.sharePath);
+        if (payload.sharePath) {
+          setSharePath(payload.sharePath);
+          const tokenMatch = payload.sharePath.match(/\/r\/([^/?#]+)/);
+          const shareToken = tokenMatch ? tokenMatch[1] : null;
+          if (shareToken) {
+            const domainLabel = domainOptions.find(
+              (option) => option.value === readingIntent.domain,
+            )?.label;
+            const goalLabel = goalOptions.find(
+              (option) => option.value === readingIntent.goal,
+            )?.label;
+            const intentLabel =
+              domainLabel && goalLabel ? `${domainLabel} · ${goalLabel}` : null;
+            addLocalReading({
+              shareToken,
+              spreadSlug: spread.slug,
+              spreadName: spread.nameZh,
+              question: finalQuestion,
+              cardCount: cards.length,
+              reversedCount: cards.filter((card) => card.reversed).length,
+              intentLabel,
+              createdAt: new Date().toISOString(),
+            });
+          }
+        }
       }
 
       setPhase("done");
@@ -625,7 +650,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
                   phase={phase}
                 />
                 {error ? (
-                  <div className="rounded-[12px] border border-[rgba(184,92,110,0.4)] bg-[rgba(184,92,110,0.06)] px-4 py-3 text-sm leading-6 text-[#8a3447]">
+                  <div className="rounded-[12px] border border-[var(--coral-edge)] bg-[var(--coral-wash)] px-4 py-3 text-sm leading-6 text-[var(--coral-deep)]">
                     {error}
                   </div>
                 ) : null}

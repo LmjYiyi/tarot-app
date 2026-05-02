@@ -8,13 +8,15 @@ const commonForbiddenPatterns = [
   "不要输出 Markdown 分隔线、项目符号清单或表格。",
   "不要在正文里写“组合意义是”“组合意义中”“资料显示”“结构分析笔记显示”等暴露提示词的表达。",
   "不要原文引用牌组组合资料；组合资料只可转化为牌间联动视角。",
+  "不要使用“别忽视……这个信号，真正的变化会从你停止重复旧节奏开始”这类模板句。",
+  "不要使用“一句话结论”“一句提醒”“一句话总结”这类报告式标题。",
 ];
 
 const defaultTemplate: SpreadReadingTemplate = {
   slug: "default",
   purpose: "用通用结构看清问题主线、关键矛盾、现实映射和可执行下一步。",
   sections: [
-    "1. 一句话结论",
+    "1. 牌面先说",
     "2. 牌阵结构",
     "3. 关键矛盾",
     "4. 现实映射",
@@ -46,7 +48,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "single-guidance": {
     slug: "single-guidance",
     purpose: "把一张牌压缩成当下最需要看见的提醒和一个具体动作。",
-    sections: ["1. 一句话结论", "2. 牌面线索", "3. 当前提醒", "4. 今日行动", "5. 观察指标"],
+    sections: ["1. 牌面先说", "2. 牌面线索", "3. 当前提醒", "4. 今日行动", "5. 观察指标"],
     instruction: "单张牌不展开复杂因果，只提炼核心主题、现实落点和一个可执行动作。",
     positionWeights: { 1: { weight: "primary", role: "核心讯息" } },
     timeScope: {
@@ -63,7 +65,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "three-card": {
     slug: "three-card",
     purpose: "用三张牌看背景、现状与走向，或转换成问题、阻碍与建议。",
-    sections: ["1. 一句话结论", "2. 三张牌的阶段变化", "3. 当前关键矛盾", "4. 现实映射", "5. 行动建议", "6. 观察指标"],
+    sections: ["1. 牌面先说", "2. 三张牌的阶段变化", "3. 当前关键矛盾", "4. 现实映射", "5. 行动建议", "6. 观察指标"],
     instruction: "三张牌必须写出阶段感，不要只并列解释三张牌。",
     positionWeights: {
       1: { weight: "secondary", role: "背景/过去影响" },
@@ -88,7 +90,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "career-five": {
     slug: "career-five",
     purpose: "围绕事业问题整合现状、阻碍、优势、近期发展和行动建议。",
-    sections: ["1. 一句话结论", "2. 事业结构", "3. 关键卡点", "4. 可用优势", "5. 近期发展", "6. 行动建议", "7. 观察指标"],
+    sections: ["1. 牌面先说", "2. 事业结构", "3. 关键卡点", "4. 可用优势", "5. 近期发展", "6. 行动建议", "7. 观察指标"],
     instruction: "事业牌阵要把阻碍、优势和近期发展连成一条现实路径。",
     positionWeights: {
       1: { weight: "secondary", role: "当前事业处境" },
@@ -120,7 +122,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "cross-five": {
     slug: "cross-five",
     purpose: "用十字结构看问题核心、背景、当下、未来和阻碍/帮助。",
-    sections: ["1. 一句话结论", "2. 核心结构", "3. 背景如何影响现在", "4. 未来趋势", "5. 阻碍或帮助", "6. 行动建议", "7. 观察指标"],
+    sections: ["1. 牌面先说", "2. 核心结构", "3. 背景如何影响现在", "4. 未来趋势", "5. 阻碍或帮助", "6. 行动建议", "7. 观察指标"],
     instruction: "五牌十字阵要围绕中心牌组织，不要把四周牌平铺。",
     positionWeights: {
       1: { weight: "primary", role: "问题核心" },
@@ -148,7 +150,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "relationship-six": {
     slug: "relationship-six",
     purpose: "看双方状态、互动结构、边界/误解以及修复路径。",
-    sections: ["1. 一句话结论", "2. 关系结构", "3. 双方状态", "4. 关键误解或边界", "5. 修复路径", "6. 行动建议", "7. 观察指标"],
+    sections: ["1. 牌面先说", "2. 关系结构", "3. 双方状态", "4. 关键误解或边界", "5. 修复路径", "6. 行动建议", "7. 观察指标"],
     instruction: "关系牌阵重点是互动结构，不替任何一方做绝对心理判决。",
     positionWeights: {
       1: { weight: "primary", role: "用户在关系中的状态" },
@@ -181,7 +183,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "lovers-pyramid": {
     slug: "lovers-pyramid",
     purpose: "用四张牌拆开你、对方、关系本身和近期发展。",
-    sections: ["1. 一句话结论", "2. 关系结构", "3. 你与对方的差异", "4. 关系本身", "5. 近期发展", "6. 行动建议", "7. 观察指标"],
+    sections: ["1. 牌面先说", "2. 关系结构", "3. 你与对方的差异", "4. 关系本身", "5. 近期发展", "6. 行动建议", "7. 观察指标"],
     instruction: "恋人金字塔要比较双方位置，再由关系位和发展位给出趋势。",
     positionWeights: {
       1: { weight: "secondary", role: "用户在关系中的状态" },
@@ -208,7 +210,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "path-of-choice": {
     slug: "path-of-choice",
     purpose: "比较 A/B 两条路径的机会、代价、隐藏变量与决策前动作。",
-    sections: ["1. 一句话结论", "2. 两个选择的本质差异", "3. 路径 A 的机会与代价", "4. 路径 B 的机会与代价", "5. 隐藏变量", "6. 决策前动作", "7. 观察指标"],
+    sections: ["1. 牌面先说", "2. 两个选择的本质差异", "3. 路径 A 的机会与代价", "4. 路径 B 的机会与代价", "5. 隐藏变量", "6. 决策前动作", "7. 观察指标"],
     instruction: "选择牌阵必须成对比较，不替用户做决定，而是澄清代价、条件和验证信号；每个路径只写机会与代价，不展开成长篇单牌解释。",
     positionWeights: {
       1: { weight: "secondary", role: "路径 A 现状" },
@@ -253,7 +255,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "self-state": {
     slug: "self-state",
     purpose: "把自我状态外化为压力、需求、被忽略的部分和调整方向。",
-    sections: ["1. 一句话结论", "2. 当前心理结构", "3. 压力源", "4. 被忽略的需求", "5. 调整方向", "6. 行动建议", "7. 观察指标"],
+    sections: ["1. 牌面先说", "2. 当前心理结构", "3. 压力源", "4. 被忽略的需求", "5. 调整方向", "6. 行动建议", "7. 观察指标"],
     instruction: "自我状态牌阵要温和、具体，不给用户贴负面标签。",
     positionWeights: {
       1: { weight: "secondary", role: "外在呈现" },
@@ -282,7 +284,7 @@ const templates: Record<string, SpreadReadingTemplate> = {
   "celtic-cross": {
     slug: "celtic-cross",
     purpose: "整合核心张力、内外因素、短期变化、希望担心与长期趋势。",
-    sections: ["1. 一句话结论", "2. 核心张力", "3. 内外因素", "4. 过去如何影响现在", "5. 短期变化", "6. 希望与担心", "7. 长期趋势", "8. 行动建议", "9. 观察指标"],
+    sections: ["1. 牌面先说", "2. 核心张力", "3. 内外因素", "4. 过去如何影响现在", "5. 短期变化", "6. 希望与担心", "7. 长期趋势", "8. 行动建议", "9. 观察指标"],
     instruction: "凯尔特十字要做整合式深读，不能逐张平铺十张牌。",
     positionWeights: {
       1: { weight: "primary", role: "现状" },

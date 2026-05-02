@@ -31,6 +31,13 @@ describe("interpretation display helpers", () => {
     expect(stripSectionNumber("4、分位置解读")).toBe("分位置解读");
   });
 
+  it("softens legacy reminder headings for display", () => {
+    expect(buildInterpretationItems("一句提醒\n先观察对方是否愿意把话说清楚。")).toEqual([
+      { kind: "heading", text: "最后看这里" },
+      { kind: "paragraph", text: "先观察对方是否愿意把话说清楚。" },
+    ]);
+  });
+
   it("splits section headings from dense single-newline interpretation text", () => {
     expect(
       buildInterpretationItems(

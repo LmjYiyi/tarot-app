@@ -74,7 +74,15 @@ export function BookingForm() {
 
   if (state.status === "success") {
     return (
-      <div className="relative py-8 sm:py-10">
+      <div className="relative overflow-hidden py-8 sm:py-10">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -left-12 -top-10 h-44 w-44 rounded-full bg-[radial-gradient(circle_at_center,rgba(200,90,60,0.10)_0%,transparent_70%)]"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-2 h-px w-24 bg-[linear-gradient(90deg,var(--coral-edge),transparent)]"
+        />
         <p className="eyebrow mb-4">Reservation · 预约成功</p>
         <h3 className="font-serif-display text-[32px] leading-tight text-[var(--ink)]">
           预约已记下，<span className="text-[var(--coral)]">谢谢你的信任。</span>
@@ -164,12 +172,20 @@ export function BookingForm() {
                 key={option.value}
                 type="button"
                 onClick={() => setTopic(option.value)}
-                className={`group rounded-[10px] border px-3 py-2.5 text-left transition ${
+                className={`group relative overflow-hidden rounded-[10px] border px-3 py-2.5 text-left transition duration-200 ${
                   active
-                    ? "border-[var(--coral)] bg-[var(--coral-wash)]"
-                    : "border-[var(--line)] bg-transparent hover:border-[var(--ink-soft)]"
+                    ? "border-[var(--coral)] bg-[var(--coral-wash)] shadow-[inset_0_0_0_1px_rgba(200,90,60,0.18)]"
+                    : "border-[var(--line)] bg-transparent hover:-translate-y-[1px] hover:border-[var(--coral-edge)] hover:bg-[rgba(200,90,60,0.04)]"
                 }`}
               >
+                <span
+                  aria-hidden
+                  className={`absolute right-2 top-2 h-1.5 w-1.5 rotate-45 border transition ${
+                    active
+                      ? "border-[var(--coral)] bg-[var(--coral)]"
+                      : "border-[var(--ink-faint)] bg-transparent group-hover:border-[var(--coral-edge)]"
+                  }`}
+                />
                 <span className={`block text-[13.5px] font-medium ${active ? "text-[var(--coral-deep)]" : "text-[var(--ink)]"}`}>
                   {option.label}
                 </span>
@@ -233,8 +249,9 @@ export function BookingForm() {
         </p>
       ) : null}
 
-      <div className="mt-8 flex flex-col-reverse items-stretch gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-[12.5px] leading-6 text-[var(--ink-muted)]">
+      <div className="mt-8 flex flex-col-reverse items-stretch gap-4 border-t border-[var(--line)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex items-center gap-2 text-[12.5px] leading-6 text-[var(--ink-muted)]">
+          <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--coral)] opacity-80" />
           提交后，我会收到你的预约信号。
         </p>
         <button
@@ -242,7 +259,7 @@ export function BookingForm() {
           disabled={state.status === "submitting"}
           className={buttonStyles({ className: "px-6 py-3 text-[14.5px]" })}
         >
-          {state.status === "submitting" ? "发送中…" : "发送预约"}
+          {state.status === "submitting" ? "发送中…" : "发送预约 →"}
         </button>
       </div>
     </form>

@@ -92,7 +92,7 @@ export function SpreadLayout({ spread, cards, quiet = false }: SpreadLayoutProps
                   <span className={cn(
                     "mt-1 font-mono text-[9px] tracking-[0.18em] px-2 py-0.5 rounded-full border",
                     reversed
-                      ? "border-[rgba(138,52,71,0.58)] bg-[rgba(184,92,110,0.14)] text-[#7b2c3e]"
+                      ? "border-[rgba(122,66,42,0.55)] bg-[rgba(122,66,42,0.10)] text-[rgba(122,66,42,0.95)]"
                       : "border-[rgba(200,90,60,0.58)] bg-[rgba(251,232,190,0.86)] text-[var(--coral-deep)]"
                   )}>
                     {reversed ? "逆位 · 受阻/内化" : "正位 · 顺流/外显"}
@@ -352,7 +352,7 @@ function CardZoomModal({
                   className={cn(
                     "mt-4 inline-flex items-center rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em]",
                     focused.reversed
-                      ? "border-[rgba(138,52,71,0.6)] bg-[rgba(184,92,110,0.12)] text-[#7b2c3e]"
+                      ? "border-[rgba(122,66,42,0.55)] bg-[rgba(122,66,42,0.10)] text-[rgba(122,66,42,0.95)]"
                       : "border-[rgba(200,90,60,0.6)] bg-[rgba(251,232,190,0.7)] text-[var(--coral-deep)]",
                   )}
                 >

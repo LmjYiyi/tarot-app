@@ -292,6 +292,11 @@ a {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.9; }
 }
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
 
 .wizard-step-enter {
   animation: wizard-step 280ms cubic-bezier(0.22, 0.65, 0.2, 1) both;
@@ -303,6 +308,8 @@ a {
   animation: shimmer-pulse 1.6s ease-in-out infinite;
 }
 .animate-pulse-slow { animation: pulse-slow 2.4s ease-in-out infinite; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-float-delayed { animation: float 6s ease-in-out 3s infinite; }
 
 /* Staggered reveal helpers */
 .stagger > * { animation: rise 0.6s cubic-bezier(0.22, 0.65, 0.2, 1) both; }
@@ -397,6 +404,17 @@ span:focus-within > .annotated-phrase {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
   border-color: var(--coral-edge);
+}
+
+/* Coral-toned focus ring helper for warm cream inputs */
+.coral-focus {
+  transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+}
+.coral-focus:focus-visible,
+.coral-focus:focus-within {
+  outline: none;
+  border-color: var(--coral);
+  box-shadow: 0 0 0 3px var(--coral-wash);
 }
 
 /* Custom scrollbar */

@@ -64,7 +64,23 @@
       "Bash(awk NR>=4 && NR<=5 *)",
       "Bash(awk 'NR>=6 && NR<=8' \"C:/Users/admin/.claude/projects/C--Users-admin-Desktop-RPC-tarot-app/13b24a28-6581-4a1a-9db5-f24c5e72d771.jsonl\")",
       "Bash(awk 'NR>=190 && NR<=200' \"C:/Users/admin/.claude/projects/C--Users-admin-Desktop-RPC-tarot-app/13b24a28-6581-4a1a-9db5-f24c5e72d771.jsonl\")",
-      "Bash(git diff *)"
+      "Bash(git push *)",
+      "Bash(git diff *)",
+      "Bash(git commit *)",
+      "Bash(git show *)",
+      "Read(//tmp/**)",
+      "mcp__chrome-devtools__wait_for",
+      "mcp__chrome-devtools__performance_start_trace",
+      "mcp__chrome-devtools__emulate",
+      "Bash(git pull *)",
+      "Bash(git reset *)",
+      "Bash(git config *)",
+      "Bash(git stash *)",
+      "Bash(git checkout *)",
+      "Bash(git clean *)",
+      "Bash(echo \"exitcode=$?\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(npx vitest *)"
     ]
   }
 }

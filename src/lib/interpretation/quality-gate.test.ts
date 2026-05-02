@@ -8,7 +8,7 @@ const template: SpreadReadingTemplate = {
   slug: "path-of-choice",
   purpose: "比较 A/B 两条路径。",
   sections: [
-    "1. 一句话结论",
+    "1. 牌面先说",
     "2. 两个选择的本质差异",
     "3. 路径 A 的机会与代价",
     "4. 路径 B 的机会与代价",
@@ -46,7 +46,7 @@ describe("runQualityGate", () => {
   it("repairs missing safety cushion and A/B labels", () => {
     const result = runQualityGate(
       [
-        "1. 一句话结论",
+        "1. 牌面先说",
         "",
         "可以比较两条路的节奏。",
         "",
@@ -85,7 +85,7 @@ describe("runQualityGate", () => {
   });
 
   it("requests retry for absolute promises", () => {
-    const result = runQualityGate("1. 一句话结论\n你一定会成功。", {
+    const result = runQualityGate("1. 牌面先说\n你一定会成功。", {
       question: "我一定会成功吗？",
       template,
       diagnosis: highRiskDiagnosis,
