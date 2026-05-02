@@ -1,6 +1,7 @@
 import { z, ZodError } from "zod";
 
 import { generateInterpretation } from "@/lib/ai/provider";
+import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
 
 export const runtime = "nodejs";
 
@@ -46,6 +47,51 @@ export async function POST(request: Request) {
   try {
     const json = await request.json();
     const input = requestSchema.parse(json);
+    const spread = getSpreadBySlug(input.spreadSlug);
+
+    if (!spread) {
+      return Response.json(
+        { error: "Invalid spreadSlug.", spreadSlug: input.spreadSlug },
+        { status: 400 },
+      );
+    }
+
+    if (input.cards.length !== spread.cardCount) {
+      return Response.json(
+        {
+          error: "Card count does not match spread.",
+          expected: spread.cardCount,
+          received: input.cards.length,
+        },
+        { status: 400 },
+      );
+    }
+
+    const validPositionOrders = new Set(spread.positions.map((position) => position.order));
+    const invalidPosition = input.cards.find(
+      (card) => !validPositionOrders.has(card.positionOrder),
+    );
+
+    if (invalidPosition) {
+      return Response.json(
+        {
+          error: "Invalid positionOrder for spread.",
+          positionOrder: invalidPosition.positionOrder,
+          spreadSlug: spread.slug,
+        },
+        { status: 400 },
+      );
+    }
+
+    const missingCard = input.cards.find((card) => !getCardById(card.cardId));
+
+    if (missingCard) {
+      return Response.json(
+        { error: "Invalid cardId.", cardId: missingCard.cardId },
+        { status: 400 },
+      );
+    }
+
     const result = await generateInterpretation(input);
 
     return new Response(result.stream, {

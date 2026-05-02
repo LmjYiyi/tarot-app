@@ -250,6 +250,8 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     feedbackSummary,
     responseBlueprint,
     questionDiagnosis,
+    userFeedback: input.userFeedback,
+    readingIntent: input.readingIntent,
     spreadName: spread?.nameZh ?? input.spreadSlug,
   };
 }

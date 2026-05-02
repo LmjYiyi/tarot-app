@@ -66,113 +66,271 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: str
   }
 }
 
-function mockInterpretation(
+const suitTheme: Record<string, string> = {
+  cups: "感受、关系和真实需求",
+  wands: "行动力、热情和推进节奏",
+  swords: "判断、沟通和压力管理",
+  pentacles: "资源、方法和稳定执行",
+};
+
+const domainTheme: Record<ReadingIntent["domain"], string> = {
+  career: "工作现实、能力呈现和推进策略",
+  love: "情感状态、互动节奏和真实需求",
+  study: "学习方法、复习节奏和临场稳定",
+  relationship: "互动边界、沟通方式和双方节奏",
+  self: "内在状态、能量管理和自我支持",
+  decision: "选择条件、风险边界和验证动作",
+};
+
+function cardLabel(
+  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+) {
+  return `${selectedCard.card.nameZh}（${selectedCard.orientation}）`;
+}
+
+function cardKeywords(
+  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+  count = 3,
+) {
+  return selectedCard.keywords.slice(0, count).join("、") || "现实确认";
+}
+
+function describeCard(
+  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+) {
+  const theme = selectedCard.card.suit
+    ? suitTheme[selectedCard.card.suit]
+    : "阶段主题、价值选择和更深层的提醒";
+  const orientationNote =
+    selectedCard.orientation === "逆位"
+      ? "逆位表示这股能量暂时被压住、绕行或需要重新调整。"
+      : "正位表示这个主题已经比较清楚，可以直接落到现实动作。";
+
+  return `${selectedCard.card.nameZh}把重点放在${theme}上，关键词是${cardKeywords(selectedCard)}。${orientationNote}`;
+}
+
+function isInterviewQuestion(question: string) {
+  return /面试|求职|应聘|候选|岗位/.test(question);
+}
+
+function isExamQuestion(question: string) {
+  return /考试|测验|考核|笔试|面试题|复习|成绩|及格|通过/.test(question);
+}
+
+function isHighRiskMoneyQuestion(question: string, intent?: ReadingIntent) {
+  return (
+    /all in|梭哈|股票|投资|基金|币|贷款|借钱|买房|卖房/i.test(question) ||
+    intent?.domain === "decision"
+  );
+}
+
+function feedbackSentence(
   payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
 ) {
-  if (payload.responseBlueprint.slug === "single-guidance" && payload.selectedCards[0]) {
-    const { card, position, orientation, keywords, domainMeaning, primaryMeaning } =
-      payload.selectedCards[0];
-    const cardLabel = `${card.nameZh}（${orientation}）`;
-    const mainKeyword = keywords[0] ?? "现实确认";
-    const questionText = payload.question?.trim();
-    const isInterviewQuestion = Boolean(questionText && /面试|求职|应聘/.test(questionText));
-    const scenarioName = isInterviewQuestion ? "这场面试" : "这件事";
-    const contextualMeaning = isInterviewQuestion
-      ? `${card.nameZh}在这里更像把旧压力、失败预期和过度担心推到台前：它提醒你结束反复想象最坏结果的循环，把注意力放回准备材料、现场表达和可调整的细节。`
-      : (domainMeaning ?? primaryMeaning);
-    const actionText = isInterviewQuestion
-      ? "面试前做三件小事：第一，把最重要的三段经历各整理成“背景、行动、结果、反思”四句话；第二，准备一个解释挫折或项目收尾的案例，重点说你学到了什么；第三，留出休息时间，避免把自己逼到精力透支。今天最该做的不是求一个保证，而是让自己在现场能更稳地接住问题。"
-      : "今天做三件小事：第一，把当前最担心的点写成一个具体问题；第二，列出你已经能控制的三个动作；第三，先完成其中成本最低、反馈最快的一步。今天最该做的不是求一个保证，而是把压力转成现实里的小步推进。";
+  const feeling = payload.userFeedback?.overallFeeling?.trim();
+  const note = payload.userFeedback?.overallFeelingNote?.trim();
+  const parts = [feeling, note].filter(Boolean);
 
+  if (!parts.length) return "";
+
+  return `你补充的感受是“${parts.join("；")}”。这会被当成牌面里的直觉线索：它不替牌下结论，但能帮助判断哪里让你有力量，哪里又让你担心失衡。`;
+}
+
+function feedbackQualityTerms(feedback: UserFeedback | undefined) {
+  const source = [feedback?.overallFeeling, feedback?.overallFeelingNote].filter(Boolean).join("，");
+  const candidates = [
+    "自信",
+    "担心",
+    "不能持久",
+    "焦虑",
+    "害怕",
+    "开心",
+    "难过",
+    "压力",
+    "疲惫",
+    "兴奋",
+    "平静",
+    "安心",
+    "不安",
+    "迷茫",
+  ];
+
+  return candidates.filter((term) => source.includes(term)).slice(0, 4);
+}
+
+function singleAction(
+  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+) {
+  const question = payload.question.trim();
+
+  if (isInterviewQuestion(question)) {
+    return "面试前先做三件小事：把三段最能证明能力的经历整理成“背景、行动、结果、反思”；准备一个解释挫折或项目收尾的案例；留出休息时间，让自己进场时能稳住节奏。";
+  }
+
+  if (isExamQuestion(question) || payload.readingIntent?.domain === "study") {
+    return "今天把复习压缩到三件可完成的事：先列出最可能失分的三个点，再各做一轮针对性练习，最后用一小段时间复述答题步骤。重点不是临时求保证，而是把会做的部分稳稳拿住。";
+  }
+
+  if (isHighRiskMoneyQuestion(question, payload.readingIntent)) {
+    return "今天不要急着下注。先写清楚可承受亏损、时间线、替代方案和止损点；如果任何一项写不出来，就把行动降级为观察和补信息。";
+  }
+
+  if (payload.readingIntent?.domain === "self") {
+    return `今天选一个能支持“${cardKeywords(selectedCard, 1)}”的小动作：整理一件拖着的事、完成一次身体休息，或把真实感受写下来。动作要小，但要真的完成。`;
+  }
+
+  if (payload.readingIntent?.domain === "love" || payload.readingIntent?.domain === "relationship") {
+    return "今天先不要用猜测替代沟通。写下你真正想确认的一句话，再判断它适不适合现在说出口；如果暂时不适合，就先观察对方是否有稳定、可重复的行动。";
+  }
+
+  return `今天围绕${selectedCard.card.nameZh}做一个小步验证：把最担心的点写成一句现实问题，再完成一个能在当天看到反馈的动作。`;
+}
+
+function singleObservation(
+  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+) {
+  const window = payload.responseBlueprint.timeScope.observationWindow;
+  const question = payload.question.trim();
+
+  if (isInterviewQuestion(question)) {
+    return `观察窗口放在${window}。重点看：回答是否更具体，面对压力问题时是否能保持节奏，面试后是否知道自己哪里发挥稳定、哪里还要补。`;
+  }
+
+  if (isExamQuestion(question) || payload.readingIntent?.domain === "study") {
+    return `观察窗口放在${window}。重点看：复习后错题是否减少，答题步骤是否更清楚，临场前是否能把注意力放在会做的部分。`;
+  }
+
+  if (payload.readingIntent?.domain === "self") {
+    return `观察窗口放在${window}。重点看：你的自信是否能转成稳定行动，担心是否下降，以及完成小动作后身体和情绪有没有更踏实。`;
+  }
+
+  return `观察窗口放在${window}。重点看：${cardKeywords(selectedCard, 1)}这个主题是否变得更清楚，你是否能把焦虑转成一个可执行动作，以及现实反馈是否比原先更具体。`;
+}
+
+function buildSingleFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+  const selectedCard = payload.selectedCards[0];
+  const questionText = payload.question.trim();
+  const feedback = feedbackSentence(payload);
+
+  if (!selectedCard) {
     return [
-      payload.responseBlueprint.sections[0] ?? "1. 牌面先说",
-      `抽到${cardLabel}，这张牌先把焦点放在“${mainKeyword}”上。${questionText ? `针对你问的“${questionText}”，` : ""}它不是在替结果下判决，而是在提醒：当前最需要处理的是压力到顶点后的收束感。${card.nameZh}的牌面很重，但它的重点不是恐吓，而是让你承认紧张、疲惫或担心失利已经占了太多心力；越是这种时候，越要把注意力拉回还能准备、还能表达、还能澄清的部分。`,
+      "1. 牌面先说",
+      "这次没有解析到有效牌面，因此不能给出负责任的塔罗解读。",
       "",
-      payload.responseBlueprint.sections[1] ?? "2. 牌面线索",
-      `${position.name}落在${card.nameZh}，说明${scenarioName}的关键不在“会不会百分百顺利”，而在你能否把一个旧阶段的压力收好。${contextualMeaning}放到当前语境里，可以读成：某个消耗你的阶段正在临界，真正有用的不是继续脑内预演最坏结果，而是把经验整理成清楚的表达。${orientation === "逆位" ? "逆位会更强调恢复信心和重新调整节奏。" : "正位会更强调事情已经到达需要收尾、复盘和重新站起的位置。"} `,
+      "2. 牌面线索",
+      "请重新抽牌或检查牌面数据后再解读。",
       "",
-      payload.responseBlueprint.sections[2] ?? "3. 当前提醒",
-      `${card.nameZh}提醒你，不要把“我很焦虑”误读成“结果已经坏了”。它更像在说：压力已经足够高，继续反复想象失败只会消耗表现。现在要做的是承认担心存在，然后整理成可执行的准备：哪些依据最能支持你，哪些问题最可能出现，哪些地方需要一句更稳的解释。`,
+      "3. 当前提醒",
+      "没有有效牌面时，不应该用泛化建议替代真实解读。",
       "",
-      payload.responseBlueprint.sections[3] ?? "4. 今日行动",
-      actionText,
+      "4. 今日行动",
+      "重新发起一次有效抽牌。",
       "",
-      payload.responseBlueprint.sections[4] ?? "5. 观察指标",
-      `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看三个信号：你是否能把表达说得更具体；面对压力问题时是否能保持节奏；以及结束后，你是否清楚知道自己哪里发挥稳定、哪里还要补。若这三个信号变清楚，${card.nameZh}就不是“失败预告”，而是一次把旧压力收尾、重新整理表达的提醒。`,
+      "5. 观察指标",
+      "确认接口返回了具体牌名和对应位置。",
     ].join("\n");
   }
 
-  const overview = payload.selectedCards
-    .map(
-      ({ card, position, orientation, domainMeaning, primaryMeaning }) =>
-        `${position.name}落在${card.nameZh}（${orientation}），提示${domainMeaning ?? primaryMeaning}`,
-    )
-    .join("；");
+  return [
+    payload.responseBlueprint.sections[0] ?? "1. 牌面先说",
+    `抽到${cardLabel(selectedCard)}。${questionText ? `针对你问的“${questionText}”，` : ""}这张牌不替你做绝对预言，而是把当下最需要处理的主题放到桌面上：${cardKeywords(selectedCard)}。`,
+    feedback,
+    "",
+    payload.responseBlueprint.sections[1] ?? "2. 牌面线索",
+    `${selectedCard.position.name}落在${selectedCard.card.nameZh}。${describeCard(selectedCard)}放到${payload.readingIntent ? domainTheme[payload.readingIntent.domain] : "当前问题"}里，它更像是在提醒你：先看清可控部分，再决定下一步。`,
+    "",
+    payload.responseBlueprint.sections[2] ?? "3. 当前提醒",
+    `${selectedCard.card.nameZh}的提醒不是“好或坏”的一句话，而是让你区分真实信号和焦虑投射。现在最重要的是把注意力从结果想象拉回准备、沟通、复盘或资源检查。`,
+    "",
+    payload.responseBlueprint.sections[3] ?? "4. 今日行动",
+    singleAction(payload, selectedCard),
+    "",
+    payload.responseBlueprint.sections[4] ?? "5. 观察指标",
+    singleObservation(payload, selectedCard),
+  ].join("\n");
+}
 
-  const positionLines = payload.selectedCards.map(
-    ({ card, position, orientation, keywords, primaryMeaning, domainMeaning }, index) =>
-      [
-        `${index + 1}. ${position.name}：${card.nameZh}（${orientation}）`,
-        `${position.focus}：${keywords.slice(0, 3).join("、")}。${domainMeaning ?? primaryMeaning}`,
-      ]
-        .filter((line): line is string => Boolean(line))
-        .join("\n"),
-  );
+function buildThreeCardFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+  const [first, second, third] = payload.selectedCards;
 
-  const suggestion =
-    payload.selectedCards[0]?.domainMeaning ??
-    payload.selectedCards[0]?.primaryMeaning ??
-    "先把问题拆回现实动作、边界和节奏，再决定下一步。";
-  const reminder =
-    (payload.selectedCards.at(-1)?.orientation === "逆位"
-      ? payload.selectedCards.at(-1)?.card.keywordsReversed[0]
-      : payload.selectedCards.at(-1)?.card.keywordsUpright[0]) ??
-    "回到现实";
-  const finalCard = payload.selectedCards.at(-1);
-  const middleCard = payload.selectedCards[Math.floor(payload.selectedCards.length / 2)];
-  const trendCard = payload.selectedCards.at(-1);
-  const positionSection =
-    payload.responseBlueprint.sections.find((section) =>
-      /分位置|逐张|关键结构|路径对比|双方/.test(section),
-    ) ?? "3. 分位置解读";
-  const actionSection =
-    payload.responseBlueprint.sections.find((section) => /行动|建议|方向/.test(section)) ??
-    "6. 行动建议";
-  const reminderSection =
-    payload.responseBlueprint.sections.find((section) => /提醒|总结/.test(section)) ??
-    payload.responseBlueprint.sections.at(-1) ??
-    "7. 观察指标";
-  const finalReminder = finalCard
-    ? `${finalCard.position.name}里的${finalCard.card.nameZh}（${finalCard.orientation}）把收尾重点放在“${reminder}”上：接下来先观察这个主题在现实里怎样出现，再决定要推进、停下，还是重新沟通。`
-    : "接下来先观察现实里的反馈，而不是急着把这次牌面当成最终定论。";
+  if (!first || !second || !third) {
+    return buildGenericFallback(payload);
+  }
 
   return [
-    payload.responseBlueprint.sections[0] ?? "1. 牌面总览",
-    overview ||
-      "这次抽牌更像是在提醒你先看清真实状态，再决定下一步。牌面不是在替你下结论，而是在把当前局势里的重点、阻力和可行动的方向摆到桌面上。",
+    "1. 牌面先说",
+    `这组三张牌从${first.card.nameZh}走到${second.card.nameZh}，最后落到${third.card.nameZh}。它更像是在说：过去有一个已经形成的背景，当下真正的卡点需要被看见，接下来要靠具体行动把局面重新推稳。`,
     "",
-    "2. 整体关系",
-    middleCard
-      ? `整组牌的重心落在${middleCard.card.nameZh}。它不像是在要求你立刻做出激烈改变，而是先看清哪里正在消耗你、哪里仍然有可用的资源。若牌面里有逆位，它更多表示能量暂时被压住、绕行或需要重新整理；若正位较多，则说明事情已经有可以推进的线索。`
-      : "这组牌的重点不是单张牌的吉凶，而是牌位之间形成的结构：先确认现实处境，再辨认阻碍，最后把建议落成一个可执行动作。",
+    "2. 三张牌的阶段变化",
+    `过去/背景的${cardLabel(first)}显示${cardKeywords(first)}，说明此前并非完全没有资源或经验。现在/现状的${cardLabel(second)}把焦点放到${cardKeywords(second)}，这是当前最需要承认的状态。未来/走向的${cardLabel(third)}指向${cardKeywords(third)}，表示接下来更适合靠持续、具体、可复盘的动作推进。`,
     "",
-    positionSection,
-    ...positionLines,
+    "3. 当前关键矛盾",
+    `矛盾在于：你一边有前面累积下来的基础，一边当下的感受或动力没有完全跟上。不要把${second.card.nameZh}读成停滞的终局，它更像提醒你先处理注意力和投入感，再让${third.card.nameZh}代表的执行力接上。`,
     "",
-    "牌与牌之间",
-    trendCard
-      ? `从第一张牌到${trendCard.card.nameZh}，牌面呈现的是一个逐步收束的过程：你需要先承认当前的真实感受，再把注意力放回能控制的部分。不要把所有压力都理解成最终结果，它更像是当下需要被看见的信号。`
-      : "这些牌之间的关系提示你：不要只看单一结论，要把位置、正逆位和问题本身连起来看。",
+    "4. 现实映射",
+    `放到${payload.readingIntent ? domainTheme[payload.readingIntent.domain] : "现实问题"}里，这组牌建议你少做泛泛判断，多看三个现实信号：过去哪些做法已经有效，当下哪里开始低投入，接下来哪一件事值得持续练习或稳定执行。`,
     "",
-    "近期趋势",
-    `近期更适合采取“小步确认”的策略。先不要急着证明一切都会好，或担心一切都会坏；你可以先观察${reminder}这个主题在现实里如何出现，再决定下一步的节奏。`,
+    "5. 行动建议",
+    `今天先选一个能承接${third.card.nameZh}的小任务，把它拆成可完成的一步；同时减少对${second.card.nameZh}状态的反复纠结。能稳定做完，比一次性想通更重要。`,
     "",
-    actionSection,
-    `先抓住最关键的一张牌和一个现实动作。${suggestion}如果暂时做不到全部调整，至少先完成一个最具体的动作。`,
-    "",
-    reminderSection,
-    finalReminder,
+    "6. 观察指标",
+    `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看：执行后反馈是否更清楚，动力是否回升，以及你是否能把当前状态从“想很多”转成“做一件”。`,
   ].join("\n");
+}
+
+function buildGenericFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+  const cards = payload.selectedCards;
+  const primary = cards[0];
+  const finalCard = cards.at(-1);
+  const section = (index: number, fallback: string) =>
+    payload.responseBlueprint.sections[index] ?? fallback;
+
+  return [
+    section(0, "1. 牌面先说"),
+    cards.length
+      ? `这次牌面由${cards.map(cardLabel).join("、")}组成。先看牌位的任务，再看它们之间如何支持或拉扯，而不是把每张牌孤立解释。`
+      : "这次没有解析到有效牌面，因此不能给出负责任的塔罗解读。",
+    "",
+    section(1, "2. 牌阵结构"),
+    cards
+      .map(
+        (item) =>
+          `${item.position.name}的${cardLabel(item)}提示${cardKeywords(item)}，它在这组牌里负责${item.position.focus}。`,
+      )
+      .join("\n"),
+    "",
+    section(2, "3. 关键矛盾"),
+    primary
+      ? `最需要先看的，是${primary.position.name}里的${primary.card.nameZh}。它提示你先确认真正的压力点，再决定哪里要推进、哪里要放慢。`
+      : "关键矛盾需要有效牌面才能判断。",
+    "",
+    section(3, "4. 现实映射"),
+    `放到${payload.readingIntent ? domainTheme[payload.readingIntent.domain] : "当前问题"}里，这组牌更适合被当作现实检查：哪些资源可用，哪些情绪或沟通需要被处理，哪些动作能在短期内验证。`,
+    "",
+    section(4, "5. 行动建议"),
+    finalCard
+      ? `先围绕${finalCard.card.nameZh}做一个小步行动：把问题拆成一个可以今天完成的动作，并记录完成后的反馈。`
+      : "请先重新抽取有效牌面。",
+    "",
+    section(5, "6. 观察指标"),
+    `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看现实反馈是否更具体，以及你是否更清楚下一步该推进、暂停还是重新沟通。`,
+  ].join("\n");
+}
+
+function mockInterpretation(
+  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+) {
+  if (payload.responseBlueprint.slug === "single-guidance") {
+    return buildSingleFallback(payload);
+  }
+
+  if (payload.responseBlueprint.slug === "three-card") {
+    return buildThreeCardFallback(payload);
+  }
+
+  return buildGenericFallback(payload);
 }
 
 function createMockStream(text: string) {
@@ -284,6 +442,7 @@ export async function generateInterpretation(input: GenerateInput) {
       diagnosis: payload.questionDiagnosis,
       requiredCardNames: payload.selectedCards.map(({ card }) => card.nameZh),
       intentDomain: input.readingIntent?.domain,
+      userFeedbackTerms: feedbackQualityTerms(input.userFeedback),
     };
     const qualityRequirements = summarizeQualityRequirements(
       runQualityGate("", qualityInput).requirements,

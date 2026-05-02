@@ -18,6 +18,7 @@ export type QualityGateInput = {
   diagnosis: QuestionDiagnosis;
   requiredCardNames?: string[];
   intentDomain?: "career" | "love" | "study" | "relationship" | "self" | "decision";
+  userFeedbackTerms?: string[];
 };
 
 export type QualityGateResult = {
@@ -42,6 +43,8 @@ const promptLeakagePattern =
   /(?:把这张牌压缩成|放到你选择的领域里|这个位置的任务是|牌面给出的关键词是|先抓住最关键的一张牌|结构分析笔记|占卜师结构分析|领域牌义|用户未填写)/;
 const impossibleSingleCardPattern =
   /(?:整组牌|牌与牌之间|从第一张牌到|四种花色全部缺席|没有明显的花色主导|没有抽到对应牌位)/;
+const rawMeaningCopyPattern =
+  /(?:^|\n|\s)(?:感情|事业|學業|事業|財務|健康)[：:]|(?:在事業|在感情|在職場環境|這張牌|當你|錢幣|權杖|寶劍|聖杯|關係|對方|會|與)/;
 
 const safeAbsoluteSentence =
   "这次解读只讨论趋势、条件和可观察信号，不做绝对承诺，也不提供精确日期。";
@@ -186,6 +189,14 @@ export function buildQualityRequirements(input: QualityGateInput): QualityRequir
     });
   }
 
+  if (input.userFeedbackTerms?.length) {
+    requirements.push({
+      id: "user-feedback-grounding",
+      severity: "retry",
+      description: `必须自然承接用户直觉反馈中的关键词：${input.userFeedbackTerms.join("、")}。`,
+    });
+  }
+
   if (input.diagnosis.flags.absolutePrediction || input.diagnosis.flags.preciseTiming) {
     requirements.push({
       id: "absolute-safety-sentence",
@@ -272,6 +283,14 @@ function validateText(
     });
   }
 
+  if (rawMeaningCopyPattern.test(text)) {
+    issues.push({
+      id: "raw-meaning-copy",
+      severity: "retry",
+      message: "输出像直接复制原始牌义资料，或混入繁体资料文本。",
+    });
+  }
+
   const requiredCardNames = input.requiredCardNames ?? [];
   if (requiredCardNames.length && !requiredCardNames.every((cardName) => text.includes(cardName))) {
     issues.push({
@@ -286,6 +305,15 @@ function validateText(
       id: "single-card-structure-drift",
       severity: "retry",
       message: "单张牌解读出现多牌阵结构或明显脱离抽牌事实的表述。",
+    });
+  }
+
+  const feedbackTerms = input.userFeedbackTerms ?? [];
+  if (feedbackTerms.length && !feedbackTerms.some((term) => text.includes(term))) {
+    issues.push({
+      id: "missing-user-feedback",
+      severity: "retry",
+      message: "输出没有承接用户提供的直觉反馈。",
     });
   }
 
