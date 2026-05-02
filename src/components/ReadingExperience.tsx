@@ -59,6 +59,14 @@ type ReturnDialogSnapshot = {
 };
 
 const returnDialogStorageKey = "arcana-flow:return-result-dialog";
+const recentQuestionStorageKey = "arcana-flow:recent-question-rituals";
+const repeatQuestionWindowMs = 24 * 60 * 60 * 1000;
+
+type RecentQuestionRitual = {
+  spreadSlug: string;
+  questionKey: string;
+  createdAt: number;
+};
 
 const phaseLabelFull: Record<FlowPhase, string> = {
   idle: "01 · 提问",
@@ -120,6 +128,65 @@ function getConfiguredReversedRate() {
     : DEFAULT_REVERSED_RATE;
 }
 
+function normalizeQuestionKey(question: string) {
+  return question.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function readRecentQuestionRituals(now = Date.now()): RecentQuestionRitual[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const raw = window.localStorage.getItem(recentQuestionStorageKey);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter((item): item is RecentQuestionRitual => {
+      if (!item || typeof item !== "object") return false;
+      const record = item as Record<string, unknown>;
+      return (
+        typeof record.spreadSlug === "string" &&
+        typeof record.questionKey === "string" &&
+        typeof record.createdAt === "number" &&
+        now - record.createdAt < repeatQuestionWindowMs
+      );
+    });
+  } catch {
+    return [];
+  }
+}
+
+function writeRecentQuestionRituals(entries: RecentQuestionRitual[]) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(recentQuestionStorageKey, JSON.stringify(entries.slice(0, 80)));
+  } catch {
+    // 隐私模式或配额失败时，不阻断主流程。
+  }
+}
+
+function getRecentQuestionMatch(spreadSlug: string, question: string) {
+  const now = Date.now();
+  const questionKey = normalizeQuestionKey(question);
+  const entries = readRecentQuestionRituals(now);
+  writeRecentQuestionRituals(entries);
+
+  return entries.find(
+    (entry) => entry.spreadSlug === spreadSlug && entry.questionKey === questionKey,
+  );
+}
+
+function rememberQuestionRitual(spreadSlug: string, question: string) {
+  const now = Date.now();
+  const questionKey = normalizeQuestionKey(question);
+  const entries = readRecentQuestionRituals(now).filter(
+    (entry) => !(entry.spreadSlug === spreadSlug && entry.questionKey === questionKey),
+  );
+
+  writeRecentQuestionRituals([{ spreadSlug, questionKey, createdAt: now }, ...entries]);
+}
+
 function defaultModeFor(spread: SpreadDefinition): SelectMode {
   if (spread.cardCount <= 1) return "focus";
   if (spread.cardCount === 3) return "fan";
@@ -135,6 +202,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const [selectMode, setSelectMode] = useState<SelectMode>(() => defaultModeFor(spread));
   const [includeReversals, setIncludeReversals] = useState(true);
   const [shuffled, setShuffled] = useState<ShuffledDeck | null>(null);
+  const [cutPosition, setCutPosition] = useState<number | null>(null);
   const [cards, setCards] = useState<DrawnCard[]>([]);
   const [drawLog, setDrawLog] = useState<DrawLog | null>(null);
   const [interpretation, setInterpretation] = useState("");
@@ -301,6 +369,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     setResultDialogOpen(false);
     setDrawLog(null);
     setCards([]);
+    setCutPosition(null);
     setStickyDeckVisible(false);
     setPostRevealContentVisible(false);
     if (revealPauseTimeoutRef.current !== null) {
@@ -315,7 +384,24 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
 
   function handleStartShuffle() {
     resetReadingState();
-    resolveQuestion();
+    const finalQuestion = resolveQuestion();
+    const recentMatch = getRecentQuestionMatch(spread.slug, finalQuestion);
+
+    if (recentMatch) {
+      const availableAt = new Date(recentMatch.createdAt + repeatQuestionWindowMs);
+      setPhase("idle");
+      setError(
+        `这件事牌已经回答过了。请给它一点时间沉淀，${availableAt.toLocaleString("zh-CN", {
+          month: "numeric",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })} 之后再重新问会更清晰。`,
+      );
+      return;
+    }
+
+    rememberQuestionRitual(spread.slug, finalQuestion);
 
     const reversedRate = includeReversals ? getConfiguredReversedRate() : 0;
     const newDeck = shuffleDeck({ reversedRate });
@@ -339,6 +425,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     if (!shuffled) return;
     const cutDeck = applyCut(shuffled, cutPosition);
     setShuffled(cutDeck);
+    setCutPosition(cutPosition);
     setPhase("selecting");
   }
 
@@ -577,7 +664,11 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           questionLength={question.length}
           readingIntent={readingIntent}
           spread={spread}
-          onQuestionChange={setQuestion}
+          repeatNotice={error}
+          onQuestionChange={(nextQuestion) => {
+            setError(null);
+            setQuestion(nextQuestion);
+          }}
           onIntentChange={updateIntent}
           includeReversals={includeReversals}
           onIncludeReversalsChange={setIncludeReversals}
@@ -592,6 +683,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
               phase={phaseToDeckPhase[phase]}
               cardCount={spread.cardCount}
               selectMode={selectMode}
+              cutPosition={cutPosition}
               shufflePreviewCards={shufflePreviewCards}
               onModeChange={setSelectMode}
               onShuffleDone={handleShuffleAnimationDone}
@@ -668,6 +760,7 @@ function IdleSetup({
   questionLength,
   readingIntent,
   spread,
+  repeatNotice,
   onQuestionChange,
   onIntentChange,
   includeReversals,
@@ -678,6 +771,7 @@ function IdleSetup({
   questionLength: number;
   readingIntent: ReadingIntent;
   spread: SpreadDefinition;
+  repeatNotice: string | null;
   onQuestionChange: (question: string) => void;
   onIntentChange: (intent: Partial<ReadingIntent>) => void;
   includeReversals: boolean;
@@ -777,6 +871,11 @@ function IdleSetup({
                   <p className="journal-hand mt-4 text-center text-[16px] leading-relaxed text-[var(--ink-muted)]">
                     {hasQuestion ? "洗牌前先把问题留在牌桌上。" : "留空也可以，我会使用默认问题开始洗牌。"}
                   </p>
+                  {repeatNotice ? (
+                    <div className="mt-4 border border-[var(--coral-edge)] bg-[var(--coral-wash)] px-4 py-3 text-[13.5px] leading-6 text-[var(--coral-deep)]">
+                      {repeatNotice}
+                    </div>
+                  ) : null}
                   <p className="hidden">
                     即便留空，我也会为这副牌阵注入最契合的通用意图。
                   </p>

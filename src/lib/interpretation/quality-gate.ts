@@ -40,16 +40,18 @@ const absolutePredictionPattern =
 const preciseDatePattern =
   /(?:\d{1,2}\s*(?:月|号|日)|后天|下周[一二三四五六日天]?|周[一二三四五六日天]|星期[一二三四五六日天])[^。！？\n]{0,18}(?:会|将|出现|发生|通过|失败|成功|联系|回来|录用|淘汰)/;
 const promptLeakagePattern =
-  /(?:把这张牌压缩成|放到你选择的领域里|这个位置的任务是|牌面给出的关键词是|先抓住最关键的一张牌|结构分析笔记|占卜师结构分析|领域牌义|用户未填写)/;
+  /(?:把这张牌压缩成|放到你选择的领域里|这个位置的任务是|牌面给出的关键词是|先抓住最关键的一张牌|结构分析笔记|占卜师结构分析|领域牌义|用户未填写|这一节用于|不新增用户没有提供的背景)/;
 const impossibleSingleCardPattern =
   /(?:整组牌|牌与牌之间|从第一张牌到|四种花色全部缺席|没有明显的花色主导|没有抽到对应牌位)/;
 const rawMeaningCopyPattern =
-  /(?:^|\n|\s)(?:感情|事业|學業|事業|財務|健康)[：:]|(?:在事業|在感情|在職場環境|這張牌|當你|錢幣|權杖|寶劍|聖杯|關係|對方|會|與)/;
+  /(?:^|\n|\s)(?:感情|事业|學業|事業|財務|健康)[：:]|(?:在事業與工作層面|在感情占卜中|在職場環境中|當這張牌出現|錢幣八的深層意義|寶劍十正位通常|權杖六正位通常|聖杯四正位通常)/;
 
 const safeAbsoluteSentence =
   "这次解读只讨论趋势、条件和可观察信号，不做绝对承诺，也不提供精确日期。";
 const highRiskSentence =
   "如果涉及现实里的高成本决定，请先核对现金流、时间线、替代方案和止损点，再决定是否行动。";
+const relationshipRiskSentence =
+  "如果这是关系里的重大决定，请先看沟通边界、支持系统、可暂停空间和观察信号，不把一时情绪当成最终判决。";
 const mindReadingSentence =
   "关于他人的想法，我不会替对方内心下结论，只把重点放在互动模式和可观察行为上。";
 
@@ -107,22 +109,6 @@ function insertAfterFirstHeading(text: string, template: SpreadReadingTemplate, 
   );
 }
 
-function appendMissingSection(text: string, template: SpreadReadingTemplate, section: string) {
-  if (findSection(text, section)) return text;
-  const title = stripSectionNumber(section);
-  let body = "这一节用于把前面的判断落回现实观察，不新增用户没有提供的背景。";
-
-  if (/行动|决策前动作|建议/.test(title)) {
-    body = "行动上先做小步验证：确认现金流或可用资源、列出时间线、准备替代方案，并提前写下止损点。";
-  } else if (/观察/.test(title)) {
-    body = `观察窗口放在${template.timeScope.observationWindow}，重点看现实反馈是否变清晰，而不是把牌面当成绝对结论。`;
-  } else if (/风险|提醒/.test(title)) {
-    body = "风险在于把趋势误读成命令。请保留现实验证，避免冲动推进不可逆决定。";
-  }
-
-  return `${text.trim()}\n\n${section}\n${body}`;
-}
-
 function extractChoiceLabels(question: string): ChoiceLabels | null {
   const normalized = question.replace(/\s+/g, " ").trim();
   const patterns = [
@@ -152,6 +138,36 @@ function hasHighRiskChecklist(text: string) {
 
 function isInterviewQuestion(question: string) {
   return /面试|求职|应聘|候选|岗位/.test(question);
+}
+
+function isHealthQuestion(question: string) {
+  return /症状|严重|疼|痛|失眠|疾病|生病|发烧|抑郁|焦虑症|医院|医生|检查|治疗|高反|高原反应|拉萨|西藏|海拔|缺氧|呼吸/.test(
+    question,
+  );
+}
+
+function isMaterialRiskDecision(question: string) {
+  const asksForAction = /要不要|该不该|是否|是不是该|能不能|可以不可以|值不值得|适合不适合|选|选择|决定|马上|立刻|现在/.test(
+    question,
+  );
+  const materialRisk = /裸辞|辞职|离职|跳槽|离婚|搬家|借钱|贷款|投资|创业|买房|卖房|退学|休学|移民|手术|数字货币|币|股票|基金|理财|抄底/.test(
+    question,
+  );
+
+  return asksForAction && materialRisk;
+}
+
+function isRelationshipRiskDecision(question: string) {
+  return /(?:要不要|该不该|是否|是不是该|决定|马上|现在).{0,12}(?:分手|离开这段关系)|(?:分手|离开这段关系).{0,12}(?:要不要|该不该|是否|是不是该|决定|马上|现在)/.test(
+    question,
+  );
+}
+
+function textWithoutQuotedQuestion(text: string, question: string) {
+  const trimmed = question.trim();
+  if (!trimmed) return text;
+
+  return text.split(trimmed).join("");
 }
 
 export function buildQualityRequirements(input: QualityGateInput): QualityRequirement[] {
@@ -189,6 +205,14 @@ export function buildQualityRequirements(input: QualityGateInput): QualityRequir
     });
   }
 
+  if (isHealthQuestion(input.question)) {
+    requirements.push({
+      id: "health-safety",
+      severity: "retry",
+      description: "健康症状问题不得判断严重程度，必须建议持续或加重时寻求医生等专业支持。",
+    });
+  }
+
   if (input.userFeedbackTerms?.length) {
     requirements.push({
       id: "user-feedback-grounding",
@@ -205,11 +229,19 @@ export function buildQualityRequirements(input: QualityGateInput): QualityRequir
     });
   }
 
-  if (input.diagnosis.flags.highRiskDecision) {
+  if (input.diagnosis.flags.highRiskDecision && isMaterialRiskDecision(input.question)) {
     requirements.push({
       id: "high-risk-checklist",
       severity: "repairable",
       description: "决策前动作必须包含现金流、时间线、替代方案、止损点。",
+    });
+  }
+
+  if (input.diagnosis.flags.highRiskDecision && isRelationshipRiskDecision(input.question)) {
+    requirements.push({
+      id: "relationship-risk-boundary",
+      severity: "repairable",
+      description: `关系重大决定必须包含边界提醒：${relationshipRiskSentence}`,
     });
   }
 
@@ -239,6 +271,7 @@ function validateText(
   requirements: QualityRequirement[],
 ): QualityIssue[] {
   const issues: QualityIssue[] = [];
+  const ruleText = textWithoutQuotedQuestion(text, input.question);
 
   if (text.trim().length < Math.max(180, input.template.length.min * 0.35)) {
     issues.push({
@@ -252,7 +285,7 @@ function validateText(
     if (!findSection(text, section)) {
       issues.push({
         id: `missing-section:${stripSectionNumber(section)}`,
-        severity: index >= input.template.sections.length - 2 ? "retry" : "repairable",
+        severity: "retry",
         message: `缺少章节：${section}`,
       });
       return;
@@ -267,7 +300,7 @@ function validateText(
     }
   });
 
-  if (absolutePredictionPattern.test(text) || preciseDatePattern.test(text)) {
+  if (absolutePredictionPattern.test(ruleText) || preciseDatePattern.test(ruleText)) {
     issues.push({
       id: "absolute-language",
       severity: "retry",
@@ -275,7 +308,7 @@ function validateText(
     });
   }
 
-  if (promptLeakagePattern.test(text)) {
+  if (promptLeakagePattern.test(ruleText)) {
     issues.push({
       id: "prompt-leakage",
       severity: "retry",
@@ -283,7 +316,7 @@ function validateText(
     });
   }
 
-  if (rawMeaningCopyPattern.test(text)) {
+  if (rawMeaningCopyPattern.test(ruleText)) {
     issues.push({
       id: "raw-meaning-copy",
       severity: "retry",
@@ -326,7 +359,7 @@ function validateText(
   }
 
   if (isInterviewQuestion(input.question)) {
-    if (!/(?:面试|求职|应聘|简历|面试官|回答)/.test(text)) {
+    if (!/(?:面试|求职|应聘|简历|面试官|回答)/.test(ruleText)) {
       issues.push({
         id: "missing-interview-grounding",
         severity: "retry",
@@ -334,11 +367,29 @@ function validateText(
       });
     }
 
-    if (/(?:当前工作阶段|工作阶段已经走到|某个工作节奏|某个项目方向|当前工作或事业中|事业中让你感到疲惫|一份工作已经无法|一份工作或一个方向|职场关系出现问题|当前工作中最让我感到疲惫)/.test(text)) {
+    if (/(?:当前工作阶段|工作阶段已经走到|某个工作节奏|某个项目方向|当前工作或事业中|事业中让你感到疲惫|一份工作已经无法|一份工作或一个方向|职场关系出现问题|当前工作中最让我感到疲惫)/.test(ruleText)) {
       issues.push({
         id: "interview-domain-drift",
         severity: "retry",
         message: "面试问题被误读成当前工作结束或职场关系问题。",
+      });
+    }
+  }
+
+  if (isHealthQuestion(input.question)) {
+    if (/严重|最后通牒|必须做出选择|被.*压垮|身体.*强制/.test(ruleText)) {
+      issues.push({
+        id: "health-alarmist-language",
+        severity: "retry",
+        message: "健康问题措辞过重或像在判断严重程度。",
+      });
+    }
+
+    if (!/医生|医院|专业支持|专业人士|就医|检查/.test(ruleText)) {
+      issues.push({
+        id: "health-professional-support",
+        severity: "retry",
+        message: "健康问题缺少专业支持提醒。",
       });
     }
   }
@@ -354,11 +405,27 @@ function validateText(
     });
   }
 
-  if (input.diagnosis.flags.highRiskDecision && !hasHighRiskChecklist(text)) {
+  if (
+    input.diagnosis.flags.highRiskDecision &&
+    isMaterialRiskDecision(input.question) &&
+    !hasHighRiskChecklist(text)
+  ) {
     issues.push({
       id: "high-risk-checklist",
       severity: "repairable",
       message: "高风险决策缺少现金流、时间线、替代方案或止损点。",
+    });
+  }
+
+  if (
+    input.diagnosis.flags.highRiskDecision &&
+    isRelationshipRiskDecision(input.question) &&
+    !/沟通边界|支持系统|可暂停|观察信号|一时情绪/.test(text)
+  ) {
+    issues.push({
+      id: "relationship-risk-boundary",
+      severity: "repairable",
+      message: "关系重大决定缺少边界提醒。",
     });
   }
 
@@ -390,10 +457,6 @@ function validateText(
 function repairText(text: string, input: QualityGateInput, issues: QualityIssue[]) {
   let repaired = text.trim();
 
-  input.template.sections.forEach((section) => {
-    repaired = appendMissingSection(repaired, input.template, section);
-  });
-
   if (issues.some((issue) => issue.id === "first-section-body")) {
     repaired = insertAfterFirstHeading(
       repaired,
@@ -408,6 +471,10 @@ function repairText(text: string, input: QualityGateInput, issues: QualityIssue[
 
   if (issues.some((issue) => issue.id === "high-risk-checklist")) {
     repaired = insertAfterFirstHeading(repaired, input.template, highRiskSentence);
+  }
+
+  if (issues.some((issue) => issue.id === "relationship-risk-boundary")) {
+    repaired = insertAfterFirstHeading(repaired, input.template, relationshipRiskSentence);
   }
 
   if (issues.some((issue) => issue.id === "mind-reading-safety")) {

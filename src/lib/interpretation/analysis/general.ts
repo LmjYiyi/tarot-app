@@ -242,14 +242,24 @@ export function diagnoseQuestion(question: string, intent?: AnalyzeGeneralInput[
     );
   }
 
-  if (
-    /裸辞|辞职|离职|跳槽|分手|离婚|搬家|借钱|贷款|投资|创业|买房|卖房|退学|休学|移民|手术/.test(trimmed) ||
-    (intent?.domain === "decision" && /马上|立刻|现在|冲动|all in|梭哈|全部/.test(trimmed))
-  ) {
+  const asksForAction = /要不要|该不该|是否|是不是该|能不能|可以不可以|值不值得|适合不适合|选|选择|决定|马上|立刻|现在/.test(
+    trimmed,
+  );
+  const materialRisk = /裸辞|辞职|离职|跳槽|离婚|搬家|借钱|贷款|投资|创业|买房|卖房|退学|休学|移民|手术/.test(
+    trimmed,
+  );
+  const relationshipBreakDecision = /(?:要不要|该不该|是否|是不是该|决定|马上|现在).{0,12}(?:分手|离开这段关系)|(?:分手|离开这段关系).{0,12}(?:要不要|该不该|是否|是不是该|决定|马上|现在)/.test(
+    trimmed,
+  );
+  const impulsiveDecision = intent?.domain === "decision" && /马上|立刻|现在|冲动|all in|梭哈|全部/.test(trimmed);
+
+  if ((asksForAction && materialRisk) || relationshipBreakDecision || impulsiveDecision) {
     flags.highRiskDecision = true;
     issues.push("问题涉及高风险现实决策，解读必须先做安全垫检查，不能只给牌面倾向。");
     safetyDirectives.push(
-      "高风险决策安全垫：必须在决策前动作中写明资源/现金流、时间线、替代方案、止损点；不得鼓励冲动裸辞、分手、借钱、投资或其他不可逆行动。",
+      materialRisk
+        ? "高风险决策安全垫：必须在决策前动作中写明资源/现金流、时间线、替代方案、止损点；不得鼓励冲动裸辞、借钱、投资或其他不可逆行动。"
+        : "关系高风险决策安全垫：必须先看沟通边界、支持系统、可暂停空间和观察信号；不得替用户一锤定音。",
     );
   }
 

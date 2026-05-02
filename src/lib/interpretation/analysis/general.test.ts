@@ -116,6 +116,17 @@ describe("general tarot structure analysis", () => {
     expect(diagnosis.safetyDirectives.join("\n")).toContain("不得鼓励冲动裸辞");
   });
 
+  it("does not treat post-breakup grief as a high-cost decision", () => {
+    const diagnosis = diagnoseQuestion("分手三个月了，我还是会深夜大哭，该怎么处理这种孤独感？", {
+      domain: "self",
+      goal: "advice",
+    });
+
+    expect(diagnosis.flags.highRiskDecision).toBe(false);
+    expect(diagnosis.safetyDirectives.join("\n")).not.toContain("现金流");
+    expect(diagnosis.safetyDirectives.join("\n")).not.toContain("止损点");
+  });
+
   it("adds timing correction for precise prediction questions", () => {
     const diagnosis = diagnoseQuestion("我们最后一定会复合吗？如果会，大概什么时候？");
 

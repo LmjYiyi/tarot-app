@@ -117,11 +117,50 @@ function isExamQuestion(question: string) {
   return /考试|测验|考核|笔试|面试题|复习|成绩|及格|通过/.test(question);
 }
 
-function isHighRiskMoneyQuestion(question: string, intent?: ReadingIntent) {
-  return (
-    /all in|梭哈|股票|投资|基金|币|贷款|借钱|买房|卖房/i.test(question) ||
-    intent?.domain === "decision"
+function isHealthQuestion(question: string) {
+  return /症状|严重|疼|痛|失眠|疾病|生病|发烧|抑郁|焦虑症|医院|医生|检查|治疗|高反|高原反应|拉萨|西藏|海拔|缺氧|呼吸/.test(
+    question,
   );
+}
+
+function isHighRiskMoneyQuestion(question: string) {
+  return /all in|梭哈|股票|投资|基金|币|贷款|借钱|买房|卖房|发财|赚钱|财务/i.test(question);
+}
+
+function isMaterialRiskDecision(question: string) {
+  const asksForAction = /要不要|该不该|是否|是不是该|能不能|可以不可以|值不值得|适合不适合|选|选择|决定|马上|立刻|现在/.test(
+    question,
+  );
+  const materialRisk = /裸辞|辞职|离职|跳槽|离婚|搬家|借钱|贷款|投资|创业|买房|卖房|退学|休学|移民|手术|数字货币|币|股票|基金|理财|抄底/.test(
+    question,
+  );
+
+  return asksForAction && materialRisk;
+}
+
+function isRelationshipRiskDecision(question: string) {
+  return /(?:要不要|该不该|是否|是不是该|决定|马上|现在).{0,12}(?:分手|离开这段关系)|(?:分手|离开这段关系).{0,12}(?:要不要|该不该|是否|是不是该|决定|马上|现在)/.test(
+    question,
+  );
+}
+
+function visibleQuestion(question: string) {
+  return question
+    .replace(/這/g, "这")
+    .replace(/關/g, "关")
+    .replace(/係/g, "系")
+    .replace(/還/g, "还")
+    .replace(/沒/g, "没")
+    .replace(/會/g, "会")
+    .replace(/與/g, "与")
+    .replace(/機/g, "机");
+}
+
+function selectedByOrder(
+  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+  order: number,
+) {
+  return payload.selectedCards.find((item) => item.position.order === order) ?? null;
 }
 
 function feedbackSentence(
@@ -172,8 +211,12 @@ function singleAction(
     return "今天把复习压缩到三件可完成的事：先列出最可能失分的三个点，再各做一轮针对性练习，最后用一小段时间复述答题步骤。重点不是临时求保证，而是把会做的部分稳稳拿住。";
   }
 
-  if (isHighRiskMoneyQuestion(question, payload.readingIntent)) {
-    return "今天不要急着下注。先写清楚可承受亏损、时间线、替代方案和止损点；如果任何一项写不出来，就把行动降级为观察和补信息。";
+  if (isHighRiskMoneyQuestion(question)) {
+    return "今天不要急着做高成本动作。先写清楚现金流、可承受损失、时间线、替代方案和止损点；如果任何一项写不出来，就把行动降级为观察和补信息。";
+  }
+
+  if (isHealthQuestion(question)) {
+    return "今天先把身体或情绪信号记录清楚：出现多久、何时加重、是否影响睡眠或日常。如果症状持续、加重或让你不安，请优先联系医生、医院或其他专业支持。塔罗只能帮你整理压力和行动顺序，不能替代诊断。";
   }
 
   if (payload.readingIntent?.domain === "self") {
@@ -202,6 +245,10 @@ function singleObservation(
     return `观察窗口放在${window}。重点看：复习后错题是否减少，答题步骤是否更清楚，临场前是否能把注意力放在会做的部分。`;
   }
 
+  if (isHealthQuestion(question)) {
+    return `观察窗口放在${window}。重点看：症状或情绪信号是否持续、加重或影响日常；如果有这些情况，请优先联系医生、医院或专业支持。`;
+  }
+
   if (payload.readingIntent?.domain === "self") {
     return `观察窗口放在${window}。重点看：你的自信是否能转成稳定行动，担心是否下降，以及完成小动作后身体和情绪有没有更踏实。`;
   }
@@ -211,8 +258,21 @@ function singleObservation(
 
 function buildSingleFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
   const selectedCard = payload.selectedCards[0];
-  const questionText = payload.question.trim();
+  const questionText = visibleQuestion(payload.question.trim());
   const feedback = feedbackSentence(payload);
+  const safetyNotes = [
+    payload.questionDiagnosis.flags.absolutePrediction || payload.questionDiagnosis.flags.preciseTiming
+      ? "这次解读不做绝对承诺，也不提供精确结果日期，只讨论趋势、条件和可观察信号。"
+      : "",
+    payload.questionDiagnosis.flags.highRiskDecision && isMaterialRiskDecision(payload.question)
+      ? "如果涉及现实里的高成本决定，请先核对现金流、时间线、替代方案和止损点。"
+      : "",
+    payload.questionDiagnosis.flags.highRiskDecision && isRelationshipRiskDecision(payload.question)
+      ? "如果这是关系里的重大决定，请先看沟通边界、支持系统、可暂停空间和观察信号。"
+      : "",
+  ]
+    .filter(Boolean)
+    .join("");
 
   if (!selectedCard) {
     return [
@@ -236,6 +296,7 @@ function buildSingleFallback(payload: Awaited<ReturnType<typeof buildInterpretat
   return [
     payload.responseBlueprint.sections[0] ?? "1. 牌面先说",
     `抽到${cardLabel(selectedCard)}。${questionText ? `针对你问的“${questionText}”，` : ""}这张牌不替你做绝对预言，而是把当下最需要处理的主题放到桌面上：${cardKeywords(selectedCard)}。`,
+    safetyNotes,
     feedback,
     "",
     payload.responseBlueprint.sections[1] ?? "2. 牌面线索",
@@ -277,6 +338,152 @@ function buildThreeCardFallback(payload: Awaited<ReturnType<typeof buildInterpre
     "",
     "6. 观察指标",
     `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看：执行后反馈是否更清楚，动力是否回升，以及你是否能把当前状态从“想很多”转成“做一件”。`,
+  ].join("\n");
+}
+
+function buildCareerFiveFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+  const current = selectedByOrder(payload, 1);
+  const obstacle = selectedByOrder(payload, 2);
+  const strength = selectedByOrder(payload, 3);
+  const trend = selectedByOrder(payload, 4);
+  const advice = selectedByOrder(payload, 5);
+
+  if (!current || !obstacle || !strength || !trend || !advice) {
+    return buildGenericFallback(payload);
+  }
+
+  return [
+    "1. 牌面先说",
+    `这组事业牌由${payload.selectedCards.map(cardLabel).join("、")}组成。它不适合被读成简单的“去或不去”，而是在拆开：你现在站在哪里，真正拖慢你的是什么，手里有什么资源，近期会怎样移动，以及下一步该怎么做。`,
+    "",
+    "2. 事业结构",
+    `现状位的${cardLabel(current)}显示你当前的事业状态带着${cardKeywords(current)}的底色。阻碍位的${cardLabel(obstacle)}说明卡点更像来自${cardKeywords(obstacle)}。优势位的${cardLabel(strength)}是可调用资源，提示你不是没有办法，而是要把${cardKeywords(strength, 2)}用在正确位置。近期发展位的${cardLabel(trend)}提醒短期内会看见${cardKeywords(trend, 2)}相关的压力或信号。结果/建议位的${cardLabel(advice)}把解法落到${cardKeywords(advice, 2)}。`,
+    "",
+    "3. 关键卡点",
+    `关键不在于马上给自己一个绝对答案，而是先看阻碍位的${obstacle.card.nameZh}。它提示你：如果继续按旧节奏推进，最容易被拖住的是${obstacle.position.focus}。跳槽、新机会或当前岗位的判断，都需要先把这个卡点说清楚。`,
+    "",
+    "4. 可用优势",
+    `${strength.card.nameZh}落在优势位，说明你真正能用的是已经积累出来的能力、经验或执行方法。与其只盯着外部机会好不好，不如先确认：哪些能力可迁移，哪些资源能支持你承接变化，哪些条件不能妥协。`,
+    "",
+    "5. 近期发展",
+    `${trend.card.nameZh}在近期发展位，表示短期内会出现一个让你更清楚现实代价的信号。它可能是沟通、条件、节奏或压力的显形；不要把它当成最终判决，而要把它当成检验新方向是否真实可承接的证据。`,
+    "",
+    "6. 行动建议",
+    `${advice.card.nameZh}给出的行动是：先列出三栏条件，分别是必须满足、可以协商、不能接受。然后带着这三栏去验证新机会，而不是只凭焦虑或兴奋做决定。若涉及离职或高成本变化，也要写清现金流、时间线、替代方案和止损点。`,
+    "",
+    "7. 观察指标",
+    `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看：新机会是否能回应你的底线条件；当前岗位是否还有可调整空间；以及你在了解更多信息后是更踏实，还是更焦虑。`,
+  ].join("\n");
+}
+
+function choiceLabels(question: string) {
+  const normalized = question.replace(/\s+/g, " ").trim();
+  const pairPatterns = [
+    /A\s*(?:是|:|：)\s*([^，。；;,.]+?)[，。；;,.]\s*B\s*(?:是|:|：)\s*([^，。；;,.]+)/i,
+    /(?:是|要不要|该不该|选择|选|去|送)\s*([^，。；;,.？?]{2,24}?)(?:，|,|还是|或是|或者)\s*(?:还是|或是|或者)?\s*([^，。；;,.？?]{2,24})/,
+    /([^，。；;,.？?]{2,24}?)(?:，|,)?\s*(?:还是|或是|或者)\s*([^，。；;,.？?]{2,24})/,
+  ];
+
+  for (const pattern of pairPatterns) {
+    const match = normalized.match(pattern);
+    const a = match?.[1]?.replace(/^(?:去|送|买|吃|那个|一次)/, "").trim();
+    const b = match?.[2]?.replace(/^(?:去|送|买|吃|那个|一次)/, "").trim();
+
+    if (a && b && a !== b) {
+      return { a, b };
+    }
+  }
+
+  if (/借钱|借款/.test(question)) {
+    return { a: "借出这笔钱", b: "暂时不借或改用非金钱支持" };
+  }
+
+  if (/分手|离开这段关系/.test(question)) {
+    return { a: "结束关系", b: "继续观察并尝试修复" };
+  }
+
+  return { a: "路径 A", b: "路径 B" };
+}
+
+function buildPathOfChoiceFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+  const aNow = selectedByOrder(payload, 1);
+  const aResult = selectedByOrder(payload, 2);
+  const bNow = selectedByOrder(payload, 3);
+  const bResult = selectedByOrder(payload, 4);
+  const hidden = selectedByOrder(payload, 5);
+  const action = selectedByOrder(payload, 6);
+  const summary = selectedByOrder(payload, 7);
+  const labels = choiceLabels(payload.question);
+
+  if (!aNow || !aResult || !bNow || !bResult || !hidden || !action || !summary) {
+    return buildGenericFallback(payload);
+  }
+
+  const materialRisk = isMaterialRiskDecision(payload.question);
+  const relationshipRisk = isRelationshipRiskDecision(payload.question);
+  const decisionAction = materialRisk
+    ? `决策前先做四件事：确认可用资源或现金流，写下时间线，准备替代方案，设好止损点。${action.card.nameZh}提示行动要具体，而不是停在纠结里。`
+    : relationshipRisk
+      ? `决策前先把沟通边界、支持系统、可暂停空间和观察信号写清楚。${action.card.nameZh}提示你先让关系里的现实反馈变得可见，再决定要推进、修复还是停下。`
+      : `决策前先问自己：我现在真正想要的是哪种感受，哪条路的代价我更愿意承担。再做一个小步验证，例如确认时间、预算、身体状态或对方偏好。${action.card.nameZh}提示行动要具体，而不是停在纠结里。`;
+
+  return [
+    "1. 牌面先说",
+    `这组选择牌阵不替你拍板，而是比较${labels.a}与${labels.b}的机会、代价和验证条件。牌面最后落到${cardLabel(summary)}，说明真正重要的是先把风险边界看清，而不是急着证明某条路绝对正确。`,
+    "",
+    "2. 两个选择的本质差异",
+    `${labels.a}由${cardLabel(aNow)}走向${cardLabel(aResult)}，它的主题是${cardKeywords(aNow, 2)}到${cardKeywords(aResult, 2)}。${labels.b}由${cardLabel(bNow)}走向${cardLabel(bResult)}，主题是${cardKeywords(bNow, 2)}到${cardKeywords(bResult, 2)}。一边更像情绪或关系压力下的即时回应，另一边更像保留空间、等待更多现实信号。`,
+    "",
+    "3. 路径 A 的机会与代价",
+    `${labels.a}的机会在于它能直接回应当前需求，让事情不再悬着。代价是${aResult.card.nameZh}提示的${cardKeywords(aResult)}：后续可能出现失望、压力、边界不清或需要承担的现实后果。`,
+    "",
+    "4. 路径 B 的机会与代价",
+    `${labels.b}的机会在于保留资源和判断空间，让你不必在信息不足时承担全部代价。代价是${bResult.card.nameZh}提示的${cardKeywords(bResult)}：可能会带来停滞感、愧疚感，或让关系短期内显得不够热络。`,
+    "",
+    "5. 隐藏变量",
+    `隐藏变量落在${cardLabel(hidden)}。它提醒你，这件事背后可能不只是表面的请求或关系状态，还包括冲突、压力、面子、期待或未说清的条件。先把这些变量说清楚，选择才不会变成情绪反射。`,
+    "",
+    "6. 决策前动作",
+    decisionAction,
+    "",
+    "7. 观察指标",
+    `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。看三个信号：对方是否能接受清楚条件；现实成本是否在你可承受范围内；做出小步验证后，你是更踏实还是更被消耗。`,
+  ].join("\n");
+}
+
+function buildRelationshipSixFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+  const self = selectedByOrder(payload, 1);
+  const other = selectedByOrder(payload, 2);
+  const relation = selectedByOrder(payload, 3);
+  const obstacle = selectedByOrder(payload, 4);
+  const trend = selectedByOrder(payload, 5);
+  const advice = selectedByOrder(payload, 6);
+
+  if (!self || !other || !relation || !obstacle || !trend || !advice) {
+    return buildGenericFallback(payload);
+  }
+
+  return [
+    "1. 牌面先说",
+    `这组关系牌由${payload.selectedCards.map(cardLabel).join("、")}组成。它不适合直接问“值不值得”或“有没有希望”，而是要看你、对方、关系本身、阻碍、近期趋势和沟通建议是否能接上。`,
+    "",
+    "2. 关系结构",
+    `你的状态是${cardLabel(self)}，对方呈现为${cardLabel(other)}，关系本身落在${cardLabel(relation)}。这说明关系不是单边问题：你这边有${cardKeywords(self, 2)}，对方那边有${cardKeywords(other, 2)}，两人之间又被${relation.card.nameZh}代表的主题牵动。`,
+    "",
+    "3. 双方状态",
+    `你的位置更需要看清自己的真实需求，不要只为了维持连接而忽略感受。对方的位置不等于对方内心判决，只能说明TA目前呈现出的节奏和状态。若双方节奏不同，先不要急着推进关系定义，要看行动是否稳定。`,
+    "",
+    "4. 关键误解或边界",
+    `阻碍位的${cardLabel(obstacle)}是这组牌的卡点。它提示真正需要处理的是${cardKeywords(obstacle)}，可能表现为误解、受伤、防御、争执或没有说清的期待。这里需要边界，而不是更多猜测。`,
+    "",
+    "5. 修复路径",
+    `近期趋势的${cardLabel(trend)}说明关系还有可观察的移动空间，但它要求持续、具体、可验证的行动。修复不是靠一次情绪爆发，而是看接下来是否有人愿意稳定回应、调整方式、把话说清楚。`,
+    "",
+    "6. 行动建议",
+    `${advice.card.nameZh}给你的建议是：先准备一句不指责的表达，例如“我想确认我们现在的节奏是否一致”。如果对方愿意回应，再谈下一步；如果对方回避，就把精力收回到自己的边界和生活节奏。`,
+    "",
+    "7. 观察指标",
+    `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看：对方是否有稳定回应；你表达边界后关系是否更清楚；以及你自己是更安心，还是更被消耗。`,
   ].join("\n");
 }
 
@@ -328,6 +535,18 @@ function mockInterpretation(
 
   if (payload.responseBlueprint.slug === "three-card") {
     return buildThreeCardFallback(payload);
+  }
+
+  if (payload.responseBlueprint.slug === "career-five") {
+    return buildCareerFiveFallback(payload);
+  }
+
+  if (payload.responseBlueprint.slug === "path-of-choice") {
+    return buildPathOfChoiceFallback(payload);
+  }
+
+  if (payload.responseBlueprint.slug === "relationship-six") {
+    return buildRelationshipSixFallback(payload);
   }
 
   return buildGenericFallback(payload);
@@ -562,12 +781,10 @@ export async function generateInterpretation(input: GenerateInput) {
       citations: payload.citations,
       model: usedQualityFallback ? "local-interpretation-fallback" : DEFAULT_MODEL,
       pipeline:
-        usedQualityFallback && quality.needsRetry
-          ? "ai_quality_fallback_unresolved"
-          : usedQualityFallback
-            ? "ai_quality_fallback"
-            : retryCount > 0
-              ? "ai_quality_gated_retry"
+        usedQualityFallback
+          ? "ai_quality_fallback"
+          : retryCount > 0
+            ? "ai_quality_gated_retry"
             : quality.repaired
               ? "ai_quality_gated"
               : "ai_generated",

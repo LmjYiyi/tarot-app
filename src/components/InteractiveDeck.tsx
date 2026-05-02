@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 
 import { CardBack } from "@/components/DeckShuffle";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,7 @@ type InteractiveDeckProps = {
   phase: RitualPhase;
   cardCount: number;
   selectMode: SelectMode;
+  cutPosition?: number | null;
   shufflePreviewCards?: ShufflePreviewCard[];
   onModeChange: (mode: SelectMode) => void;
   onShuffleDone: () => void;
@@ -68,6 +69,7 @@ export function InteractiveDeck({
   phase,
   cardCount,
   selectMode,
+  cutPosition = null,
   shufflePreviewCards = [],
   onModeChange,
   onShuffleDone,
@@ -118,6 +120,7 @@ export function InteractiveDeck({
             <SelectStage
               cardCount={cardCount}
               mode={selectMode}
+              cutPosition={cutPosition}
               onModeChange={onModeChange}
               onSelectionDone={onSelectionDone}
             />
@@ -572,21 +575,44 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
   const [position, setPosition] = useState(0.5);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
+  const dragStartRef = useRef<{ x: number; moved: boolean } | null>(null);
+
+  const resolvePositionFromClientX = useCallback((clientX: number) => {
+    if (!trackRef.current) return position;
+    const rect = trackRef.current.getBoundingClientRect();
+    const ratio = (clientX - rect.left) / rect.width;
+    return Math.min(0.92, Math.max(0.08, ratio));
+  }, [position]);
+
+  const commitCut = useCallback((nextPosition = position) => {
+    triggerHaptic([10, 20, 14]);
+    onCutDone(nextPosition);
+  }, [onCutDone, position]);
 
   useEffect(() => {
     if (!dragging) return;
 
     function handleMove(event: MouseEvent | TouchEvent) {
-      if (!trackRef.current) return;
-      const rect = trackRef.current.getBoundingClientRect();
       const clientX =
         "touches" in event ? event.touches[0]?.clientX ?? 0 : event.clientX;
-      const ratio = (clientX - rect.left) / rect.width;
-      setPosition(Math.min(0.92, Math.max(0.08, ratio)));
+      if (
+        dragStartRef.current &&
+        Math.abs(clientX - dragStartRef.current.x) > 8
+      ) {
+        dragStartRef.current.moved = true;
+      }
+      setPosition(resolvePositionFromClientX(clientX));
     }
 
-    function handleUp() {
+    function handleUp(event: MouseEvent | TouchEvent) {
+      const clientX =
+        "changedTouches" in event ? event.changedTouches[0]?.clientX ?? 0 : event.clientX;
+      const nextPosition = resolvePositionFromClientX(clientX);
       setDragging(false);
+      if (dragStartRef.current && !dragStartRef.current.moved) {
+        commitCut(nextPosition);
+      }
+      dragStartRef.current = null;
     }
 
     window.addEventListener("mousemove", handleMove);
@@ -599,12 +625,12 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
       window.removeEventListener("touchmove", handleMove);
       window.removeEventListener("touchend", handleUp);
     };
-  }, [dragging]);
+  }, [commitCut, dragging, resolvePositionFromClientX]);
 
   return (
     <StageLayout
       label="Cut · 切牌"
-      helper="把一叠牌切开 — 拖动这条线，决定能量从哪里介入。"
+      helper="轻拍牌堆某个位置直接切；也可以拖动这条线，再确认。"
       action={
         <div className="flex items-center gap-5">
           <div className="flex flex-col items-end">
@@ -617,10 +643,7 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
           </div>
           <Button
             className="px-8 py-6 text-[15px]"
-            onClick={() => {
-              triggerHaptic([10, 20, 14]);
-              onCutDone(position);
-            }}
+            onClick={() => commitCut(position)}
           >
             确认切牌
           </Button>
@@ -630,12 +653,19 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
       <div
         ref={trackRef}
         className="relative h-48 w-full max-w-2xl select-none"
-        onMouseDown={() => {
+        onMouseDown={(event) => {
           triggerHaptic(8);
+          const nextPosition = resolvePositionFromClientX(event.clientX);
+          setPosition(nextPosition);
+          dragStartRef.current = { x: event.clientX, moved: false };
           setDragging(true);
         }}
-        onTouchStart={() => {
+        onTouchStart={(event) => {
           triggerHaptic(8);
+          const clientX = event.touches[0]?.clientX ?? 0;
+          const nextPosition = resolvePositionFromClientX(clientX);
+          setPosition(nextPosition);
+          dragStartRef.current = { x: clientX, moved: false };
           setDragging(true);
         }}
       >
@@ -719,11 +749,13 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
 function SelectStage({
   cardCount,
   mode,
+  cutPosition,
   onModeChange,
   onSelectionDone,
 }: {
   cardCount: number;
   mode: SelectMode;
+  cutPosition: number | null;
   onModeChange: (mode: SelectMode) => void;
   onSelectionDone: (indices: number[]) => void;
 }) {
@@ -761,7 +793,7 @@ function SelectStage({
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.35 }}
           >
-            <FanPicker cardCount={cardCount} onDone={onSelectionDone} />
+            <FanPicker cardCount={cardCount} cutPosition={cutPosition} onDone={onSelectionDone} />
           </motion.div>
         ) : null}
         {mode === "piles" ? (
@@ -772,7 +804,7 @@ function SelectStage({
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.35 }}
           >
-            <PilePicker cardCount={cardCount} onDone={onSelectionDone} />
+            <PilePicker cardCount={cardCount} cutPosition={cutPosition} onDone={onSelectionDone} />
           </motion.div>
         ) : null}
         {mode === "number" ? (
@@ -783,7 +815,7 @@ function SelectStage({
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.35 }}
           >
-            <NumberPicker cardCount={cardCount} onDone={onSelectionDone} />
+            <NumberPicker cardCount={cardCount} cutPosition={cutPosition} onDone={onSelectionDone} />
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -831,6 +863,30 @@ function SelectStage({
           ) : null}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function CutTrace({ cutPosition }: { cutPosition: number | null }) {
+  if (cutPosition === null) return null;
+
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-2 px-5">
+      <div className="relative h-7 w-full">
+        <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-[var(--line-strong)] to-transparent" />
+        <motion.div
+          className="absolute top-1/2 h-7 w-px -translate-y-1/2 bg-[var(--coral)] shadow-[0_0_18px_rgba(200,90,60,0.36)]"
+          style={{ left: `${cutPosition * 100}%` }}
+          initial={{ scaleY: 0.4, opacity: 0 }}
+          animate={{ scaleY: 1, opacity: 1 }}
+          transition={{ duration: 0.36 }}
+        >
+          <span className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border border-[var(--coral)] bg-[var(--surface-tint)]" />
+        </motion.div>
+      </div>
+      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--ink-muted)]">
+        切口保留在第 {Math.round(cutPosition * TOTAL_CARDS)} 张附近
+      </p>
     </div>
   );
 }
@@ -981,9 +1037,11 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
 
 function FanPicker({
   cardCount,
+  cutPosition,
   onDone,
 }: {
   cardCount: number;
+  cutPosition: number | null;
   onDone: (indices: number[]) => void;
 }) {
   const [picks, setPicks] = useState<number[]>([]);
@@ -1100,6 +1158,8 @@ function FanPicker({
 
   return (
     <div className="flex flex-col items-center gap-6">
+      <CutTrace cutPosition={cutPosition} />
+
       <div className="flex flex-col items-center gap-2 px-6">
         <p className="max-w-xl text-center text-[15px] leading-7 text-[var(--ink-soft)]">
           78 张牌摊开成一道弧 — 凭直觉点击其中{" "}
@@ -1246,9 +1306,11 @@ function FanPicker({
 
 function PilePicker({
   cardCount,
+  cutPosition,
   onDone,
 }: {
   cardCount: number;
+  cutPosition: number | null;
   onDone: (indices: number[]) => void;
 }) {
   const [chosenPile, setChosenPile] = useState<number | null>(null);
@@ -1287,6 +1349,8 @@ function PilePicker({
 
   return (
     <div className="flex flex-col items-center gap-9 py-4">
+      <CutTrace cutPosition={cutPosition} />
+
       <div className="flex flex-col items-center gap-2 px-6 text-center">
         <p className="max-w-xl text-[15px] leading-7 text-[var(--ink-soft)]">
           {"\u5148\u51ed\u7b2c\u4e00\u611f\u89c9\u9009\u4e00\u53e0\uff0c\u518d\u4ece\u8fd9\u53e0\u91cc\u4eb2\u624b\u62bd\u51fa\u724c\u3002"}
@@ -1449,16 +1513,17 @@ function PilePicker({
 
 function NumberPicker({
   cardCount,
+  cutPosition,
   onDone,
 }: {
   cardCount: number;
+  cutPosition: number | null;
   onDone: (indices: number[]) => void;
 }) {
   const [activeSlot, setActiveSlot] = useState(0);
   const [values, setValues] = useState<number[]>(() =>
     Array.from({ length: cardCount }, () => Math.floor(TOTAL_CARDS / 2)),
   );
-  const value = values[activeSlot];
 
   function updateActiveValue(updater: (value: number) => number) {
     setValues((current) =>
@@ -1475,6 +1540,8 @@ function NumberPicker({
 
   return (
     <div className="flex flex-col items-center gap-10 py-6">
+      <CutTrace cutPosition={cutPosition} />
+
       <div className="flex flex-col items-center gap-2">
         <p className="max-w-xl text-center text-[15px] leading-7 text-[var(--ink-soft)]">
           在心里默念问题，捕获第一个浮现的数字。
@@ -1561,7 +1628,7 @@ function NumberPicker({
         className="px-12 py-6 text-[15px]"
         onClick={confirm}
       >
-        从第 {value} 张起，抽 {cardCount} 张牌
+        按这些数字翻开 {cardCount} 张牌
       </Button>
     </div>
   );
