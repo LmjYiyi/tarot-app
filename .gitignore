@@ -29,7 +29,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+.tmp-screens/
+.tmp-codex-screens/
 .tmp-tarot-quality/
+artifacts/
 
 # env files (can opt-in for committing if needed)
 .env*
