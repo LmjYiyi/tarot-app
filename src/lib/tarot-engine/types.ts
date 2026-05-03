@@ -16,6 +16,7 @@ import type {
   SafetyRule,
   Spread,
 } from "@/lib/tarot-kb/types";
+import type { ResearchCardEvidence } from "@/lib/research-datasets/loader";
 
 export type TarotKbDomain = "love" | "career" | "self_state" | "decision";
 
@@ -60,11 +61,18 @@ export type RetrievedCardContext = {
   positionRule: PositionRule | null;
   contextMeaning: CardContextMeaning | null;
   contextPositionMeaning: CardContextPositionMeaning | null;
+  researchCardEvidence: ResearchCardEvidence | null;
 };
 
 export type RetrievedPairContext = {
   cardA: string;
   cardB: string;
+  positions: Array<{
+    positionOrder: number;
+    positionId: string;
+    positionName: string;
+  }>;
+  reason: string;
   curated: CardCombination | null;
   highFrequency: CardCombination | null;
   base: CardCombination | null;
@@ -89,6 +97,12 @@ export type TarotEngineContext = {
   kbVersion: string;
   domain: TarotKbDomain;
   spread: Spread | null;
+  researchDataset: {
+    generatedAt: string;
+    manifestFiles: string[];
+    matchedCardEvidence: number;
+    matchedSafetyRules: number;
+  };
   questionMatches: RetrievedQuestionTaxonomy[];
   safetyMatches: RetrievedSafetyRule[];
   cardContexts: RetrievedCardContext[];

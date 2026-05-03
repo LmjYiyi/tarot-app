@@ -6,13 +6,16 @@ import { jsonrepair } from "jsonrepair";
 import { structuredAiPatchSchema } from "./structured-ai-schema";
 import type { StructuredAiPatch } from "./structured-ai-schema";
 import type { TarotQualityResult } from "./quality-gate";
-import type { TarotInterpretationV2Result } from "./structured-result";
+import {
+  buildStructuredSections,
+  type TarotInterpretationV2Result,
+} from "./structured-result";
 import type { TarotEngineContext } from "./types";
 
 const DEFAULT_MODEL = process.env.MINIMAX_MODEL ?? "MiniMax-M2.7";
 const DEFAULT_BASE_URL =
   process.env.MINIMAX_BASE_URL ?? "https://api.minimaxi.com/anthropic";
-const DEFAULT_TIMEOUT_MS = Number(process.env.MINIMAX_TIMEOUT_MS ?? 15000);
+const DEFAULT_TIMEOUT_MS = Number(process.env.MINIMAX_TIMEOUT_MS ?? 60000);
 const DEFAULT_MAX_RETRIES = Number(process.env.MINIMAX_MAX_RETRIES ?? 0);
 const STRUCTURED_MAX_TOKENS = Number(process.env.MINIMAX_STRUCTURED_MAX_TOKENS ?? 2200);
 const STRUCTURED_TEMPERATURE = Number(process.env.MINIMAX_STRUCTURED_TEMPERATURE ?? 0.45);
@@ -72,12 +75,35 @@ function parsePatch(rawText: string): StructuredAiPatch {
 }
 
 function buildPrompt(input: EnhanceStructuredResultInput) {
+  const promptCards = input.base.cards.map((card) => ({
+    cardId: card.cardId,
+    cardName: card.cardName,
+    orientation: card.orientation,
+    positionId: card.positionId,
+    positionName: card.positionName,
+    meaning: card.meaning,
+    advice: card.advice ?? [],
+    reflectionQuestions: card.reflectionQuestions ?? [],
+  }));
+  const promptCombinations = input.base.combinations.map((combination) => ({
+    cardIds: combination.cardIds,
+    cardNames: combination.cardNames,
+    positions: combination.positions,
+    reason: combination.reason,
+    summary: combination.summary,
+  }));
   const safeBase = {
     question: input.base.question,
     spread: input.base.spread,
-    cards: input.base.cards,
-    combinations: input.base.combinations,
-    reading: input.base.reading,
+    cards: promptCards,
+    combinations: promptCombinations,
+    reading: {
+      opening: input.base.reading.opening,
+      overallTheme: input.base.reading.overallTheme,
+      summary: input.base.reading.summary,
+      advice: input.base.reading.advice,
+      feedbackQuestions: input.base.reading.feedbackQuestions,
+    },
     safety: input.base.safety,
     goldenCases: input.tarotEngineContext.goldenCases.map(({ case: item }) => ({
       caseId: item.case_id,
@@ -93,6 +119,8 @@ function buildPrompt(input: EnhanceStructuredResultInput) {
     "禁止改变牌名、正逆位、牌位、领域、安全边界、kbVersion、pipeline、readingId 或任何事实字段。",
     "禁止新增绝对预测、宿命论、精确日期、投资/医疗/法律保证，也禁止替第三方断言心理。",
     "如果 safety.note 存在，必须维持安全边界，只能把表达写得更清楚、更像真人占卜师。",
+    "只润色最有价值的字段；可以只返回 reading，也可以只返回部分 cards/combinations。",
+    "不确定怎么改的字段请省略，不要为了完整而编造。",
     "只返回 JSON，不要 Markdown，不要解释。",
     "",
     "JSON schema:",
@@ -101,7 +129,7 @@ function buildPrompt(input: EnhanceStructuredResultInput) {
         {
           cardId: "必须原样返回已有 cardId",
           positionId: "必须原样返回已有 positionId",
-          polishedMeaning: "润色后的逐牌解释，20 字以上",
+          polishedMeaning: "可选。润色后的逐牌解释，20 字以上",
           advice: ["行动建议，可为空数组"],
           reflectionQuestions: ["感受型反馈问题，可为空数组"],
         },
@@ -113,11 +141,11 @@ function buildPrompt(input: EnhanceStructuredResultInput) {
         },
       ],
       reading: {
-        opening: "润色后的开场",
-        overallTheme: "润色后的整体主题",
-        summary: "润色后的总结",
-        advice: ["行动建议"],
-        feedbackQuestions: ["感受型反馈问题"],
+        opening: "可选。润色后的开场",
+        overallTheme: "可选。润色后的整体主题",
+        summary: "可选。润色后的总结",
+        advice: ["可选。行动建议"],
+        feedbackQuestions: ["可选。感受型反馈问题"],
       },
     }),
     "",
@@ -143,7 +171,7 @@ export function mergeStructuredAiPatch(
 
     return {
       ...card,
-      meaning: cardPatch.polishedMeaning,
+      meaning: cardPatch.polishedMeaning ?? card.meaning,
       advice: cardPatch.advice.length ? cardPatch.advice.map(compactText).filter(Boolean) : card.advice,
       reflectionQuestions: cardPatch.reflectionQuestions.length
         ? cardPatch.reflectionQuestions.map(compactText).filter(Boolean)
@@ -158,18 +186,36 @@ export function mergeStructuredAiPatch(
     return matched ? { ...combination, summary: matched.polishedSummary } : combination;
   });
 
-  return {
+  const polishedAdvice = patch.reading.advice.map(compactText).filter(Boolean);
+  const polishedFeedbackQuestions = patch.reading.feedbackQuestions.map(compactText).filter(Boolean);
+  const reading = {
+    opening: compactText(patch.reading.opening) || base.reading.opening,
+    overallTheme: compactText(patch.reading.overallTheme) || base.reading.overallTheme,
+    summary: compactText(patch.reading.summary) || base.reading.summary,
+    closingNote: polishedAdvice[0]
+      ? `最后给你的提醒：${polishedAdvice[0]}`
+      : base.reading.closingNote,
+    advice: polishedAdvice.length ? polishedAdvice : base.reading.advice,
+    feedbackQuestions: polishedFeedbackQuestions.length
+      ? polishedFeedbackQuestions
+      : base.reading.feedbackQuestions,
+  };
+  const enhanced = {
     ...base,
-    pipeline: "ai_structured_enhanced",
+    pipeline: "ai_structured_enhanced" as const,
     cards,
     combinations,
-    reading: {
-      opening: patch.reading.opening,
-      overallTheme: patch.reading.overallTheme,
-      summary: patch.reading.summary,
-      advice: patch.reading.advice.map(compactText).filter(Boolean),
-      feedbackQuestions: patch.reading.feedbackQuestions.map(compactText).filter(Boolean),
-    },
+    reading,
+  };
+
+  return {
+    ...enhanced,
+    sections: buildStructuredSections({
+      reading,
+      cards,
+      combinations,
+      safety: enhanced.safety,
+    }),
   };
 }
 

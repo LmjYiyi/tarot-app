@@ -31,6 +31,15 @@ export type TarotQualityLogEntry = {
     issues: string[];
     checks: Record<string, boolean>;
   };
+  aiEnhancer?: {
+    enabled: boolean;
+    eligible: boolean;
+    allowedDomains: string[];
+    skippedReason?: string;
+    durationMs?: number;
+    failureReason?: string;
+    errorName?: string;
+  };
 };
 
 export async function writeTarotQualityLog(entry: TarotQualityLogEntry) {

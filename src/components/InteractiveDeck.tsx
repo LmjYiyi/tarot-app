@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 
 import { CardBack } from "@/components/DeckShuffle";
 import { Button } from "@/components/ui/button";
@@ -77,16 +77,22 @@ export function InteractiveDeck({
   onSelectionDone,
   shuffleDurationMs = 4200,
 }: InteractiveDeckProps) {
+  const phaseAnnouncement = getPhaseAnnouncement(phase, cardCount);
+
   return (
     <div className="relative w-full">
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {phaseAnnouncement}
+      </div>
       <AnimatePresence mode="wait">
         {phase === "idle" || phase === "shuffling" ? (
           <motion.div
             key="shuffle"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.4 }}
+            initial={{ opacity: 0, y: 10, rotateX: -8, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, rotateX: 8, filter: "blur(5px)" }}
+            transition={{ duration: 0.5, ease: [0.22, 0.65, 0.2, 1] }}
+            style={{ transformStyle: "preserve-3d" }}
           >
             <ShuffleStage
               active={phase === "shuffling"}
@@ -100,10 +106,11 @@ export function InteractiveDeck({
         {phase === "cutting" ? (
           <motion.div
             key="cut"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.4 }}
+            initial={{ opacity: 0, y: 14, rotateX: -7, filter: "blur(5px)" }}
+            animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, rotateX: 7, filter: "blur(5px)" }}
+            transition={{ duration: 0.5, ease: [0.22, 0.65, 0.2, 1] }}
+            style={{ transformStyle: "preserve-3d" }}
           >
             <CutStage onCutDone={onCutDone} />
           </motion.div>
@@ -112,10 +119,10 @@ export function InteractiveDeck({
         {phase === "selecting" ? (
           <motion.div
             key="select"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.4 }}
+            initial={{ opacity: 0, y: 14, scale: 0.985, filter: "blur(5px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -10, scale: 0.99, filter: "blur(5px)" }}
+            transition={{ duration: 0.5, ease: [0.22, 0.65, 0.2, 1] }}
           >
             <SelectStage
               cardCount={cardCount}
@@ -147,21 +154,25 @@ function ShufflePile({
   faceCards: ShufflePreviewCard[];
 }) {
   const direction = side === "left" ? -1 : 1;
-  const restX = direction * 140;
+  const restX = `calc(${direction} * clamp(76px, 22vw, 140px))`;
+  const closeX = `calc(${direction} * clamp(10px, 3vw, 18px))`;
   const closeDuration = reduceMotion ? 0.2 : SHUFFLE_CLOSE_MS / 1000;
   const showFace = active && !closing && !reduceMotion;
 
   return (
     <motion.div
-      className="absolute left-1/2 top-1/2 h-[300px] w-[180px] will-change-transform"
+      className="absolute left-1/2 top-1/2 will-change-transform"
       style={{
-        marginLeft: -90,
-        marginTop: -150,
+        "--shuffle-card-w": "clamp(132px, 34vw, 180px)",
+        width: "var(--shuffle-card-w)",
+        height: "calc(var(--shuffle-card-w) * 1.6667)",
+        marginLeft: "calc(var(--shuffle-card-w) * -0.5)",
+        marginTop: "calc(var(--shuffle-card-w) * -0.83335)",
         transformStyle: "preserve-3d",
-      }}
+      } as CSSProperties}
       animate={
         closing
-          ? { x: direction * 18, y: 0, rotate: direction * 1.5, opacity: 0 }
+          ? { x: closeX, y: 0, rotate: direction * 1.5, opacity: 0 }
           : { x: restX, y: 0, rotate: direction * 3.5, opacity: 1 }
       }
       transition={{ duration: closing ? closeDuration : 0.7, ease: "easeInOut" }}
@@ -203,7 +214,7 @@ function ShufflePile({
               src={faceCard.imageUrl}
               alt=""
               fill
-              sizes="180px"
+              sizes="(max-width: 640px) 132px, 180px"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,transparent_50%,rgba(26,26,25,0.18)_100%)]" />
@@ -233,7 +244,7 @@ function StageLayout({
   headerAddon?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center w-full min-h-[460px] justify-between py-6 lg:py-8">
+    <div className="flex w-full min-h-[400px] flex-col items-center justify-between py-5 sm:min-h-[460px] lg:py-8">
       <div className="flex flex-col items-center gap-4 text-center w-full shrink-0 px-4">
         {headerAddon}
         <div className="flex items-center gap-2.5">
@@ -247,9 +258,9 @@ function StageLayout({
             {label}
           </p>
         </div>
-        <p className="max-w-[420px] text-center text-[14.5px] leading-[1.8] text-[var(--ink-soft)] min-h-[2.5rem]">
+        <div className="ritual-note min-h-[2.5rem]">
           {helper}
-        </p>
+        </div>
       </div>
 
       <div className="flex flex-1 w-full items-center justify-center my-2">
@@ -257,7 +268,7 @@ function StageLayout({
       </div>
 
       {action ? (
-        <div className="flex flex-col items-center justify-center w-full min-h-[48px] shrink-0 px-4">
+        <div className="bottom-action-safe flex w-full min-h-[48px] shrink-0 flex-col items-center justify-center px-4">
           {action}
         </div>
       ) : null}
@@ -352,8 +363,8 @@ function ShuffleStage({
         )
       }
     >
-      <div className="flex flex-col items-center justify-center w-full min-h-[460px] sm:min-h-[520px]">
-        <div className="mb-8 flex flex-col items-center gap-2">
+      <div className="flex w-full min-h-[340px] flex-col items-center justify-center sm:min-h-[520px]">
+        <div className="mb-4 flex flex-col items-center gap-2 sm:mb-8">
           <p className={cn(
             "text-center text-[13px] font-medium tracking-wider transition-all duration-300",
             manualActive ? "text-[var(--coral)]" : "text-[var(--ink-muted)]"
@@ -440,12 +451,12 @@ function ShuffleAura({
   return (
     <div
       aria-hidden="true"
-      className="relative flex h-[460px] w-full max-w-[860px] items-center justify-center overflow-visible sm:h-[520px]"
+      className="relative flex h-[310px] w-full max-w-[860px] items-center justify-center overflow-visible sm:h-[520px]"
       style={{ perspective: "1800px" }}
     >
       {/* compass dial — a slowly turning hairline ring with tick marks */}
       <motion.div
-        className="absolute h-[340px] w-[340px] rounded-full sm:h-[440px] sm:w-[440px]"
+        className="absolute h-[270px] w-[270px] rounded-full sm:h-[440px] sm:w-[440px]"
         animate={active && !reduceMotion ? { rotate: 360 } : { rotate: 0 }}
         transition={{
           duration: 90,
@@ -498,7 +509,7 @@ function ShuffleAura({
 
       {/* card stack — riffle */}
       <div
-        className="relative h-[400px] w-[min(92vw,680px)] sm:h-[460px]"
+        className="relative h-[290px] w-[min(92vw,680px)] sm:h-[460px]"
         style={{ transformStyle: "preserve-3d" }}
       >
         <ShufflePile
@@ -524,12 +535,15 @@ function ShuffleAura({
 
         <motion.div
           aria-hidden
-          className="absolute left-1/2 top-1/2 h-[300px] w-[180px] will-change-transform"
+          className="absolute left-1/2 top-1/2 will-change-transform"
           style={{
-            marginLeft: -90,
-            marginTop: -150,
+            "--shuffle-card-w": "clamp(132px, 34vw, 180px)",
+            width: "var(--shuffle-card-w)",
+            height: "calc(var(--shuffle-card-w) * 1.6667)",
+            marginLeft: "calc(var(--shuffle-card-w) * -0.5)",
+            marginTop: "calc(var(--shuffle-card-w) * -0.83335)",
             transformStyle: "preserve-3d",
-          }}
+          } as CSSProperties}
           animate={
             closing
               ? { opacity: 1, scale: 1, y: 0, rotate: 0 }
@@ -576,6 +590,7 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
   const dragStartRef = useRef<{ x: number; moved: boolean } | null>(null);
+  const lastHapticStepRef = useRef<number | null>(null);
 
   const resolvePositionFromClientX = useCallback((clientX: number) => {
     if (!trackRef.current) return position;
@@ -601,7 +616,13 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
       ) {
         dragStartRef.current.moved = true;
       }
-      setPosition(resolvePositionFromClientX(clientX));
+      const nextPosition = resolvePositionFromClientX(clientX);
+      const hapticStep = Math.round(nextPosition * 12);
+      if (hapticStep !== lastHapticStepRef.current) {
+        lastHapticStepRef.current = hapticStep;
+        triggerHaptic(4);
+      }
+      setPosition(nextPosition);
     }
 
     function handleUp(event: MouseEvent | TouchEvent) {
@@ -609,6 +630,7 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
         "changedTouches" in event ? event.changedTouches[0]?.clientX ?? 0 : event.clientX;
       const nextPosition = resolvePositionFromClientX(clientX);
       setDragging(false);
+      lastHapticStepRef.current = null;
       if (dragStartRef.current && !dragStartRef.current.moved) {
         commitCut(nextPosition);
       }
@@ -630,7 +652,13 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
   return (
     <StageLayout
       label="Cut · 切牌"
-      helper="轻拍牌堆某个位置直接切；也可以拖动这条线，再确认。"
+      helper={
+        <>
+          选择一个切口：系统会从这里把牌堆一分为二，并重新接回。
+          <br />
+          切口之后的牌会被移到最前面，再进入抽牌。
+        </>
+      }
       action={
         <div className="flex items-center gap-5">
           <div className="flex flex-col items-end">
@@ -679,7 +707,7 @@ function CutStage({ onCutDone }: { onCutDone: (cutPosition: number) => void }) {
             }}
           />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_var(--x,50%)_50%,transparent_0%,rgba(74,59,50,0.08)_100%)]" 
-               style={{ '--x': `${position * 100}%` } as React.CSSProperties} />
+               style={{ "--x": `${position * 100}%` } as CSSProperties} />
           
           {/* Card edges simulation */}
           <div className="absolute inset-0 flex">
@@ -867,6 +895,46 @@ function SelectStage({
   );
 }
 
+function RitualPrompt({
+  children,
+  detail,
+}: {
+  children: React.ReactNode;
+  detail?: React.ReactNode;
+}) {
+  return (
+    <div className="ritual-note mx-auto">
+      <p className="ritual-note-main">{children}</p>
+      {detail ? <p className="ritual-note-detail">{detail}</p> : null}
+    </div>
+  );
+}
+
+function getPhaseAnnouncement(phase: RitualPhase, cardCount: number) {
+  switch (phase) {
+    case "shuffling":
+      return "洗牌开始。请长按牌堆，把问题放进牌里。";
+    case "cutting":
+      return "洗牌完成。现在进入切牌阶段。";
+    case "selecting":
+      return `切牌完成。现在请选择 ${cardCount} 张牌。`;
+    case "revealing":
+      return "选牌完成。正在翻开牌面。";
+    case "revealed":
+      return "牌面已经翻开，可以查看解读。";
+    default:
+      return "抽牌仪式尚未开始。";
+  }
+}
+
+function syncPointerGlow(event: PointerEvent<HTMLElement>) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 100;
+  event.currentTarget.style.setProperty("--card-glow-x", `${Math.min(100, Math.max(0, x))}%`);
+  event.currentTarget.style.setProperty("--card-glow-y", `${Math.min(100, Math.max(0, y))}%`);
+}
+
 function CutTrace({ cutPosition }: { cutPosition: number | null }) {
   if (cutPosition === null) return null;
 
@@ -897,6 +965,7 @@ const FOCUS_VISIBLE = 21;
 
 function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
   const [offsets, setOffsets] = useState(() => pickUniqueDeckIndices(FOCUS_VISIBLE));
+  const [refreshVersion, setRefreshVersion] = useState(0);
   const reduceMotion = useReducedMotion() ?? false;
   const [pickedSlot, setPickedSlot] = useState<number | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
@@ -905,6 +974,7 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
     if (pickedSlot !== null) return;
     triggerHaptic(8);
     setOffsets(pickUniqueDeckIndices(FOCUS_VISIBLE));
+    setRefreshVersion((version) => version + 1);
   }
 
   function handlePick(slotIndex: number) {
@@ -918,22 +988,62 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
 
   return (
     <div className="flex flex-col items-center gap-9 py-4">
-      <div className="flex flex-col items-center gap-2 px-6 text-center">
-        <p className="max-w-md text-[15px] leading-7 text-[var(--ink-soft)]">
+      <div className="px-6 text-center">
+        <RitualPrompt detail="哪一张在召唤你，直接点它。">
           深呼吸三次。让目光在牌上停留。
-        </p>
-        <p className="text-[12.5px] text-[var(--ink-muted)]">
-          哪一张在召唤你 — 直接点它。
-        </p>
+        </RitualPrompt>
+      </div>
+
+      <div className="grid w-full max-w-[360px] grid-cols-7 gap-2 px-3 sm:hidden">
+        {offsets.map((deckIndex, slotIndex) => {
+          const isPicked = pickedSlot === slotIndex;
+          const someoneElsePicked = pickedSlot !== null && !isPicked;
+          const cardTilt = ((deckIndex % 7) - 3) * 0.8;
+          const cardLift = (deckIndex % 5) * -1;
+
+          return (
+            <motion.button
+              type="button"
+              key={`mobile-${refreshVersion}-${deckIndex}`}
+              onClick={() => handlePick(slotIndex)}
+              className="group/card relative aspect-[2/3.5] min-h-[74px] rounded-[9px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
+              initial={{ opacity: 0, y: 12, rotate: cardTilt * 1.8 }}
+              animate={{
+                opacity: someoneElsePicked ? 0.22 : 1,
+                y: isPicked ? -12 : cardLift,
+                rotate: cardTilt,
+                scale: isPicked ? 1.08 : 1,
+              }}
+              transition={{
+                delay: Math.min(slotIndex * 0.018, 0.22),
+                type: "spring",
+                stiffness: 240,
+                damping: 24,
+              }}
+              whileTap={{ scale: 0.96 }}
+              aria-label={`抽出第 ${slotIndex + 1} 张可选牌`}
+            >
+              <CardBack className="rounded-[9px]" compact />
+              <span
+                className={cn(
+                  "pointer-events-none absolute inset-0 rounded-[9px] border transition",
+                  isPicked
+                    ? "border-[var(--coral)] shadow-[0_10px_24px_rgba(200,90,60,0.24)]"
+                    : "border-[var(--line-strong)] group-hover/card:border-[var(--coral-edge)]",
+                )}
+              />
+            </motion.button>
+          );
+        })}
       </div>
 
       <div
-        className="relative flex h-[300px] w-full max-w-[820px] items-end justify-center sm:h-[340px]"
+        className="relative hidden h-[300px] w-full max-w-[820px] items-end justify-center sm:flex sm:h-[340px]"
         style={{ perspective: "1200px" }}
       >
-        {offsets.map((_, slotIndex) => {
+        {offsets.map((deckIndex, slotIndex) => {
           const t = slotIndex / (FOCUS_VISIBLE - 1) - 0.5;
-          const angle = t * 30;
+          const angle = t * 30 + ((deckIndex % 5) - 2) * 0.7;
           const lift = -Math.cos(t * Math.PI) * 34;
           const isPicked = pickedSlot === slotIndex;
           const someoneElsePicked = pickedSlot !== null && !isPicked;
@@ -942,16 +1052,21 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
           return (
             <motion.button
               type="button"
-              key={slotIndex}
+              key={`desktop-${refreshVersion}-${deckIndex}`}
               onClick={() => handlePick(slotIndex)}
               onPointerEnter={() => setHovered(slotIndex)}
+              onPointerMove={syncPointerGlow}
               onPointerLeave={() => setHovered((current) => (current === slotIndex ? null : current))}
-              className="absolute bottom-6 origin-bottom focus:outline-none"
+              onFocus={() => setHovered(slotIndex)}
+              onBlur={() => setHovered((current) => (current === slotIndex ? null : current))}
+              className="group/card absolute bottom-6 origin-bottom focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--surface)]"
               style={{
+                "--card-glow-x": "50%",
+                "--card-glow-y": "22%",
                 left: `calc(50% + ${t * 620}px)`,
                 transform: `translateX(-50%) rotate(${angle}deg)`,
                 zIndex: isPicked ? 50 : isHovered ? 40 : 10 + slotIndex,
-              }}
+              } as CSSProperties}
               animate={{
                 y: isPicked ? -90 : someoneElsePicked ? lift + 6 : lift,
                 opacity: someoneElsePicked ? 0.16 : 1,
@@ -983,7 +1098,7 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
               >
                 <div
                   className={cn(
-                    "absolute inset-0 rounded-[14px] transition-shadow duration-300",
+                    "ritual-card-surface absolute inset-0 rounded-[14px] transition-shadow duration-300",
                     isPicked
                       ? "shadow-[0_24px_60px_rgba(200,90,60,0.32)]"
                       : isHovered
@@ -992,6 +1107,14 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
                   )}
                 >
                   <CardBack className="rounded-[14px]" />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-[1px] rounded-[13px] opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 group-focus-visible/card:opacity-100"
+                    style={{
+                      background:
+                        "radial-gradient(circle at var(--card-glow-x,50%) var(--card-glow-y,22%), rgba(255,248,224,0.38), rgba(255,248,224,0.08) 28%, transparent 58%)",
+                    }}
+                  />
                 </div>
                 {isHovered && pickedSlot === null ? (
                   <motion.div
@@ -1016,17 +1139,17 @@ function FocusPicker({ onDone }: { onDone: (indices: number[]) => void }) {
         />
       </div>
 
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-3 px-6 text-center">
         <Button
-          variant="ghost"
-          className="text-[13px]"
+          variant="secondary"
+          className="px-5 py-2.5 text-[13px]"
           onClick={refreshOptions}
           disabled={pickedSlot !== null}
         >
           {"换一组"}
         </Button>
-        <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--ink-faint)]">
-        {pickedSlot !== null ? "正在翻开" : "Trust the first one your eye returns to"}
+        <p className="max-w-[260px] font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--ink-faint)]">
+          {pickedSlot !== null ? "正在翻开" : "相信目光反复回到的那一张"}
         </p>
       </div>
     </div>
@@ -1160,14 +1283,13 @@ function FanPicker({
     <div className="flex flex-col items-center gap-6">
       <CutTrace cutPosition={cutPosition} />
 
-      <div className="flex flex-col items-center gap-2 px-6">
-        <p className="max-w-xl text-center text-[15px] leading-7 text-[var(--ink-soft)]">
+      <div className="px-6">
+        <RitualPrompt
+          detail={isCoarsePointer ? "横向滑动牌弧浏览，点击选定。" : "移动鼠标浏览，点击选定。"}
+        >
           78 张牌摊开成一道弧 — 凭直觉点击其中{" "}
           <span className="font-serif-display text-[18px] text-[var(--coral-deep)]">{cardCount}</span> 张。
-        </p>
-        <p className="text-[12.5px] text-[var(--ink-muted)]">
-          {isCoarsePointer ? "横向滑动牌弧浏览，点击选定。" : "移动鼠标浏览，点击选定。"}
-        </p>
+        </RitualPrompt>
       </div>
 
       <div
@@ -1210,17 +1332,22 @@ function FanPicker({
                 type="button"
                 key={cardIndex}
                 onClick={() => togglePick(cardIndex)}
-                className="group relative shrink-0"
+                onPointerMove={syncPointerGlow}
+                className="group/card relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--surface)]"
                 style={{
+                  "--card-glow-x": "50%",
+                  "--card-glow-y": "24%",
                   marginLeft: cardIndex === 0 ? 0 : -68,
                   zIndex: isPicked ? 400 + pickOrder : cardIndex,
                   transform: `translateY(${lift}px) rotate(${angle}deg)`,
                   transformOrigin: "50% 110%",
                   transition: "transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1)",
-                }}
+                } as CSSProperties}
+                aria-label={`选择牌弧中的第 ${cardIndex + 1} 张牌${isPicked ? `，已选为第 ${pickOrder + 1} 张` : ""}`}
+                aria-pressed={isPicked}
               >
                 <motion.div
-                  className="relative h-[160px] w-[96px] overflow-visible rounded-[12px]"
+                  className="ritual-card-surface relative h-[160px] w-[96px] overflow-visible rounded-[12px]"
                   animate={{ 
                     y: isPicked ? -48 : 0, 
                     scale: isPicked ? 1.08 : 1,
@@ -1237,10 +1364,18 @@ function FanPicker({
                       "absolute inset-0 rounded-[12px] border transition-all duration-300",
                       isPicked
                         ? "border-[var(--coral)] shadow-[0_12px_30px_rgba(200,90,60,0.3),0_0_15px_rgba(200,90,60,0.1)]"
-                        : "border-[var(--line-strong)] group-hover:border-[var(--coral-edge)] group-hover:shadow-[0_4px_16px_rgba(74,59,50,0.12)]",
+                        : "border-[var(--line-strong)] group-hover/card:border-[var(--coral-edge)] group-hover/card:shadow-[0_4px_16px_rgba(74,59,50,0.12)]",
                     )}
                   >
                     <CardBack className="rounded-[12px]" />
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-[1px] rounded-[11px] opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 group-focus-visible/card:opacity-100"
+                      style={{
+                        background:
+                          "radial-gradient(circle at var(--card-glow-x,50%) var(--card-glow-y,24%), rgba(255,248,224,0.38), rgba(255,248,224,0.08) 28%, transparent 58%)",
+                      }}
+                    />
                     {isPicked && (
                       <motion.div 
                         layoutId={`halo-${cardIndex}`}
@@ -1272,7 +1407,7 @@ function FanPicker({
         <span className="w-8 h-px bg-[var(--line)]" />
       </div>
 
-      <div className="mt-2 flex flex-col items-center gap-6">
+      <div className="bottom-action-safe mt-2 flex flex-col items-center gap-6">
         <PickProgress picks={picks.length} total={cardCount} />
         <div className="flex items-center gap-4">
           <Button
@@ -1313,21 +1448,25 @@ function PilePicker({
   cutPosition: number | null;
   onDone: (indices: number[]) => void;
 }) {
-  const [chosenPile, setChosenPile] = useState<number | null>(null);
+  const [activePile, setActivePile] = useState(0);
   const [picks, setPicks] = useState<number[]>([]);
-  const [pileCards, setPileCards] = useState<number[]>([]);
-  const piles = [
-    { label: "\u5de6 / \u81ea\u6211" },
-    { label: "\u4e2d / \u60c5\u5883" },
-    { label: "\u53f3 / \u5916\u754c" },
-  ];
-  const selectedPile = chosenPile === null ? null : piles[chosenPile];
+  const pileGroups = useMemo(
+    () =>
+      [
+        { label: "\u5de6 / \u81ea\u6211" },
+        { label: "\u4e2d / \u60c5\u5883" },
+        { label: "\u53f3 / \u5916\u754c" },
+      ].map((pile, index) => ({
+        ...pile,
+        cards: Array.from({ length: 26 }, (_, cardIndex) => index * 26 + cardIndex),
+      })),
+    [],
+  );
+  const selectedPile = pileGroups[activePile];
 
   function choosePile(index: number) {
     triggerHaptic(12);
-    setChosenPile(index);
-    setPileCards(pickUniqueDeckIndices(26));
-    setPicks([]);
+    setActivePile(index);
   }
 
   function togglePick(index: number) {
@@ -1351,32 +1490,41 @@ function PilePicker({
     <div className="flex flex-col items-center gap-9 py-4">
       <CutTrace cutPosition={cutPosition} />
 
-      <div className="flex flex-col items-center gap-2 px-6 text-center">
-        <p className="max-w-xl text-[15px] leading-7 text-[var(--ink-soft)]">
-          {"\u5148\u51ed\u7b2c\u4e00\u611f\u89c9\u9009\u4e00\u53e0\uff0c\u518d\u4ece\u8fd9\u53e0\u91cc\u4eb2\u624b\u62bd\u51fa\u724c\u3002"}
-        </p>
-        <p className="text-[12.5px] text-[var(--ink-muted)]">
-          {selectedPile
-            ? "\u8bf7\u70b9\u9009 " + cardCount + " \u5f20\u724c\uff0c\u70b9\u51fb\u987a\u5e8f\u5c31\u662f\u724c\u4f4d\u987a\u5e8f\u3002"
-            : "\u9009\u4e2d\u4e00\u53e0\u540e\uff0c\u4f1a\u5c55\u5f00 26 \u5f20\u80cc\u9762\u724c\u3002"}
-        </p>
+      <div className="px-6 text-center">
+        <RitualPrompt
+          detail={
+            <>
+              当前展开：<span className="text-[var(--coral-deep)]">{selectedPile.label}</span>。
+              点击顺序就是牌位顺序，已选的牌会保留。
+            </>
+          }
+        >
+          牌已分成三叠。你可以只从一叠里抽完，也可以在左、中、右之间切换，各取所感。
+        </RitualPrompt>
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
-        {piles.map((pile, index) => {
-          const isChosen = chosenPile === index;
-          const isDimmed = chosenPile !== null && !isChosen;
+        {pileGroups.map((pile, index) => {
+          const isChosen = activePile === index;
+          const selectedFromPile = pile.cards.filter((cardIndex) => picks.includes(cardIndex)).length;
           return (
             <motion.button
               type="button"
               key={pile.label}
               onClick={() => choosePile(index)}
-              className="group relative flex flex-col items-center gap-4"
+              onPointerMove={syncPointerGlow}
+              className="group/card relative flex flex-col items-center gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--surface)]"
+              style={{
+                "--card-glow-x": "50%",
+                "--card-glow-y": "24%",
+              } as CSSProperties}
+              aria-label={`选择${pile.label}牌叠`}
+              aria-pressed={isChosen}
               whileHover={{ y: -6 }}
               animate={{
                 y: isChosen ? -12 : 0,
-                opacity: isDimmed ? 0.32 : 1,
-                scale: isDimmed ? 0.94 : 1,
+                opacity: 1,
+                scale: isChosen ? 1 : 0.96,
               }}
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
             >
@@ -1395,7 +1543,7 @@ function PilePicker({
                       "absolute h-full w-full rounded-[14px] border transition-colors duration-300",
                       isChosen
                         ? "border-[var(--coral)]"
-                        : "border-[var(--line-strong)] group-hover:border-[var(--coral-edge)]",
+                        : "border-[var(--line-strong)] group-hover/card:border-[var(--coral-edge)]",
                     )}
                     style={{
                       transform: "translate(" + layer * 1.5 + "px, " + -layer * 1.5 + "px)",
@@ -1403,6 +1551,16 @@ function PilePicker({
                     }}
                   >
                     <CardBack className="rounded-[14px]" />
+                    {layer === 4 ? (
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute inset-[1px] rounded-[13px] opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 group-focus-visible/card:opacity-100"
+                        style={{
+                          background:
+                            "radial-gradient(circle at var(--card-glow-x,50%) var(--card-glow-y,24%), rgba(255,248,224,0.34), rgba(255,248,224,0.08) 30%, transparent 60%)",
+                        }}
+                      />
+                    ) : null}
                   </div>
                 ))}
               </div>
@@ -1427,8 +1585,13 @@ function PilePicker({
                   animate={{ scale: 1, opacity: 1 }}
                   className="absolute -top-6 left-1/2 -translate-x-1/2 rounded-full border border-[var(--coral-edge)] bg-[var(--surface-tint)] px-3 py-1 font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--coral-deep)] shadow-sm"
                 >
-                  Chosen
+                  展开中
                 </motion.span>
+              ) : null}
+              {selectedFromPile > 0 ? (
+                <span className="absolute -right-2 top-2 flex h-7 min-w-7 items-center justify-center rounded-full border-2 border-[var(--surface-tint)] bg-[var(--coral)] px-1.5 font-mono text-[10px] font-bold text-white shadow-lg">
+                  {selectedFromPile}
+                </span>
               ) : null}
             </motion.button>
           );
@@ -1436,66 +1599,66 @@ function PilePicker({
       </div>
 
       <AnimatePresence>
-        {selectedPile ? (
-          <motion.div
-            key="pile-cards"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.35 }}
-            className="flex w-full max-w-4xl flex-col items-center gap-5"
-          >
-            <div className="grid w-full grid-cols-7 gap-2 px-2 sm:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2.5">
-              {pileCards.map((deckIndex, index) => {
-                const pickOrder = picks.indexOf(deckIndex);
-                const isPicked = pickOrder >= 0;
-                const disabled = !isPicked && picks.length >= cardCount;
+        <motion.div
+          key={activePile}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.35 }}
+          className="flex w-full max-w-4xl flex-col items-center gap-5"
+        >
+          <div className="grid w-full grid-cols-7 gap-2 px-2 sm:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2.5">
+            {selectedPile.cards.map((deckIndex, index) => {
+              const pickOrder = picks.indexOf(deckIndex);
+              const isPicked = pickOrder >= 0;
+              const disabled = !isPicked && picks.length >= cardCount;
 
-                return (
-                  <motion.button
-                    type="button"
-                    key={deckIndex}
-                    onClick={() => togglePick(deckIndex)}
-                    disabled={disabled}
+              return (
+                <motion.button
+                  type="button"
+                  key={deckIndex}
+                  onClick={() => togglePick(deckIndex)}
+                  disabled={disabled}
+                  aria-label={`从${selectedPile.label}牌叠中选择第 ${index + 1} 张牌${isPicked ? `，已选为第 ${pickOrder + 1} 张` : ""}`}
+                  aria-pressed={isPicked}
+                  className={cn(
+                    "group/card relative aspect-[2/3.5] min-h-[68px] rounded-[8px] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]",
+                    disabled ? "cursor-not-allowed opacity-35" : "cursor-pointer",
+                  )}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{
+                    opacity: 1,
+                    y: isPicked ? -10 : 0,
+                    scale: isPicked ? 1.06 : 1,
+                  }}
+                  transition={{
+                    delay: Math.min(index * 0.012, 0.18),
+                    type: "spring",
+                    stiffness: 240,
+                    damping: 24,
+                  }}
+                >
+                  <CardBack className="rounded-[8px]" compact />
+                  <span
                     className={cn(
-                      "group relative aspect-[2/3.5] min-h-[68px] rounded-[8px] transition",
-                      disabled ? "cursor-not-allowed opacity-35" : "cursor-pointer",
+                      "pointer-events-none absolute inset-0 rounded-[8px] border transition",
+                      isPicked
+                        ? "border-[var(--coral)] shadow-[0_10px_24px_rgba(200,90,60,0.24)]"
+                        : "border-[var(--line-strong)] group-hover/card:border-[var(--coral-edge)]",
                     )}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{
-                      opacity: 1,
-                      y: isPicked ? -10 : 0,
-                      scale: isPicked ? 1.06 : 1,
-                    }}
-                    transition={{
-                      delay: Math.min(index * 0.012, 0.18),
-                      type: "spring",
-                      stiffness: 240,
-                      damping: 24,
-                    }}
-                  >
-                    <CardBack className="rounded-[8px]" compact />
-                    <span
-                      className={cn(
-                        "pointer-events-none absolute inset-0 rounded-[8px] border transition",
-                        isPicked
-                          ? "border-[var(--coral)] shadow-[0_10px_24px_rgba(200,90,60,0.24)]"
-                          : "border-[var(--line-strong)] group-hover:border-[var(--coral-edge)]",
-                      )}
-                    />
-                    {isPicked ? (
-                      <span className="absolute -top-2 left-1/2 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border-2 border-[var(--surface-tint)] bg-[var(--coral)] font-mono text-[10px] font-bold text-white shadow-lg">
-                        {pickOrder + 1}
-                      </span>
-                    ) : null}
-                  </motion.button>
-                );
-              })}
-            </div>
+                  />
+                  {isPicked ? (
+                    <span className="absolute -top-2 left-1/2 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border-2 border-[var(--surface-tint)] bg-[var(--coral)] font-mono text-[10px] font-bold text-white shadow-lg">
+                      {pickOrder + 1}
+                    </span>
+                  ) : null}
+                </motion.button>
+              );
+            })}
+          </div>
 
-            <PickProgress picks={picks.length} total={cardCount} />
-          </motion.div>
-        ) : null}
+          <PickProgress picks={picks.length} total={cardCount} />
+        </motion.div>
       </AnimatePresence>
 
       <Button
@@ -1521,32 +1684,94 @@ function NumberPicker({
   onDone: (indices: number[]) => void;
 }) {
   const [activeSlot, setActiveSlot] = useState(0);
+  const initialNumber = Math.floor(TOTAL_CARDS / 2);
   const [values, setValues] = useState<number[]>(() =>
-    Array.from({ length: cardCount }, () => Math.floor(TOTAL_CARDS / 2)),
+    Array.from({ length: cardCount }, () => initialNumber),
   );
+  const [draftValues, setDraftValues] = useState<string[]>(() =>
+    Array.from({ length: cardCount }, () => String(initialNumber)),
+  );
+  const [inputTip, setInputTip] = useState("可以直接输入，也可以先删空再写下浮现的数字。");
+
+  function normalizeDraftValue(rawValue: string, fallback: number) {
+    const trimmed = rawValue.trim();
+    const parsed = Number(trimmed);
+
+    if (trimmed.length === 0 || !Number.isFinite(parsed)) {
+      return {
+        value: fallback,
+        draft: String(fallback),
+        valid: false,
+        tip: "这里需要 1 到 78 之间的数字；如果还没想好，可以先停在原来的数字。",
+      };
+    }
+
+    const rounded = Math.round(parsed);
+    const clamped = Math.max(1, Math.min(TOTAL_CARDS, rounded));
+
+    return {
+      value: clamped,
+      draft: String(clamped),
+      valid: true,
+      tip:
+        clamped === rounded
+          ? "已记下这个数字。"
+          : `塔罗牌只有 78 张，已帮你收回到 ${clamped}。`,
+    };
+  }
 
   function updateActiveValue(updater: (value: number) => number) {
-    setValues((current) =>
-      current.map((value, index) =>
+    setValues((current) => {
+      const nextValues = current.map((value, index) =>
         index === activeSlot ? Math.max(1, Math.min(TOTAL_CARDS, updater(value))) : value,
-      ),
+      );
+      setDraftValues((drafts) =>
+        drafts.map((draft, index) => (index === activeSlot ? String(nextValues[index]) : draft)),
+      );
+      setInputTip("已调整当前数字。");
+      return nextValues;
+    });
+  }
+
+  function commitDraft(slotIndex = activeSlot) {
+    const normalized = normalizeDraftValue(draftValues[slotIndex] ?? "", values[slotIndex]);
+    setValues((current) =>
+      current.map((value, index) => (index === slotIndex ? normalized.value : value)),
     );
+    setDraftValues((current) =>
+      current.map((draft, index) => (index === slotIndex ? normalized.draft : draft)),
+    );
+    setInputTip(normalized.tip);
+    return normalized.valid;
   }
 
   function confirm() {
+    const normalizedEntries = draftValues.map((draft, index) =>
+      normalizeDraftValue(draft, values[index]),
+    );
+
+    setValues(normalizedEntries.map((entry) => entry.value));
+    setDraftValues(normalizedEntries.map((entry) => entry.draft));
+
+    const invalidEntry = normalizedEntries.find((entry) => !entry.valid);
+    if (invalidEntry) {
+      setInputTip(invalidEntry.tip);
+      triggerHaptic(6);
+      return;
+    }
+
     triggerHaptic([10, 20, 14]);
-    onDone(resolveUniqueNumberIndices(values));
+    onDone(resolveUniqueNumberIndices(normalizedEntries.map((entry) => entry.value)));
   }
 
   return (
     <div className="flex flex-col items-center gap-10 py-6">
       <CutTrace cutPosition={cutPosition} />
 
-      <div className="flex flex-col items-center gap-2">
-        <p className="max-w-xl text-center text-[15px] leading-7 text-[var(--ink-soft)]">
+      <div className="px-6">
+        <RitualPrompt detail="1 到 78 之间，不需要任何解释。">
           在心里默念问题，捕获第一个浮现的数字。
-        </p>
-        <p className="text-[12.5px] text-[var(--ink-muted)]">1 到 78 之间，不需要任何解释。</p>
+        </RitualPrompt>
       </div>
 
       <div className="flex flex-wrap justify-center gap-2">
@@ -1554,7 +1779,10 @@ function NumberPicker({
           <button
             key={index}
             type="button"
-            onClick={() => setActiveSlot(index)}
+            onClick={() => {
+              commitDraft(activeSlot);
+              setActiveSlot(index);
+            }}
             className={cn(
               "h-9 min-w-12 border px-3 font-mono text-[12px] transition",
               activeSlot === index
@@ -1582,14 +1810,47 @@ function NumberPicker({
           </svg>
         </motion.button>
 
-        <div className="relative group">
+        <label className="relative group block">
           <div className="absolute -inset-4 rounded-[24px] bg-[var(--coral-wash)] opacity-50 blur-xl transition-opacity group-hover:opacity-100" />
           <div className="relative flex h-36 w-36 items-center justify-center rounded-[24px] border-2 border-[var(--coral-edge)] bg-[var(--surface-tint)] shadow-[0_8px_24px_rgba(168,85,62,0.12)]">
-            <span className="font-serif-display text-[72px] leading-none text-[var(--coral-deep)]">
-              {values[activeSlot]}
-            </span>
+            <span className="sr-only">输入第 {activeSlot + 1} 张牌的心象数字</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={TOTAL_CARDS}
+              value={draftValues[activeSlot]}
+              aria-describedby="number-picker-tip"
+              onFocus={(event) => event.currentTarget.select()}
+              onBlur={() => commitDraft(activeSlot)}
+              onChange={(event) => {
+                const rawValue = event.target.value.replace(/[^\d]/g, "");
+                triggerHaptic(4);
+                setDraftValues((current) =>
+                  current.map((draft, index) => (index === activeSlot ? rawValue : draft)),
+                );
+
+                if (rawValue.length === 0) {
+                  setInputTip("可以先留空，等那个数字浮上来再输入。");
+                  return;
+                }
+
+                const parsed = Number(rawValue);
+                if (parsed >= 1 && parsed <= TOTAL_CARDS) {
+                  setValues((current) =>
+                    current.map((value, index) => (index === activeSlot ? parsed : value)),
+                  );
+                  setInputTip("数字有效。");
+                  return;
+                }
+
+                setInputTip("请写 1 到 78 之间的数字，确认时会帮你校正。");
+              }}
+              className="h-full w-full appearance-none rounded-[24px] bg-transparent text-center font-serif-display text-[64px] leading-none text-[var(--coral-deep)] outline-none [appearance:textfield] focus-visible:ring-2 focus-visible:ring-[var(--coral)] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              aria-label={`第 ${activeSlot + 1} 张牌的数字，1 到 78`}
+            />
           </div>
-        </div>
+        </label>
 
         <motion.button
           type="button"
@@ -1623,6 +1884,14 @@ function NumberPicker({
           <span>78</span>
         </div>
       </div>
+
+      <p
+        id="number-picker-tip"
+        className="ritual-note mx-auto max-w-md px-4 text-center text-[12.5px] leading-6 text-[var(--ink-muted)]"
+        aria-live="polite"
+      >
+        {inputTip}
+      </p>
 
       <Button 
         className="px-12 py-6 text-[15px]"

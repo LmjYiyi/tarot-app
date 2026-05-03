@@ -18,6 +18,7 @@ function formatCardContext(item: RetrievedCardContext) {
   const doNotSay = Array.isArray(precise?.do_not_say)
     ? precise.do_not_say.slice(0, 4).join("；")
     : "";
+  const researchEvidence = item.researchCardEvidence;
 
   return [
     `### ${positionName}：${item.appCard.nameZh}（${orientationLabel}）`,
@@ -25,6 +26,12 @@ function formatCardContext(item: RetrievedCardContext) {
     precise ? `位置感读法：${oneLine(precise.position_reading)}` : null,
     precise?.advice_direction ? `建议方向：${oneLine(precise.advice_direction)}` : null,
     profile ? `场景核心：${oneLine(profile.core_reading)}` : null,
+    researchEvidence
+      ? `核验牌义：Waite公有领域底本，${orientationLabel}=${oneLine(
+          item.orientation === "upright" ? researchEvidence.upright : researchEvidence.reversed,
+        )}`
+      : null,
+    researchEvidence?.description ? `牌面描述核对：${oneLine(researchEvidence.description)}` : null,
     rule ? `牌位语法：${oneLine(rule.interpretation_rule)}；${oneLine(rule.function)}` : null,
     doSay ? `推荐表达：${doSay}` : null,
     doNotSay ? `禁止说法：${doNotSay}` : null,
@@ -105,6 +112,7 @@ export function formatTarotEngineContext(context: TarotEngineContext) {
 
   return [
     `## TAROT_KB_V0_2 | domain=${context.domain} | version=${context.kbVersion}`,
+    `核验资料集：generatedAt=${context.researchDataset.generatedAt}；cardEvidence=${context.researchDataset.matchedCardEvidence}；safetyRules=${context.researchDataset.matchedSafetyRules}`,
     context.spread
       ? `牌阵映射：${context.spread.name_cn}（${context.spread.spread_id}）`
       : "牌阵映射：未命中 KB 牌阵，仍使用单牌/组合资料。",

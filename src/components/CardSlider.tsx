@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { toRoman } from "@/components/ui/ornament";
@@ -14,6 +14,12 @@ export function CardSlider({ cards }: CardSliderProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true); // Assuming cards > view width
+  const mobileFeaturedIds = useMemo(() => {
+    const featuredIndexes = [0, 1, 2, 6, 13, cards.length - 1].filter(
+      (index, position, list) => index >= 0 && list.indexOf(index) === position,
+    );
+    return new Set(featuredIndexes.map((index) => cards[index]?.id).filter(Boolean));
+  }, [cards]);
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -64,13 +70,16 @@ export function CardSlider({ cards }: CardSliderProps) {
       <div 
         ref={scrollRef}
         onScroll={handleScroll}
-        className="no-scrollbar flex w-full overflow-x-auto scroll-smooth px-5 sm:px-8 lg:px-12 grid grid-cols-2 gap-4 sm:flex sm:grid-cols-none sm:gap-6 lg:gap-8 pb-4"
+        className="no-scrollbar grid w-full grid-cols-3 gap-3 px-5 pb-4 sm:flex sm:grid-cols-none sm:gap-6 sm:overflow-x-auto sm:px-8 sm:scroll-smooth lg:gap-8 lg:px-12"
       >
         {cards.map((card) => (
           <Link
             key={card.id}
             href={`/cards/${card.slug}`}
-            className="group relative aspect-[300/524] w-full shrink-0 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--surface-raised)] shadow-[0_4px_12px_rgba(26,26,25,0.08)] sm:w-[160px] md:w-[180px] lg:w-[200px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(216,106,69,0.15)]"
+            className={[
+              "group relative aspect-[300/524] w-full shrink-0 overflow-hidden rounded-[10px] border border-[var(--line)] bg-[var(--surface-raised)] shadow-[0_4px_12px_rgba(26,26,25,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(216,106,69,0.15)] sm:block sm:w-[160px] md:w-[180px] lg:w-[200px]",
+              mobileFeaturedIds.has(card.id) ? "block" : "hidden",
+            ].join(" ")}
           >
             <span className="absolute left-2.5 top-2.5 z-10 rounded-[4px] bg-[var(--surface)] px-2.5 py-1 font-mono text-[10.5px] tracking-[0.14em] text-[var(--coral-deep)] shadow-[0_1px_3px_rgba(26,26,25,0.08)]">
               {toRoman(card.number)}

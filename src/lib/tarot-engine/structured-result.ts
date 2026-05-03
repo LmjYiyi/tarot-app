@@ -44,15 +44,23 @@ export type TarotInterpretationV2Result = {
   combinations: Array<{
     cardIds: string[];
     cardNames: string[];
+    positions: Array<{
+      positionOrder: number;
+      positionId: string;
+      positionName: string;
+    }>;
+    reason: string;
     summary: string;
   }>;
   reading: {
     opening: string;
     overallTheme: string;
     summary: string;
+    closingNote: string;
     advice: string[];
     feedbackQuestions: string[];
   };
+  sections: TarotInterpretationV2Section[];
   safety: {
     passed: boolean;
     hits: number;
@@ -72,7 +80,35 @@ export type TarotInterpretationV2Result = {
       safetyHits: number;
       goldenCaseHits: number;
     };
+    aiEnhancer?: {
+      enabled: boolean;
+      eligible: boolean;
+      allowedDomains: string[];
+      skippedReason?: string;
+      durationMs?: number;
+      failureReason?: string;
+      errorName?: string;
+    };
   };
+};
+
+export type TarotInterpretationV2Section = {
+  id: string;
+  title: string;
+  source: string;
+  body?: string;
+  items?: Array<{
+    id: string;
+    title?: string;
+    body: string;
+    cardId?: string;
+    cardName?: string;
+    orientation?: "upright" | "reversed";
+    positionId?: string;
+    positionName?: string;
+    cardIds?: string[];
+    cardNames?: string[];
+  }>;
 };
 
 type BuildKbStructuredResultInput = {
@@ -176,11 +212,14 @@ function buildCombinations(context: TarotEngineContext) {
         pair.base?.card_names_cn ??
         context.cardContexts
           .filter((card) => card.kbCardId === pair.cardA || card.kbCardId === pair.cardB)
+          .sort((a, b) => a.drawnCard.positionOrder - b.drawnCard.positionOrder)
           .map((card) => card.appCard.nameZh);
 
       return {
         cardIds: [pair.cardA, pair.cardB],
         cardNames: Array.isArray(cardNames) ? cardNames.map(String) : [],
+        positions: pair.positions,
+        reason: pair.reason,
         summary,
       };
     })
@@ -189,6 +228,33 @@ function buildCombinations(context: TarotEngineContext) {
 
 function buildSafetyNote(context: TarotEngineContext) {
   if (!context.safetyMatches.length) return undefined;
+
+  const specificNote = context.safetyMatches
+    .map(({ rule }) => {
+      switch (rule.risk_type) {
+        case "self_harm_crisis":
+        case "self_harm_or_immediate_crisis":
+          return "这个问题已经触及即时安全边界，这次不继续做塔罗预测。请立刻联系当地紧急服务、身边可信任的人或专业危机支持。";
+        case "death_disaster_prediction":
+          return "我不能用塔罗预测死亡、重大意外或灾祸，也不会给出这类确定结论。我们先把问题转成现实安全检查、照护准备和可求助资源。";
+        case "privacy_sensitive":
+        case "third_party_mind_reading_or_privacy":
+          return "这个方向涉及对方隐私和关系边界，我不能支持偷看手机、查聊天记录或替对方内心下结论。可以改为整理你的不安、可观察互动和可以坦诚沟通的边界。";
+        case "medical_health":
+        case "medical_or_health_advice":
+          return "这个问题不能用塔罗判断健康结果。请把医生或专业医疗支持放在第一位，塔罗最多只适合整理压力、照护线索和需要确认的问题。";
+        case "legal":
+        case "legal_advice_or_case_prediction":
+          return "这个问题不能用塔罗判断法律结果或替代律师意见。更适合整理事实、证据、沟通记录和需要咨询专业人士的问题。";
+        case "financial_investment":
+        case "financial_or_investment_advice":
+          return "这个问题不能用塔罗做投资判断或给买卖建议。更适合整理风险承受度、现金流、冲动因素和需要独立核验的信息。";
+        default:
+          return "";
+      }
+    })
+    .find(Boolean);
+  if (specificNote) return specificNote;
 
   const actions = unique(context.safetyMatches.map(({ rule }) => compactText(rule.action)));
   const fallback = unique(
@@ -203,6 +269,36 @@ function buildSafetyNote(context: TarotEngineContext) {
   return note.includes("专业") || note.includes("医生") || note.includes("律师")
     ? note
     : `${note} 请优先参考医生、律师、心理咨询师或其他专业支持。`;
+}
+
+function isCriticalSafetyMatch(match: RetrievedSafetyRule) {
+  return (
+    match.rule.risk_level === "critical" ||
+    match.rule.risk_type === "self_harm_crisis" ||
+    match.rule.risk_type === "self_harm_or_immediate_crisis" ||
+    match.rule.risk_type === "death_disaster_prediction"
+  );
+}
+
+function getCriticalSafetyMatch(context: TarotEngineContext) {
+  return context.safetyMatches.find(isCriticalSafetyMatch);
+}
+
+function buildCriticalSafetyReading(safetyNote: string): TarotInterpretationV2Result["reading"] {
+  const supportActions = [
+    "先暂停占卜，把人身安全放在第一位。",
+    "现在就联系身边可信任的人，让对方陪你待一会儿或帮你联系现实支持。",
+    "如果你可能马上伤害自己，请立刻联系当地紧急服务或专业危机支持。",
+  ];
+
+  return {
+    opening: safetyNote,
+    overallTheme: "这次不继续做塔罗预测，重点是让你先获得现实中的即时支持。",
+    summary: safetyNote,
+    closingNote: "先不要一个人扛着，请马上把这件事告诉一个能真实陪到你的人。",
+    advice: supportActions,
+    feedbackQuestions: [],
+  };
 }
 
 function collectAdvice(cards: TarotInterpretationV2Result["cards"], safetyNote?: string) {
@@ -278,12 +374,134 @@ function buildSummary(input: {
     : `${cardLine}提示你先回到现实信号。重点不是得到绝对答案，而是判断哪里可以推进，哪里需要观察。`;
 }
 
+function buildClosingNote(input: {
+  cards: TarotInterpretationV2Result["cards"];
+  safetyNote?: string;
+}) {
+  if (input.safetyNote) {
+    return "最后给你的提醒：先把现实安全和专业支持放在牌面判断之前。";
+  }
+
+  const firstAdvice = input.cards.flatMap((card) => card.advice ?? [])[0];
+  if (firstAdvice) {
+    return `最后给你的提醒：${firstAdvice}`;
+  }
+
+  const firstCard = input.cards[0];
+  if (firstCard) {
+    return `最后给你的提醒：先看清${firstCard.positionName}里的${firstCard.cardName}正在提示什么，再做一个可验证的小行动。`;
+  }
+
+  return "最后给你的提醒：把这次解读当作观察框架，而不是替你下结论。";
+}
+
+export function buildStructuredSections(input: {
+  reading: TarotInterpretationV2Result["reading"];
+  cards: TarotInterpretationV2Result["cards"];
+  combinations: TarotInterpretationV2Result["combinations"];
+  safety: TarotInterpretationV2Result["safety"];
+}): TarotInterpretationV2Section[] {
+  const sections: TarotInterpretationV2Section[] = [
+    {
+      id: "opening",
+      title: "牌面先说",
+      source: "reading.opening",
+      body: input.reading.opening,
+    },
+    {
+      id: "position_readings",
+      title: "分位置解读",
+      source: "cards",
+      items: input.cards.map((card) => ({
+        id: `${card.positionId}:${card.cardId}`,
+        title: `${card.positionName} - ${card.cardName}`,
+        body: card.meaning,
+        cardId: card.cardId,
+        cardName: card.cardName,
+        orientation: card.orientation,
+        positionId: card.positionId,
+        positionName: card.positionName,
+      })),
+    },
+  ];
+
+  if (input.combinations.length) {
+    sections.push({
+      id: "combinations",
+      title: "牌面联动",
+      source: "combinations",
+      items: input.combinations.map((combination, index) => ({
+        id: `combination-${index + 1}`,
+        title: `${combination.reason}: ${combination.cardNames.join(" / ")}`,
+        body: combination.summary,
+        cardIds: combination.cardIds,
+        cardNames: combination.cardNames,
+      })),
+    });
+  }
+
+  if (input.safety.note) {
+    sections.push({
+      id: "safety",
+      title: "边界提醒",
+      source: "safety.note",
+      body: input.safety.note,
+    });
+  }
+
+  sections.push(
+    {
+      id: "overall",
+      title: "整体主线",
+      source: "reading.overallTheme",
+      body: input.reading.overallTheme,
+    },
+    {
+      id: "summary",
+      title: "当前结论",
+      source: "reading.summary",
+      body: input.reading.summary,
+    },
+    {
+      id: "advice",
+      title: "下一步建议",
+      source: "reading.advice",
+      items: input.reading.advice.map((body, index) => ({
+        id: `advice-${index + 1}`,
+        body,
+      })),
+    },
+    {
+      id: "reflection_questions",
+      title: "可以继续问自己的问题",
+      source: "reading.feedbackQuestions",
+      items: input.reading.feedbackQuestions.map((body, index) => ({
+        id: `reflection-${index + 1}`,
+        body,
+      })),
+    },
+    {
+      id: "closing_note",
+      title: "最后给你的提醒",
+      source: "reading.closingNote",
+      body: input.reading.closingNote,
+    },
+  );
+
+  return sections.filter(
+    (section) =>
+      Boolean(section.body?.trim()) || Boolean(section.items?.some((item) => item.body.trim())),
+  );
+}
+
 export function buildKbStructuredResult(
   input: BuildKbStructuredResultInput,
 ): TarotInterpretationV2Result {
   const context = input.tarotEngineContext;
   const safetyNote = buildSafetyNote(context);
-  const cards = context.cardContexts.map((cardContext) => ({
+  const criticalSafetyMatch = getCriticalSafetyMatch(context);
+  const isCriticalSafety = Boolean(criticalSafetyMatch && safetyNote);
+  const cards = isCriticalSafety ? [] : context.cardContexts.map((cardContext) => ({
     cardId: cardContext.appCard.id,
     cardName: cardContext.appCard.nameZh,
     orientation: cardContext.orientation,
@@ -297,17 +515,27 @@ export function buildKbStructuredResult(
     advice: buildCardAdvice(cardContext),
     reflectionQuestions: buildReflectionQuestions(cardContext),
   }));
-  const combinations = buildCombinations(context);
-  const opening = buildOpening({
-    question: input.question,
-    context,
-    cards,
-    safetyNote,
-  });
-  const overallTheme = buildOverallTheme({ context, cards, combinations });
-  const summary = buildSummary({ context, cards, combinations, safetyNote });
-  const advice = collectAdvice(cards, safetyNote);
-  const feedbackQuestions = collectFeedbackQuestions(cards);
+  const combinations = isCriticalSafety ? [] : buildCombinations(context);
+  const safety = {
+    passed: true,
+    hits: context.safetyMatches.length,
+    note: safetyNote,
+  };
+  const reading = isCriticalSafety && safetyNote
+    ? buildCriticalSafetyReading(safetyNote)
+    : {
+        opening: buildOpening({
+          question: input.question,
+          context,
+          cards,
+          safetyNote,
+        }),
+        overallTheme: buildOverallTheme({ context, cards, combinations }),
+        summary: buildSummary({ context, cards, combinations, safetyNote }),
+        closingNote: buildClosingNote({ cards, safetyNote }),
+        advice: collectAdvice(cards, safetyNote),
+        feedbackQuestions: collectFeedbackQuestions(cards),
+      };
 
   return {
     readingId: randomUUID(),
@@ -329,18 +557,9 @@ export function buildKbStructuredResult(
     },
     cards,
     combinations,
-    reading: {
-      opening,
-      overallTheme,
-      summary,
-      advice,
-      feedbackQuestions,
-    },
-    safety: {
-      passed: true,
-      hits: context.safetyMatches.length,
-      note: safetyNote,
-    },
+    reading,
+    sections: buildStructuredSections({ reading, cards, combinations, safety }),
+    safety,
     quality: {
       score: input.quality?.score ?? 0,
       passed: input.quality?.passed ?? false,
@@ -364,6 +583,7 @@ export function renderStructuredResultForQuality(result: TarotInterpretationV2Re
     result.question.rewritten,
     result.reading.opening,
     result.reading.overallTheme,
+    result.reading.closingNote,
     ...result.cards.map(
       (card) =>
         `${card.positionName}：${card.cardName}。${card.meaning}${card.advice?.length ? ` 建议：${card.advice.join("；")}` : ""}`,

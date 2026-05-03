@@ -6,9 +6,15 @@ import {
   applyEnhancedStructuredResultQuality,
   mergeStructuredAiPatch,
 } from "./structured-ai-enhancer";
-import { interpretTarotStructured } from "./interpret-tarot-structured";
+import {
+  interpretTarotStructured,
+  shouldUseStructuredAiEnhancer,
+} from "./interpret-tarot-structured";
 import type { TarotQualityResult } from "./quality-gate";
-import type { TarotInterpretationV2Result } from "./structured-result";
+import {
+  buildStructuredSections,
+  type TarotInterpretationV2Result,
+} from "./structured-result";
 
 const passingQuality: TarotQualityResult = {
   score: 95,
@@ -40,7 +46,7 @@ const failingQuality: TarotQualityResult = {
 };
 
 function baseResult(): TarotInterpretationV2Result {
-  return {
+  const result: TarotInterpretationV2Result = {
     readingId: "reading-1",
     kbVersion: "v0.2",
     pipeline: "kb_structured_fallback",
@@ -80,6 +86,19 @@ function baseResult(): TarotInterpretationV2Result {
       {
         cardIds: ["major-0-fool", "major-1-magician"],
         cardNames: ["愚者", "魔术师"],
+        positions: [
+          {
+            positionOrder: 1,
+            positionId: "external_influence",
+            positionName: "过去/背景",
+          },
+          {
+            positionOrder: 2,
+            positionId: "current_state",
+            positionName: "现在/现状",
+          },
+        ],
+        reason: "相邻牌位的连续关系",
         summary: "这组牌提醒你，关系里有启动感，也需要具体表达。",
       },
     ],
@@ -87,9 +106,11 @@ function baseResult(): TarotInterpretationV2Result {
       opening: "这次先把问题调整成互动模式来观察。",
       overallTheme: "整体主题是看互动是否能落到真实行动。",
       summary: "不要急着替对方下结论，先看对方是否有稳定回应。",
+      closingNote: "最后给你的提醒：先看真实互动，再判断下一步。",
       advice: ["先观察一个可验证信号。"],
       feedbackQuestions: ["你希望这段关系带给你什么感受？"],
     },
+    sections: [],
     safety: {
       passed: true,
       hits: 0,
@@ -105,11 +126,20 @@ function baseResult(): TarotInterpretationV2Result {
       },
     },
   };
+  result.sections = buildStructuredSections({
+    reading: result.reading,
+    cards: result.cards,
+    combinations: result.combinations,
+    safety: result.safety,
+  });
+
+  return result;
 }
 
 describe("structured AI enhancer", () => {
   afterEach(() => {
     delete process.env.TAROT_V2_AI_STRUCTURED;
+    delete process.env.TAROT_V2_AI_DOMAINS;
   });
 
   it("only changes expression fields and keeps fact fields locked", () => {
@@ -208,5 +238,73 @@ describe("structured AI enhancer", () => {
 
     expect(result.pipeline).toBe("kb_structured_fallback");
     expect(result.quality.passed).toBe(true);
+  });
+
+  it("gates AI enhancement by domain, safety hits, and risk level", () => {
+    expect(
+      shouldUseStructuredAiEnhancer({
+        enabled: true,
+        domain: "love",
+        safetyHits: 0,
+        riskLevel: "medium",
+        allowedDomains: new Set(["love", "career"]),
+      }),
+    ).toBe(true);
+    expect(
+      shouldUseStructuredAiEnhancer({
+        enabled: true,
+        domain: "love",
+        safetyHits: 1,
+        riskLevel: "medium",
+        allowedDomains: new Set(["love", "career"]),
+      }),
+    ).toBe(false);
+    expect(
+      shouldUseStructuredAiEnhancer({
+        enabled: true,
+        domain: "decision",
+        safetyHits: 0,
+        riskLevel: "high",
+        allowedDomains: new Set(["decision"]),
+      }),
+    ).toBe(false);
+    expect(
+      shouldUseStructuredAiEnhancer({
+        enabled: true,
+        domain: "daily",
+        safetyHits: 0,
+        riskLevel: "low",
+        allowedDomains: new Set(["self_state"]),
+      }),
+    ).toBe(true);
+    expect(
+      shouldUseStructuredAiEnhancer({
+        enabled: true,
+        domain: "legal",
+        safetyHits: 0,
+        riskLevel: "low",
+        allowedDomains: new Set(["love", "career"]),
+      }),
+    ).toBe(false);
+  });
+
+  it("does not call AI enhancement for high-risk safety cases", async () => {
+    process.env.TAROT_V2_AI_STRUCTURED = "1";
+
+    const result = await interpretTarotStructured({
+      question: "塔罗看我这个病会不会恶化？",
+      spreadSlug: "single-guidance",
+      cards: [{ cardId: "major-5-hierophant", positionOrder: 1, reversed: false }],
+      locale: "zh-CN",
+    });
+
+    expect(result.pipeline).toBe("kb_structured_fallback");
+    expect(result.safety.hits).toBeGreaterThan(0);
+    expect(result.question.riskLevel).toBe("high");
+    expect(result.debug?.aiEnhancer).toMatchObject({
+      enabled: true,
+      eligible: false,
+      skippedReason: "safety_hits",
+    });
   });
 });

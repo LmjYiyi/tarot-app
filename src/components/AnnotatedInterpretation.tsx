@@ -116,7 +116,7 @@ export function AnnotatedInterpretation({
 
   if (isStreaming) {
     return (
-      <div className="interpretation-content whitespace-pre-wrap text-[15px] leading-[1.85] tracking-[0.005em] text-[var(--ink)]">
+      <div className="interpretation-content streaming-ink mx-auto max-w-[68ch] whitespace-pre-wrap text-[15px] leading-[1.9] tracking-[0.005em] text-[var(--ink)]">
         {renderAnnotatedText(safeText, "stream")}
       </div>
     );
@@ -129,7 +129,7 @@ export function AnnotatedInterpretation({
   const firstHeadingIndex = interpretationItems.findIndex((item) => item.kind === "heading");
 
   return (
-    <div className="interpretation-content text-[15.5px] leading-[1.95] tracking-[0.005em] text-[var(--ink)]">
+    <div className="interpretation-content mx-auto max-w-[68ch] text-[15.5px] leading-[1.95] tracking-[0.005em] text-[var(--ink)]">
       {interpretationItems.map((item, index) => {
         if (item.kind === "heading") {
           return (

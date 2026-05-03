@@ -1,4 +1,9 @@
 import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
+import {
+  getResearchCardEvidence,
+  loadResearchDatasets,
+  type ResearchSafetyRule,
+} from "@/lib/research-datasets/loader";
 import type { ReadingIntent, SpreadDefinition, TarotCard } from "@/lib/tarot/types";
 import { loadTarotKb } from "@/lib/tarot-kb/loader";
 import {
@@ -9,10 +14,10 @@ import {
 import type { GoldenCase, TarotKb } from "@/lib/tarot-kb/types";
 
 import type {
+  RetrievedCardContext,
   RetrievedGoldenCase,
   RetrievedQuestionTaxonomy,
   RetrievedSafetyRule,
-  RetrievedPairContext,
   TarotEngineContext,
   TarotEngineInput,
   TarotKbDomain,
@@ -262,19 +267,25 @@ function retrieveQuestionMatches(input: {
 
 function retrieveSafetyMatches(input: { kb: TarotKb; question: string }): RetrievedSafetyRule[] {
   const normalizedQuestion = normalizeQuestion(input.question);
+  if (!normalizedQuestion) return [];
+
   const broadRiskPatterns: Record<string, RegExp[]> = {
     medical_health: [/病|癌症|怀孕|症状|恶化|严重|医生|医院|治疗|能活多久/u],
     legal: [/官司|诉讼|起诉|合同|律师|坐牢|判刑|违法/u],
-    financial_investment: [/股票|基金|投资|币|理财|彩票|收益|赚钱|亏钱|买入|买|卖出|加仓|梭哈/u],
+    financial_investment: [
+      /股票|基金|投资|币|理财|彩票|收益|赚钱|亏钱|买入|买|卖出|加仓|梭哈/u,
+      /全仓|重仓|all\s*-?\s*in|所有钱|全部钱|存款|投进去/u,
+    ],
     self_harm_crisis: [/不想活|自杀|轻生|伤害自己|活不下去/u],
-    death_disaster: [/死亡|死|灾祸|灾难|车祸|意外/u],
-    privacy_invasion: [/偷看|监听|查.*手机|查.*聊天|隐私|跟踪/u],
+    death_disaster_prediction: [/死亡|会不会死|死不死|重大意外|出.*意外|灾祸|灾难|车祸|出事/u],
+    privacy_sensitive: [/偷看|偷偷看|翻.*手机|查.*手机|看.*手机|查.*聊天|聊天记录|监听|隐私|跟踪/u],
   };
 
   return input.kb.safetyRules
     .map((rule) => {
       const matchedTriggers = rule.trigger_examples.filter((example) => {
         const normalizedExample = normalizeQuestion(example);
+        if (!normalizedExample) return false;
         return (
           normalizedQuestion.includes(normalizedExample) ||
           normalizedExample.includes(normalizedQuestion)
@@ -290,36 +301,232 @@ function retrieveSafetyMatches(input: { kb: TarotKb; question: string }): Retrie
     .filter((item) => item.matchedTriggers.length > 0);
 }
 
-function buildPairContexts(input: { kb: TarotKb; cardIds: string[] }) {
-  const pairContexts: RetrievedPairContext[] = [];
+function retrieveResearchSafetyMatches(input: { question: string }): RetrievedSafetyRule[] {
+  const normalizedQuestion = normalizeQuestion(input.question);
+  if (!normalizedQuestion) return [];
 
-  for (let i = 0; i < input.cardIds.length; i += 1) {
-    for (let j = i + 1; j < input.cardIds.length; j += 1) {
-      const cardA = input.cardIds[i];
-      const cardB = input.cardIds[j];
-      if (!cardA || !cardB) continue;
+  const bundle = loadResearchDatasets();
+  const broadRiskPatterns: Record<string, RegExp[]> = {
+    medical_or_health_advice: [/病|癌症|怀孕|症状|恶化|严重|医生|医院|治疗|手术|吃药|疼痛|失眠/u],
+    legal_advice_or_case_prediction: [/法院|官司|诉讼|起诉|胜诉|败诉|律师|合同|判决/u],
+    financial_or_investment_advice: [
+      /股票|基金|数字货币|抄底|梭哈|贷款|借钱|买房|投资|收益/u,
+      /全仓|重仓|all\s*-?\s*in|所有钱|全部钱|存款|投进去/u,
+    ],
+    self_harm_or_immediate_crisis: [/不想活|自杀|自残|轻生|伤害自己|结束生命|撑不下去/u],
+    third_party_mind_reading_or_privacy: [
+      /他怎么想|她怎么想|TA怎么想|对方心里|是不是有别人|爱不爱我/u,
+      /偷看|偷偷看|翻.*手机|查.*手机|看.*手机|查.*聊天|聊天记录|监听|隐私|跟踪/u,
+    ],
+    absolute_or_precise_prediction: [
+      /一定|必然|注定|百分百|具体哪天|什么时候会/u,
+      /会不会死|死不死|什么时候死|哪天死|重大意外|出.*意外/u,
+    ],
+  };
 
-      const context = getCombinationContext({ kb: input.kb, cardA, cardB });
+  return bundle.safetyRules
+    .map((rule) => {
+      const matchedTriggers = rule.triggers.filter((trigger) => {
+        const normalizedTrigger = normalizeQuestion(trigger);
+        if (!normalizedTrigger) return false;
+        return (
+          normalizedQuestion.includes(normalizedTrigger) ||
+          normalizedTrigger.includes(normalizedQuestion)
+        );
+      });
+      const broadMatches =
+        broadRiskPatterns[rule.riskType]
+          ?.filter((pattern) => pattern.test(input.question))
+          .map((pattern) => `source-dataset-pattern:${pattern.source}`) ?? [];
 
-      if (context.curated || context.highFrequency || context.base) {
-        pairContexts.push({
-          cardA,
-          cardB,
-          curated: context.curated ?? null,
-          highFrequency: context.highFrequency ?? null,
-          base: context.base ?? null,
-        });
-      }
-    }
+      return {
+        rule: mapResearchSafetyRule(rule),
+        matchedTriggers: [
+          ...matchedTriggers.map((trigger) => `source-dataset:${trigger}`),
+          ...broadMatches,
+        ],
+      };
+    })
+    .filter((item) => item.matchedTriggers.length > 0);
+}
+
+function mapResearchSafetyRule(rule: ResearchSafetyRule): RetrievedSafetyRule["rule"] {
+  return {
+    risk_type: rule.riskType,
+    risk_level: rule.riskLevel,
+    trigger_examples: rule.triggers,
+    action: rule.requiredResponse.join("；"),
+    forbidden: rule.forbidden,
+    fallback_template:
+      rule.riskLevel === "critical"
+        ? "这个问题已经触及即时安全边界，这次不继续做塔罗预测。请立刻联系当地紧急服务、身边可信任的人或专业危机支持。"
+        : `这个问题触及${rule.riskType}边界，塔罗不能替代专业判断；我会把它转成风险、条件和下一步现实支持来整理。`,
+    source_dataset_rule_id: rule.id,
+    source_ids: rule.sourceIds,
+    backend_hard_control: rule.backendHardControl,
+  };
+}
+
+function mergeSafetyMatches(
+  kbMatches: RetrievedSafetyRule[],
+  researchMatches: RetrievedSafetyRule[],
+) {
+  const seen = new Set<string>();
+
+  return [...researchMatches, ...kbMatches].filter((match) => {
+    const key = match.rule.risk_type;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function getPairPositionName(card: RetrievedCardContext) {
+  return (
+    card.appPosition?.name ??
+    card.contextPositionMeaning?.position_name_cn ??
+    card.positionRule?.name_cn ??
+    card.kbPositionId
+  );
+}
+
+function buildPairCandidate(input: {
+  cards: RetrievedCardContext[];
+  reason: string;
+  priority: number;
+}) {
+  const [first, second] = input.cards
+    .filter(Boolean)
+    .sort((a, b) => a.drawnCard.positionOrder - b.drawnCard.positionOrder);
+
+  if (!first || !second || first.kbCardId === second.kbCardId) return null;
+
+  return {
+    cardA: first.kbCardId,
+    cardB: second.kbCardId,
+    positions: [first, second].map((card) => ({
+      positionOrder: card.drawnCard.positionOrder,
+      positionId: card.kbPositionId,
+      positionName: getPairPositionName(card),
+    })),
+    reason: input.reason,
+    priority: input.priority,
+  };
+}
+
+function getCardsByOrder(cards: RetrievedCardContext[], ...orders: number[]) {
+  return orders
+    .map((order) => cards.find((card) => card.drawnCard.positionOrder === order))
+    .filter((card): card is RetrievedCardContext => Boolean(card));
+}
+
+function getSemanticPairCandidates(input: {
+  cardContexts: RetrievedCardContext[];
+  kbSpreadId: string | null;
+}) {
+  const cards = [...input.cardContexts].sort(
+    (a, b) => a.drawnCard.positionOrder - b.drawnCard.positionOrder,
+  );
+  if (cards.length <= 1) return [];
+
+  const candidates: NonNullable<ReturnType<typeof buildPairCandidate>>[] = [];
+  const add = (pairCards: RetrievedCardContext[], reason: string, priority: number) => {
+    const candidate = buildPairCandidate({ cards: pairCards, reason, priority });
+    if (candidate) candidates.push(candidate);
+  };
+
+  if (input.kbSpreadId === "three_option_a_b_advice") {
+    add(getCardsByOrder(cards, 1, 2), "选项 A 的状态与结果", 100);
+    add(getCardsByOrder(cards, 3, 4), "选项 B 的状态与结果", 100);
+    add(getCardsByOrder(cards, 5, 6), "隐藏因素与建议", 90);
+    add(getCardsByOrder(cards, 6, 7), "建议与总结", 80);
+    return candidates;
   }
 
-  return pairContexts;
+  for (let index = 0; index < cards.length - 1; index += 1) {
+    add([cards[index], cards[index + 1]].filter(Boolean), "相邻牌位的连续关系", 50 - index);
+  }
+
+  const byPositionId = new Map(cards.map((card) => [card.kbPositionId, card]));
+  const addByPosition = (a: string, b: string, reason: string, priority: number) => {
+    const first = byPositionId.get(a);
+    const second = byPositionId.get(b);
+    if (first && second) add([first, second], reason, priority);
+  };
+
+  addByPosition("current_state", "obstacle", "现状与阻碍", 85);
+  addByPosition("obstacle", "advice", "阻碍与建议", 95);
+  addByPosition("near_future_trend", "advice", "趋势与建议", 90);
+  addByPosition("external_influence", "advice", "外部影响与建议", 82);
+  addByPosition("relationship_dynamic", "advice", "关系现状与建议", 92);
+  addByPosition("inner_need", "advice", "内在需求与调整方向", 88);
+
+  return candidates;
+}
+
+function getPairCandidateLimit(input: {
+  kbSpreadId: string | null;
+  cardCount: number;
+}) {
+  if (input.cardCount <= 1) return 0;
+  if (input.kbSpreadId === "three_option_a_b_advice") return 4;
+  if (input.cardCount <= 3) return 2;
+  if (input.cardCount <= 5) return 3;
+
+  return 4;
+}
+
+function buildPairContexts(input: {
+  kb: TarotKb;
+  cardContexts: RetrievedCardContext[];
+  kbSpreadId: string | null;
+}) {
+  const limit = getPairCandidateLimit({
+    kbSpreadId: input.kbSpreadId,
+    cardCount: input.cardContexts.length,
+  });
+  if (limit === 0) return [];
+
+  const seen = new Set<string>();
+  const candidates = getSemanticPairCandidates({
+    cardContexts: input.cardContexts,
+    kbSpreadId: input.kbSpreadId,
+  })
+    .filter((candidate) => {
+      const key = [candidate.cardA, candidate.cardB].sort().join("|");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, limit);
+
+  return candidates.flatMap((candidate) => {
+    const context = getCombinationContext({
+      kb: input.kb,
+      cardA: candidate.cardA,
+      cardB: candidate.cardB,
+    });
+
+    if (!context.curated && !context.highFrequency && !context.base) return [];
+
+    return [{
+      cardA: candidate.cardA,
+      cardB: candidate.cardB,
+      positions: candidate.positions,
+      reason: candidate.reason,
+      curated: context.curated ?? null,
+      highFrequency: context.highFrequency ?? null,
+      base: context.base ?? null,
+    }];
+  });
 }
 
 export async function retrieveTarotEngineContext(
   input: TarotEngineInput,
 ): Promise<TarotEngineContext> {
   const kb = await loadTarotKb();
+  const researchDatasets = loadResearchDatasets();
   const appSpread = getSpreadBySlug(input.spreadSlug);
   const kbSpreadId = spreadSlugToKbSpreadId[input.spreadSlug] ?? null;
   const kbSpread = kbSpreadId ? kb.spreadsById.get(kbSpreadId) ?? null : null;
@@ -371,6 +578,10 @@ export async function retrieveTarotEngineContext(
           domain,
           positionId: kbPositionId,
         }) ?? null;
+      const researchCardEvidence = getResearchCardEvidence({
+        slug: appCard.slug,
+        nameEn: appCard.nameEn,
+      });
 
       if (!contextMeaning) missing.push(`ctxp:${kbCardId}:${orientation}:${domain}`);
       if (!contextPositionMeaning) {
@@ -387,18 +598,27 @@ export async function retrieveTarotEngineContext(
         positionRule: kb.positionsById.get(kbPositionId) ?? null,
         contextMeaning,
         contextPositionMeaning,
+        researchCardEvidence,
       };
     })
     .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
-  const pairContexts = buildPairContexts({ kb, cardIds: kbCardIds });
+  const pairContexts = buildPairContexts({
+    kb,
+    cardContexts,
+    kbSpreadId,
+  });
   const questionMatches = retrieveQuestionMatches({
     kb,
     question: input.question,
     domain,
     limit: 3,
   });
-  const safetyMatches = retrieveSafetyMatches({ kb, question: input.question });
+  const researchSafetyMatches = retrieveResearchSafetyMatches({ question: input.question });
+  const safetyMatches = mergeSafetyMatches(
+    retrieveSafetyMatches({ kb, question: input.question }),
+    researchSafetyMatches,
+  );
   const goldenCases = retrieveGoldenCases({
     kb,
     domain,
@@ -425,6 +645,12 @@ export async function retrieveTarotEngineContext(
     kbVersion: kb.manifest.version,
     domain,
     spread: kbSpread,
+    researchDataset: {
+      generatedAt: researchDatasets.generatedAt,
+      manifestFiles: researchDatasets.manifestFiles,
+      matchedCardEvidence: cardContexts.filter((item) => item.researchCardEvidence).length,
+      matchedSafetyRules: researchSafetyMatches.length,
+    },
     questionMatches,
     safetyMatches,
     cardContexts,

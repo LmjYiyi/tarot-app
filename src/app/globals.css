@@ -13,7 +13,7 @@
   /* Ink — warm dark brown */
   --ink: #4a3b32;
   --ink-soft: #6b5a50;
-  --ink-muted: #9c8a80;
+  --ink-muted: #806f66;
   --ink-faint: #d4c5bd;
 
   /* Rust / Coral — retro accent */
@@ -215,6 +215,49 @@ a {
   background-position: 0 3rem;
 }
 
+.ritual-note {
+  position: relative;
+  width: min(100%, 560px);
+  padding: 0.35rem 0.75rem 0.42rem;
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  line-height: 1.85;
+  text-align: center;
+  background: none;
+  border: 0;
+  text-shadow: 0 1px 0 rgba(253, 248, 225, 0.74);
+}
+
+.ritual-note::before,
+.ritual-note::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  height: 1px;
+  width: min(68%, 320px);
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(200, 90, 60, 0.24), transparent);
+}
+
+.ritual-note::before { top: 0; }
+.ritual-note::after { bottom: 0; opacity: 0.62; }
+
+.ritual-note-main {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+}
+
+.ritual-note-detail {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--ink-muted);
+}
+
 .gilt-text {
   color: var(--coral);
 }
@@ -292,6 +335,10 @@ a {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.9; }
 }
+@keyframes ink-breathe {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(200, 90, 60, 0)); }
+  45% { filter: drop-shadow(0 0 12px rgba(200, 90, 60, 0.12)); }
+}
 @keyframes float {
   0% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-10px) rotate(5deg); }
@@ -310,6 +357,23 @@ a {
 .animate-pulse-slow { animation: pulse-slow 2.4s ease-in-out infinite; }
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-float-delayed { animation: float 6s ease-in-out 3s infinite; }
+
+.streaming-ink {
+  animation: ink-breathe 2.8s ease-in-out infinite;
+}
+
+.ritual-card-surface {
+  transform-style: preserve-3d;
+}
+
+.group\/card:hover .ritual-card-surface,
+.group\/card:focus-visible .ritual-card-surface {
+  transform: rotateX(2deg) rotateY(-2deg);
+}
+
+.bottom-action-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
 
 /* Staggered reveal helpers */
 .stagger > * { animation: rise 0.6s cubic-bezier(0.22, 0.65, 0.2, 1) both; }

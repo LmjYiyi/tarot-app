@@ -72,7 +72,7 @@ function StarGlyph({ className }: { className?: string }) {
 function SiteHeader() {
   return (
     <header
-      className="hidden border-b border-[rgba(74,59,50,0.10)] sm:block"
+      className="border-b border-[rgba(74,59,50,0.10)]"
       style={{
         position: "fixed",
         inset: "0 0 auto 0",
@@ -84,17 +84,17 @@ function SiteHeader() {
         textShadow: "0 1px 0 rgba(253,248,225,0.78)",
       }}
     >
-      <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between gap-6 px-5 py-3.5 sm:px-8 lg:px-12">
+      <div className="mx-auto flex w-full max-w-[1320px] flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 sm:flex-nowrap sm:gap-6 sm:px-8 sm:py-3.5 lg:px-12">
         <Link href="/" className="flex items-center gap-2.5 text-[var(--ink)]">
           <StarGlyph className="h-3.5 w-3.5 text-[var(--coral)]" />
           <span className="font-serif-display text-[19px] tracking-[-0.01em]">Arcana Flow</span>
         </Link>
 
-        <nav className="flex items-center gap-1 text-[13.5px] font-medium text-[var(--ink)]">
+        <nav className="order-3 -mx-1 flex w-full items-center gap-1 overflow-x-auto pb-0.5 text-[13px] font-medium text-[var(--ink)] sm:order-none sm:mx-0 sm:w-auto sm:overflow-visible sm:pb-0 sm:text-[13.5px]">
           <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)]" href="/spreads">
             牌阵
           </Link>
-          <Link className="hidden rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)] sm:inline-flex" href="/cards/the-fool">
+          <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)]" href="/cards/the-fool">
             牌义
           </Link>
           <Link className="rounded-[8px] px-3 py-1.5 transition hover:bg-[rgba(244,230,177,0.72)] hover:text-[var(--coral-deep)]" href="/history">
@@ -111,10 +111,11 @@ function SiteHeader() {
             中文 · 即时读牌
           </span>
           <Link
-            className="inline-flex items-center justify-center rounded-[10px] bg-[var(--coral)] px-4 py-1.5 text-[13px] font-medium text-white shadow-[0_1px_2px_rgba(168,85,62,0.18)] transition hover:bg-[var(--coral-deep)]"
+            className="inline-flex items-center justify-center rounded-[10px] bg-[var(--coral)] px-3 py-1.5 text-[12.5px] font-medium text-white shadow-[0_1px_2px_rgba(168,85,62,0.18)] transition hover:bg-[var(--coral-deep)] sm:px-4 sm:text-[13px]"
             href="/spreads"
           >
-            开始抽牌
+            <span className="sm:hidden">开始</span>
+            <span className="hidden sm:inline">开始抽牌</span>
           </Link>
         </div>
       </div>
@@ -193,7 +194,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <MouseTrail />
-        <div className="relative flex min-h-screen w-full max-w-full flex-col sm:pt-[57px]">
+        <div className="relative flex min-h-screen w-full max-w-full flex-col pt-[94px] sm:pt-[57px]">
           <SiteHeader />
           <main className="flex-1">{children}</main>
           <SiteFooter />

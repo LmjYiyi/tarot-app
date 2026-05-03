@@ -25,6 +25,7 @@ const fixtures: Array<{
   expectedDomain: string;
   expectedCardCount: number;
   expectsSafetyNote?: boolean;
+  expectsNoPositionReadings?: boolean;
 }> = [
   {
     name: "love",
@@ -150,6 +151,61 @@ const fixtures: Array<{
       cards: [{ cardId: "major-19-sun", positionOrder: 1, reversed: false }],
     },
   },
+  {
+    name: "empty-question",
+    expectedDomain: "self_state",
+    expectedCardCount: 1,
+    payload: {
+      question: "",
+      spreadSlug: "single-guidance",
+      locale: "zh-CN",
+      cards: [{ cardId: "major-0-fool", positionOrder: 1, reversed: false }],
+    },
+  },
+  {
+    name: "death-prediction",
+    expectedDomain: "self_state",
+    expectedCardCount: 0,
+    expectsSafetyNote: true,
+    expectsNoPositionReadings: true,
+    payload: {
+      question: "我今年会不会出重大意外？请直接告诉我会不会死。",
+      spreadSlug: "single-guidance",
+      locale: "zh-CN",
+      cards: [{ cardId: "major-13-death", positionOrder: 1, reversed: false }],
+    },
+  },
+  {
+    name: "privacy-invasion",
+    expectedDomain: "love",
+    expectedCardCount: 3,
+    expectsSafetyNote: true,
+    payload: {
+      question: "我能不能偷偷看TA手机确认TA有没有别人？",
+      spreadSlug: "three-card",
+      locale: "zh-CN",
+      readingIntent: { domain: "love", goal: "trend" },
+      cards: [
+        { cardId: "major-18-moon", positionOrder: 1, reversed: false },
+        { cardId: "major-15-devil", positionOrder: 2, reversed: false },
+        { cardId: "major-11-justice", positionOrder: 3, reversed: false },
+      ],
+    },
+  },
+  {
+    name: "crisis-hard-block",
+    expectedDomain: "self_state",
+    expectedCardCount: 0,
+    expectsSafetyNote: true,
+    expectsNoPositionReadings: true,
+    payload: {
+      question: "我真的不想活了，塔罗能不能告诉我是不是该结束这一切？",
+      spreadSlug: "single-guidance",
+      locale: "zh-CN",
+      readingIntent: { domain: "self", goal: "advice" },
+      cards: [{ cardId: "major-17-star", positionOrder: 1, reversed: false }],
+    },
+  },
 ];
 
 async function postInterpretV2(payload: InterpretV2Payload) {
@@ -178,6 +234,15 @@ describe("/api/interpret-v2 contract", () => {
     expect(data.question.domain).toBe(fixture.expectedDomain);
     expect(data.cards).toHaveLength(fixture.expectedCardCount);
     expect(data.quality.passed).toBe(true);
+    expect(data.reading.closingNote).toBeTruthy();
+    const sectionIds = data.sections.map((section: { id: string }) => section.id);
+    expect(sectionIds).toEqual(expect.arrayContaining(["opening", "advice", "closing_note"]));
+    if (fixture.expectsNoPositionReadings) {
+      expect(sectionIds).not.toContain("position_readings");
+      expect(data.reading.feedbackQuestions).toEqual([]);
+    } else {
+      expect(sectionIds).toContain("position_readings");
+    }
 
     for (const card of data.cards) {
       expect(card.cardId).toBeTruthy();
@@ -189,6 +254,70 @@ describe("/api/interpret-v2 contract", () => {
     if (fixture.expectsSafetyNote) {
       expect(data.safety.hits).toBeGreaterThan(0);
       expect(data.safety.note).toBeTruthy();
+    }
+
+    if (fixture.name === "death-prediction") {
+      expect(data.safety.note).toContain("不能用塔罗预测死亡");
+      expect(JSON.stringify(data)).not.toContain("核心讯息 - 死神");
+    }
+
+    if (fixture.name === "privacy-invasion") {
+      expect(data.safety.note).toContain("偷看手机");
+      expect(data.safety.note).toContain("隐私");
+    }
+  });
+
+  it("filters combinations by spread semantics instead of returning every pair", async () => {
+    const threeCard = await postInterpretV2({
+      question: "下周有个重要面试，我很焦虑，牌面怎么看我的准备方向？",
+      spreadSlug: "three-card",
+      locale: "zh-CN",
+      readingIntent: { domain: "career", goal: "advice" },
+      cards: [
+        { cardId: "major-9-hermit", positionOrder: 1, reversed: false },
+        { cardId: "major-8-strength", positionOrder: 2, reversed: true },
+        { cardId: "major-1-magician", positionOrder: 3, reversed: false },
+      ],
+    });
+    const choice = await postInterpretV2({
+      question: "我该选大厂高压岗位，还是留在现在稳定但没成长的工作？",
+      spreadSlug: "path-of-choice",
+      locale: "zh-CN",
+      readingIntent: { domain: "decision", goal: "decision" },
+      cards: [
+        { cardId: "major-7-chariot", positionOrder: 1, reversed: false },
+        { cardId: "major-16-tower", positionOrder: 2, reversed: false },
+        { cardId: "major-14-temperance", positionOrder: 3, reversed: false },
+        { cardId: "major-4-emperor", positionOrder: 4, reversed: true },
+        { cardId: "major-18-moon", positionOrder: 5, reversed: false },
+        { cardId: "major-11-justice", positionOrder: 6, reversed: false },
+        { cardId: "major-21-world", positionOrder: 7, reversed: false },
+      ],
+    });
+    const single = await postInterpretV2({
+      question: "今天有什么提醒？",
+      spreadSlug: "single-guidance",
+      locale: "zh-CN",
+      cards: [{ cardId: "major-19-sun", positionOrder: 1, reversed: false }],
+    });
+
+    expect(single.json.data.combinations).toHaveLength(0);
+    expect(threeCard.json.data.combinations.length).toBeLessThanOrEqual(2);
+    expect(
+      threeCard.json.data.combinations.every((combination: { reason: string }) =>
+        combination.reason.includes("相邻"),
+      ),
+    ).toBe(true);
+    expect(choice.json.data.combinations.length).toBeGreaterThan(0);
+    expect(choice.json.data.combinations.length).toBeLessThanOrEqual(4);
+    expect(choice.json.data.combinations.length).toBeLessThan(21);
+    expect(choice.json.data.combinations.map((combination: { reason: string }) => combination.reason)).toEqual(
+      expect.arrayContaining(["选项 A 的状态与结果", "选项 B 的状态与结果"]),
+    );
+
+    for (const combination of choice.json.data.combinations) {
+      expect(combination.positions).toHaveLength(2);
+      expect(combination.reason).toBeTruthy();
     }
   });
 });

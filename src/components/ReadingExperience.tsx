@@ -101,6 +101,25 @@ const phaseToDeckPhase: Record<FlowPhase, RitualPhase> = {
   done: "revealed",
 };
 
+function preloadDrawnCardImages(drawn: DrawnCard[]) {
+  if (typeof document === "undefined") return;
+
+  drawn
+    .map((entry) => getCardById(entry.cardId)?.imageUrl)
+    .filter((src): src is string => Boolean(src))
+    .forEach((src) => {
+      const preload = document.createElement("link");
+      preload.rel = "preload";
+      preload.as = "image";
+      preload.href = src;
+      document.head.appendChild(preload);
+
+      const image = document.createElement("img");
+      image.decoding = "async";
+      image.src = src;
+    });
+}
+
 const domainOptions: Array<{ value: ReadingDomain; label: string }> = [
   { value: "career", label: "事业" },
   { value: "love", label: "感情" },
@@ -434,6 +453,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
 
     resolveQuestion();
     const drawn = drawFromIndices(shuffled, indices);
+    preloadDrawnCardImages(drawn);
     setCards(drawn);
     setDrawLog({
       seed: shuffled.seed,
@@ -944,12 +964,13 @@ function SpreadPreview({ spread }: { spread: SpreadDefinition }) {
               key={position.order}
               className={cn(
                 "group absolute aspect-[2/3.5] -translate-x-1/2 -translate-y-1/2",
+                compactCards ? "w-[13.5%] min-w-[34px]" : "w-[17%] min-w-[54px]",
                 preset.cardWidth,
               )}
               style={{
                 left: `${previewPos.x}%`,
                 top: `${previewPos.y}%`,
-                transform: `translate(-50%, -50%) rotate(${layoutPos.rotate ?? 0}deg)`,
+                transform: "translate(-50%, -50%)",
                 zIndex: 10 + index,
               }}
             >
@@ -962,15 +983,27 @@ function SpreadPreview({ spread }: { spread: SpreadDefinition }) {
                       "radial-gradient(closest-side, rgba(200,90,60,0.20), transparent)",
                   }}
                 />
-                <CardBack
-                  compact={compactCards}
-                  className="rounded-[9px] shadow-[0_10px_24px_rgba(74,59,50,0.12),0_2px_6px_rgba(74,59,50,0.08)]"
-                />
-                <span className="absolute -left-3 -top-3 flex h-6 w-6 items-center justify-center rounded-full border border-[var(--coral-edge)] bg-[var(--surface-tint)] font-mono text-[10px] text-[var(--coral-deep)] shadow-[0_2px_8px_rgba(74,59,50,0.08)]">
+                <div
+                  className="absolute inset-0"
+                  style={{ transform: `rotate(${layoutPos.rotate ?? 0}deg)` }}
+                >
+                  <CardBack
+                    compact={compactCards}
+                    className="rounded-[9px] shadow-[0_10px_24px_rgba(74,59,50,0.12),0_2px_6px_rgba(74,59,50,0.08)]"
+                  />
+                </div>
+                <span
+                  className={cn(
+                    "absolute z-20 flex items-center justify-center rounded-full border border-[var(--coral-edge)] bg-[var(--surface-tint)] font-mono text-[var(--coral-deep)] shadow-[0_2px_8px_rgba(74,59,50,0.08)]",
+                    compactCards
+                      ? "left-1 top-1 h-4 w-4 text-[8px] md:-left-3 md:-top-3 md:h-6 md:w-6 md:text-[10px]"
+                      : "-left-3 -top-3 h-6 w-6 text-[10px]",
+                  )}
+                >
                   {position.order}
                 </span>
                 {!compactCards ? (
-                  <span className="absolute left-1/2 top-[calc(100%+6px)] max-w-[120px] -translate-x-1/2 whitespace-nowrap rounded-full border border-[rgba(74,59,50,0.14)] bg-[rgba(253,248,225,0.86)] px-2 py-0.5 text-center text-[11px] leading-4 text-[var(--ink-soft)] shadow-[0_2px_8px_rgba(74,59,50,0.05)]">
+                  <span className="absolute bottom-1 left-1/2 z-20 max-w-[calc(100%-8px)] -translate-x-1/2 truncate rounded-full border border-[rgba(74,59,50,0.14)] bg-[rgba(253,248,225,0.88)] px-1.5 py-0.5 text-center text-[9px] leading-3 text-[var(--ink-soft)] shadow-[0_2px_8px_rgba(74,59,50,0.05)] md:bottom-auto md:top-[calc(100%+6px)] md:max-w-[120px] md:whitespace-nowrap md:px-2 md:text-[11px] md:leading-4">
                     {position.name}
                   </span>
                 ) : null}

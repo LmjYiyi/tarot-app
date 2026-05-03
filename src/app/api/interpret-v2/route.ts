@@ -96,6 +96,7 @@ export async function POST(request: Request) {
     }
 
     const result = await interpretTarotStructured(input);
+    const aiEnhancer = result.debug?.aiEnhancer;
 
     return NextResponse.json(
       {
@@ -109,6 +110,12 @@ export async function POST(request: Request) {
           "x-tarot-pipeline": result.pipeline,
           "x-tarot-quality-score": String(result.quality.score),
           "x-tarot-quality-passed": String(result.quality.passed),
+          "x-tarot-ai-enhancer-enabled": String(aiEnhancer?.enabled ?? false),
+          "x-tarot-ai-enhancer-eligible": String(aiEnhancer?.eligible ?? false),
+          "x-tarot-ai-enhancer-skipped-reason": aiEnhancer?.skippedReason ?? "none",
+          "x-tarot-ai-enhancer-failure-reason": aiEnhancer?.failureReason ?? "none",
+          "x-tarot-ai-enhancer-duration-ms":
+            typeof aiEnhancer?.durationMs === "number" ? String(aiEnhancer.durationMs) : "unknown",
         },
       },
     );
