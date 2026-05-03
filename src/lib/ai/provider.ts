@@ -10,6 +10,7 @@ import {
   runQualityGate,
   summarizeQualityRequirements,
 } from "@/lib/interpretation/quality-gate";
+import { buildKbDrivenFallback } from "@/lib/tarot-engine/kb-fallback";
 import type { DrawLog, DrawnCard, ReadingIntent, UserFeedback } from "@/lib/tarot/types";
 
 const DEFAULT_MODEL = process.env.MINIMAX_MODEL ?? "MiniMax-M2.7";
@@ -32,6 +33,20 @@ type GenerateInput = {
   readingIntent?: ReadingIntent;
   userFeedback?: UserFeedback;
   locale?: string;
+};
+
+type InterpretationPayload = Awaited<ReturnType<typeof buildInterpretationPayload>>;
+
+type CompletedInterpretationText = {
+  pipeline: string;
+  text: string;
+};
+
+type CreateInterpretationStreamInput = {
+  payload: InterpretationPayload;
+  fallbackText: string;
+  startedAt?: number;
+  onCompleteText?: (result: CompletedInterpretationText) => void | Promise<void>;
 };
 
 function getClient() {
@@ -83,20 +98,20 @@ const domainTheme: Record<ReadingIntent["domain"], string> = {
 };
 
 function cardLabel(
-  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+  selectedCard: InterpretationPayload["selectedCards"][number],
 ) {
   return `${selectedCard.card.nameZh}（${selectedCard.orientation}）`;
 }
 
 function cardKeywords(
-  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+  selectedCard: InterpretationPayload["selectedCards"][number],
   count = 3,
 ) {
   return selectedCard.keywords.slice(0, count).join("、") || "现实确认";
 }
 
 function describeCard(
-  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+  selectedCard: InterpretationPayload["selectedCards"][number],
 ) {
   const theme = selectedCard.card.suit
     ? suitTheme[selectedCard.card.suit]
@@ -157,14 +172,14 @@ function visibleQuestion(question: string) {
 }
 
 function selectedByOrder(
-  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+  payload: InterpretationPayload,
   order: number,
 ) {
   return payload.selectedCards.find((item) => item.position.order === order) ?? null;
 }
 
 function feedbackSentence(
-  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+  payload: InterpretationPayload,
 ) {
   const feeling = payload.userFeedback?.overallFeeling?.trim();
   const note = payload.userFeedback?.overallFeelingNote?.trim();
@@ -198,8 +213,8 @@ function feedbackQualityTerms(feedback: UserFeedback | undefined) {
 }
 
 function singleAction(
-  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
-  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+  payload: InterpretationPayload,
+  selectedCard: InterpretationPayload["selectedCards"][number],
 ) {
   const question = payload.question.trim();
 
@@ -231,8 +246,8 @@ function singleAction(
 }
 
 function singleObservation(
-  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
-  selectedCard: Awaited<ReturnType<typeof buildInterpretationPayload>>["selectedCards"][number],
+  payload: InterpretationPayload,
+  selectedCard: InterpretationPayload["selectedCards"][number],
 ) {
   const window = payload.responseBlueprint.timeScope.observationWindow;
   const question = payload.question.trim();
@@ -256,7 +271,7 @@ function singleObservation(
   return `观察窗口放在${window}。重点看：${cardKeywords(selectedCard, 1)}这个主题是否变得更清楚，你是否能把焦虑转成一个可执行动作，以及现实反馈是否比原先更具体。`;
 }
 
-function buildSingleFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+function buildSingleFallback(payload: InterpretationPayload) {
   const selectedCard = payload.selectedCards[0];
   const questionText = visibleQuestion(payload.question.trim());
   const feedback = feedbackSentence(payload);
@@ -313,7 +328,7 @@ function buildSingleFallback(payload: Awaited<ReturnType<typeof buildInterpretat
   ].join("\n");
 }
 
-function buildThreeCardFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+function buildThreeCardFallback(payload: InterpretationPayload) {
   const [first, second, third] = payload.selectedCards;
 
   if (!first || !second || !third) {
@@ -341,7 +356,7 @@ function buildThreeCardFallback(payload: Awaited<ReturnType<typeof buildInterpre
   ].join("\n");
 }
 
-function buildCareerFiveFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+function buildCareerFiveFallback(payload: InterpretationPayload) {
   const current = selectedByOrder(payload, 1);
   const obstacle = selectedByOrder(payload, 2);
   const strength = selectedByOrder(payload, 3);
@@ -405,7 +420,7 @@ function choiceLabels(question: string) {
   return { a: "路径 A", b: "路径 B" };
 }
 
-function buildPathOfChoiceFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+function buildPathOfChoiceFallback(payload: InterpretationPayload) {
   const aNow = selectedByOrder(payload, 1);
   const aResult = selectedByOrder(payload, 2);
   const bNow = selectedByOrder(payload, 3);
@@ -451,7 +466,7 @@ function buildPathOfChoiceFallback(payload: Awaited<ReturnType<typeof buildInter
   ].join("\n");
 }
 
-function buildRelationshipSixFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+function buildRelationshipSixFallback(payload: InterpretationPayload) {
   const self = selectedByOrder(payload, 1);
   const other = selectedByOrder(payload, 2);
   const relation = selectedByOrder(payload, 3);
@@ -487,7 +502,7 @@ function buildRelationshipSixFallback(payload: Awaited<ReturnType<typeof buildIn
   ].join("\n");
 }
 
-function buildGenericFallback(payload: Awaited<ReturnType<typeof buildInterpretationPayload>>) {
+function buildGenericFallback(payload: InterpretationPayload) {
   const cards = payload.selectedCards;
   const primary = cards[0];
   const finalCard = cards.at(-1);
@@ -527,8 +542,19 @@ function buildGenericFallback(payload: Awaited<ReturnType<typeof buildInterpreta
 }
 
 function mockInterpretation(
-  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+  payload: InterpretationPayload,
 ) {
+  if (payload.tarotEngineContext.cardContexts.some((item) => item.contextPositionMeaning)) {
+    return buildKbDrivenFallback({
+      question: payload.question,
+      spreadName: payload.spreadName,
+      responseBlueprint: payload.responseBlueprint,
+      selectedCards: payload.selectedCards,
+      readingIntent: payload.readingIntent,
+      tarotEngineContext: payload.tarotEngineContext,
+    });
+  }
+
   if (payload.responseBlueprint.slug === "single-guidance") {
     return buildSingleFallback(payload);
   }
@@ -576,21 +602,32 @@ function createMockStream(text: string) {
   });
 }
 
-function createTextStream(text: string) {
+function createTextStream(
+  text: string,
+  onCompleteText?: (text: string) => void | Promise<void>,
+) {
   const encoder = new TextEncoder();
   const chunks = text.split(/(\n{2,}|\n|。|！|？)/).filter(Boolean);
 
   return new ReadableStream({
     start(controller) {
       let index = 0;
+      let visibleText = "";
 
       function push() {
         if (index >= chunks.length) {
           controller.close();
+          if (visibleText.trim()) {
+            void Promise.resolve(onCompleteText?.(visibleText)).catch((error) => {
+              console.error("[createTextStream] onCompleteText failed", error);
+            });
+          }
           return;
         }
 
-        controller.enqueue(encoder.encode(chunks[index]));
+        const chunk = chunks[index];
+        visibleText += chunk;
+        controller.enqueue(encoder.encode(chunk));
         index += 1;
         setTimeout(push, 18);
       }
@@ -601,7 +638,7 @@ function createTextStream(text: string) {
 }
 
 function resolveInterpretationMaxTokens(
-  payload: Awaited<ReturnType<typeof buildInterpretationPayload>>,
+  payload: InterpretationPayload,
 ) {
   const envLimit = Number.isFinite(INTERPRETATION_MAX_TOKENS) ? INTERPRETATION_MAX_TOKENS : 1200;
   const templateLimit = payload.responseBlueprint.maxTokens;
@@ -609,28 +646,33 @@ function resolveInterpretationMaxTokens(
   return Math.max(envLimit, templateLimit);
 }
 
-export async function generateInterpretation(input: GenerateInput) {
-  const startedAt = Date.now();
-  const payload = await buildInterpretationPayload({
-    question: input.question,
-    spreadSlug: input.spreadSlug,
-    cards: input.cards,
-    drawLog: input.drawLog ?? undefined,
-    readingIntent: input.readingIntent,
-    userFeedback: input.userFeedback,
-    locale: input.locale ?? "zh-CN",
-  });
+export async function createInterpretationStream(input: CreateInterpretationStreamInput) {
+  const { payload, fallbackText } = input;
+  const startedAt = input.startedAt ?? Date.now();
+  const readingIntent = payload.readingIntent;
+  const userFeedback = payload.userFeedback;
+  const question = payload.question;
+  const tarotKbDebug = {
+    tarotKbVersion: payload.tarotEngineContext.kbVersion,
+    tarotKbDomain: payload.tarotEngineContext.domain,
+    tarotKbContextIds: payload.tarotEngineContext.contextIds.slice(0, 24),
+    tarotKbMissing: payload.tarotEngineContext.missing.slice(0, 12),
+    tarotKbCardContextHits: payload.tarotEngineContext.cardContexts.filter(
+      (item) => item.contextPositionMeaning,
+    ).length,
+    tarotKbPairContextHits: payload.tarotEngineContext.pairContexts.length,
+    tarotKbGoldenCaseHits: payload.tarotEngineContext.goldenCases.length,
+    tarotKbQuestionMatchHits: payload.tarotEngineContext.questionMatches.length,
+    tarotKbSafetyMatchHits: payload.tarotEngineContext.safetyMatches.length,
+  };
   const sanitizeOptions = {
-    neutralizeRelationshipPronouns: shouldNeutralizeRelationshipPronouns(
-      input.question,
-      input.readingIntent,
-    ),
+    neutralizeRelationshipPronouns: shouldNeutralizeRelationshipPronouns(question, readingIntent),
   };
   const client = getClient();
 
   if (!client) {
     const text = sanitizeInterpretationText(
-      mockInterpretation(payload),
+      fallbackText,
       payload.responseBlueprint,
       sanitizeOptions,
     );
@@ -641,6 +683,7 @@ export async function generateInterpretation(input: GenerateInput) {
       model: "mock-static-reader",
       pipeline: "local_fallback",
       debug: {
+        ...tarotKbDebug,
         fallbackReason: "missing_minimax_api_key",
         total_ms: Date.now() - startedAt,
       },
@@ -656,12 +699,12 @@ export async function generateInterpretation(input: GenerateInput) {
 
   try {
     const qualityInput = {
-      question: input.question,
+      question,
       template: payload.responseBlueprint,
       diagnosis: payload.questionDiagnosis,
       requiredCardNames: payload.selectedCards.map(({ card }) => card.nameZh),
-      intentDomain: input.readingIntent?.domain,
-      userFeedbackTerms: feedbackQualityTerms(input.userFeedback),
+      intentDomain: readingIntent?.domain,
+      userFeedbackTerms: feedbackQualityTerms(userFeedback),
     };
     const qualityRequirements = summarizeQualityRequirements(
       runQualityGate("", qualityInput).requirements,
@@ -763,7 +806,7 @@ export async function generateInterpretation(input: GenerateInput) {
 
     if (quality.needsRetry) {
       text = sanitizeInterpretationText(
-        mockInterpretation(payload),
+        fallbackText,
         payload.responseBlueprint,
         sanitizeOptions,
       );
@@ -776,19 +819,32 @@ export async function generateInterpretation(input: GenerateInput) {
     timings.quality_issues = quality.issues.length;
     timings.quality_retries = retryCount;
 
+    const pipeline =
+      usedQualityFallback
+        ? "ai_quality_fallback"
+        : retryCount > 0
+          ? "ai_quality_gated_retry"
+          : quality.repaired
+            ? "ai_quality_gated"
+            : "ai_generated";
+    const shouldReportAiCompletion = !usedQualityFallback;
+
     return {
-      stream: createTextStream(text),
+      stream: createTextStream(
+        text,
+        shouldReportAiCompletion
+          ? (visibleText) =>
+              input.onCompleteText?.({
+                pipeline,
+                text: visibleText,
+              })
+          : undefined,
+      ),
       citations: payload.citations,
       model: usedQualityFallback ? "local-interpretation-fallback" : DEFAULT_MODEL,
-      pipeline:
-        usedQualityFallback
-          ? "ai_quality_fallback"
-          : retryCount > 0
-            ? "ai_quality_gated_retry"
-            : quality.repaired
-              ? "ai_quality_gated"
-              : "ai_generated",
+      pipeline,
       debug: {
+        ...tarotKbDebug,
         ...timings,
         qualityIssueIds: quality.issues.map((issue) => issue.id),
       },
@@ -797,7 +853,7 @@ export async function generateInterpretation(input: GenerateInput) {
     abortController.abort(error);
     timings.total_ms = Date.now() - startedAt;
     const text = sanitizeInterpretationText(
-      mockInterpretation(payload),
+      fallbackText,
       payload.responseBlueprint,
       sanitizeOptions,
     );
@@ -808,10 +864,29 @@ export async function generateInterpretation(input: GenerateInput) {
       model: "local-interpretation-fallback",
       pipeline: "ai_failed_fallback",
       debug: {
+        ...tarotKbDebug,
         ...timings,
         fallbackReason: "stream_start_exception",
         error: error instanceof Error ? error.message : "Unknown interpretation error",
       },
     };
   }
+}
+
+export async function generateInterpretation(input: GenerateInput) {
+  const startedAt = Date.now();
+  const payload = await buildInterpretationPayload({
+    question: input.question,
+    spreadSlug: input.spreadSlug,
+    cards: input.cards,
+    drawLog: input.drawLog ?? undefined,
+    readingIntent: input.readingIntent,
+    userFeedback: input.userFeedback,
+    locale: input.locale ?? "zh-CN",
+  });
+  return createInterpretationStream({
+    payload,
+    fallbackText: mockInterpretation(payload),
+    startedAt,
+  });
 }

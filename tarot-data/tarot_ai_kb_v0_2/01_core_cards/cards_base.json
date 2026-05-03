@@ -1,0 +1,2678 @@
+[
+  {
+    "card_id": "the_fool",
+    "name_cn": "愚人",
+    "name_en": "The Fool",
+    "arcana": "major",
+    "number": 0,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "开始",
+      "自由",
+      "冒险",
+      "未知",
+      "轻装上阵"
+    ],
+    "reversed_keywords": [
+      "鲁莽",
+      "逃避现实",
+      "准备不足",
+      "不计后果",
+      "幼稚冲动"
+    ],
+    "core_symbols": [
+      "白色小狗",
+      "悬崖",
+      "包袱",
+      "白玫瑰",
+      "远山"
+    ],
+    "visual_summary": "站在悬崖边的人带着小包袱出发，旁边的小狗像提醒也像陪伴。",
+    "base_upright_meaning": "愚人正位强调开始、自由与冒险，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "愚人逆位强调鲁莽、逃避现实与准备不足，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_magician",
+    "name_cn": "魔术师",
+    "name_en": "The Magician",
+    "arcana": "major",
+    "number": 1,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "行动力",
+      "显化",
+      "资源整合",
+      "表达",
+      "主动创造"
+    ],
+    "reversed_keywords": [
+      "空想",
+      "操控",
+      "资源错配",
+      "技巧不足",
+      "承诺过满"
+    ],
+    "core_symbols": [
+      "桌上的四元素",
+      "举起的魔杖",
+      "无限符号",
+      "红白衣袍"
+    ],
+    "visual_summary": "人物一手指天一手指地，桌上摆着四元素，强调把想法落到现实。",
+    "base_upright_meaning": "魔术师正位强调行动力、显化与资源整合，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "魔术师逆位强调空想、操控与资源错配，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_high_priestess",
+    "name_cn": "女祭司",
+    "name_en": "The High Priestess",
+    "arcana": "major",
+    "number": 2,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "直觉",
+      "隐秘",
+      "潜意识",
+      "等待",
+      "内在智慧"
+    ],
+    "reversed_keywords": [
+      "信息不明",
+      "压抑直觉",
+      "回避真相",
+      "过度猜测",
+      "表里不一"
+    ],
+    "core_symbols": [
+      "黑白柱",
+      "卷轴",
+      "月亮",
+      "帷幕",
+      "水"
+    ],
+    "visual_summary": "女祭司坐在两根柱子之间，帷幕后像藏着还未揭开的信息。",
+    "base_upright_meaning": "女祭司正位强调直觉、隐秘与潜意识，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "女祭司逆位强调信息不明、压抑直觉与回避真相，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_empress",
+    "name_cn": "女皇",
+    "name_en": "The Empress",
+    "arcana": "major",
+    "number": 3,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "滋养",
+      "丰盛",
+      "创造",
+      "身体感受",
+      "关系温度"
+    ],
+    "reversed_keywords": [
+      "过度付出",
+      "依赖",
+      "匮乏感",
+      "创造力堵塞",
+      "照顾失衡"
+    ],
+    "core_symbols": [
+      "麦田",
+      "皇冠",
+      "河流",
+      "软垫",
+      "维纳斯符号"
+    ],
+    "visual_summary": "丰饶自然中的女性形象，强调生长、感受和被滋养。",
+    "base_upright_meaning": "女皇正位强调滋养、丰盛与创造，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "女皇逆位强调过度付出、依赖与匮乏感，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_emperor",
+    "name_cn": "皇帝",
+    "name_en": "The Emperor",
+    "arcana": "major",
+    "number": 4,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "秩序",
+      "边界",
+      "责任",
+      "结构",
+      "掌控"
+    ],
+    "reversed_keywords": [
+      "僵硬",
+      "控制欲",
+      "权威压迫",
+      "规则失灵",
+      "缺乏弹性"
+    ],
+    "core_symbols": [
+      "王座",
+      "盔甲",
+      "山脉",
+      "权杖",
+      "羊头"
+    ],
+    "visual_summary": "坐在坚硬王座上的权威人物，代表结构、规则和承担。",
+    "base_upright_meaning": "皇帝正位强调秩序、边界与责任，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "皇帝逆位强调僵硬、控制欲与权威压迫，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_hierophant",
+    "name_cn": "教皇",
+    "name_en": "The Hierophant",
+    "arcana": "major",
+    "number": 5,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "传统",
+      "制度",
+      "学习",
+      "规范",
+      "精神秩序"
+    ],
+    "reversed_keywords": [
+      "反传统",
+      "不合群",
+      "僵化信念",
+      "质疑权威",
+      "方法更新"
+    ],
+    "core_symbols": [
+      "双柱",
+      "钥匙",
+      "信徒",
+      "三重冠",
+      "祝福手势"
+    ],
+    "visual_summary": "宗教/制度中的导师形象，强调知识传承与规则系统。",
+    "base_upright_meaning": "教皇正位强调传统、制度与学习，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "教皇逆位强调反传统、不合群与僵化信念，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_lovers",
+    "name_cn": "恋人",
+    "name_en": "The Lovers",
+    "arcana": "major",
+    "number": 6,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "关系",
+      "选择",
+      "吸引",
+      "价值一致",
+      "亲密连接"
+    ],
+    "reversed_keywords": [
+      "失衡",
+      "犹豫",
+      "价值冲突",
+      "关系脱节",
+      "错误选择"
+    ],
+    "core_symbols": [
+      "天使",
+      "男女",
+      "伊甸园",
+      "果树",
+      "蛇"
+    ],
+    "visual_summary": "两个人在天使注视下相对而立，关系与选择同时出现。",
+    "base_upright_meaning": "恋人正位强调关系、选择与吸引，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "恋人逆位强调失衡、犹豫与价值冲突，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_chariot",
+    "name_cn": "战车",
+    "name_en": "The Chariot",
+    "arcana": "major",
+    "number": 7,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "推进",
+      "意志",
+      "胜利",
+      "控制方向",
+      "克服阻力"
+    ],
+    "reversed_keywords": [
+      "失控",
+      "方向混乱",
+      "硬撑",
+      "内耗",
+      "冲动推进"
+    ],
+    "core_symbols": [
+      "战车",
+      "黑白狮身人面像",
+      "星冠",
+      "盔甲"
+    ],
+    "visual_summary": "驾驶战车的人需要驾驭两股力量，靠意志让方向一致。",
+    "base_upright_meaning": "战车正位强调推进、意志与胜利，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "战车逆位强调失控、方向混乱与硬撑，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "strength",
+    "name_cn": "力量",
+    "name_en": "Strength",
+    "arcana": "major",
+    "number": 8,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "温柔的力量",
+      "耐心",
+      "自控",
+      "勇气",
+      "驯服本能"
+    ],
+    "reversed_keywords": [
+      "压抑",
+      "失去耐心",
+      "内在怯懦",
+      "情绪失控",
+      "强撑"
+    ],
+    "core_symbols": [
+      "狮子",
+      "白衣女子",
+      "无限符号",
+      "花环"
+    ],
+    "visual_summary": "女子温柔地抚住狮子，真正的力量不是压制，而是驯服。",
+    "base_upright_meaning": "力量正位强调温柔的力量、耐心与自控，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "力量逆位强调压抑、失去耐心与内在怯懦，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_hermit",
+    "name_cn": "隐士",
+    "name_en": "The Hermit",
+    "arcana": "major",
+    "number": 9,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "独处",
+      "内省",
+      "寻找答案",
+      "抽离",
+      "成熟智慧"
+    ],
+    "reversed_keywords": [
+      "孤立",
+      "逃避连接",
+      "迷失",
+      "过度封闭",
+      "不愿求助"
+    ],
+    "core_symbols": [
+      "灯笼",
+      "雪山",
+      "手杖",
+      "灰袍"
+    ],
+    "visual_summary": "老人提灯站在山巅，像是在安静地寻找内在方向。",
+    "base_upright_meaning": "隐士正位强调独处、内省与寻找答案，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "隐士逆位强调孤立、逃避连接与迷失，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "wheel_of_fortune",
+    "name_cn": "命运之轮",
+    "name_en": "Wheel of Fortune",
+    "arcana": "major",
+    "number": 10,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "转机",
+      "周期",
+      "变化",
+      "机缘",
+      "局势流动"
+    ],
+    "reversed_keywords": [
+      "停滞",
+      "反复循环",
+      "时机不稳",
+      "抗拒变化",
+      "失控感"
+    ],
+    "core_symbols": [
+      "轮盘",
+      "四圣兽",
+      "蛇",
+      "斯芬克斯"
+    ],
+    "visual_summary": "轮盘转动，提醒事情处在变化周期里，不完全由个人控制。",
+    "base_upright_meaning": "命运之轮正位强调转机、周期与变化，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "命运之轮逆位强调停滞、反复循环与时机不稳，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "justice",
+    "name_cn": "正义",
+    "name_en": "Justice",
+    "arcana": "major",
+    "number": 11,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "公平",
+      "因果",
+      "判断",
+      "契约",
+      "理性决策"
+    ],
+    "reversed_keywords": [
+      "不公",
+      "偏见",
+      "逃避责任",
+      "失衡判断",
+      "规则争议"
+    ],
+    "core_symbols": [
+      "天平",
+      "长剑",
+      "红袍",
+      "石柱"
+    ],
+    "visual_summary": "人物一手持剑一手持天平，强调清醒判断和承担后果。",
+    "base_upright_meaning": "正义正位强调公平、因果与判断，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "正义逆位强调不公、偏见与逃避责任，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_hanged_man",
+    "name_cn": "倒吊人",
+    "name_en": "The Hanged Man",
+    "arcana": "major",
+    "number": 12,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "暂停",
+      "换角度",
+      "牺牲",
+      "等待",
+      "重新理解"
+    ],
+    "reversed_keywords": [
+      "卡死",
+      "无意义牺牲",
+      "拖延",
+      "不愿改变视角",
+      "被动消耗"
+    ],
+    "core_symbols": [
+      "倒吊的人",
+      "光环",
+      "树架",
+      "交叉腿"
+    ],
+    "visual_summary": "倒挂的人表面停住，但头上的光说明暂停也可能带来新视角。",
+    "base_upright_meaning": "倒吊人正位强调暂停、换角度与牺牲，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "倒吊人逆位强调卡死、无意义牺牲与拖延，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "death",
+    "name_cn": "死神",
+    "name_en": "Death",
+    "arcana": "major",
+    "number": 13,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "结束",
+      "转化",
+      "旧模式终结",
+      "放下",
+      "重生前的清理"
+    ],
+    "reversed_keywords": [
+      "抗拒结束",
+      "拖延改变",
+      "旧事纠缠",
+      "无法放手",
+      "停在过渡期"
+    ],
+    "core_symbols": [
+      "骷髅骑士",
+      "白马",
+      "旗帜",
+      "日出",
+      "倒下的人"
+    ],
+    "visual_summary": "死亡形象并不只代表毁灭，更强调不可逆的转化和旧模式退场。",
+    "base_upright_meaning": "死神正位强调结束、转化与旧模式终结，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "死神逆位强调抗拒结束、拖延改变与旧事纠缠，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "temperance",
+    "name_cn": "节制",
+    "name_en": "Temperance",
+    "arcana": "major",
+    "number": 14,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "调和",
+      "恢复",
+      "平衡",
+      "耐心",
+      "中间道路"
+    ],
+    "reversed_keywords": [
+      "失衡",
+      "急躁",
+      "过度消耗",
+      "节奏混乱",
+      "难以整合"
+    ],
+    "core_symbols": [
+      "天使",
+      "两个杯子",
+      "水流",
+      "一脚水中一脚陆地"
+    ],
+    "visual_summary": "天使在两只杯之间倒水，像是在调配节奏、情绪和资源。",
+    "base_upright_meaning": "节制正位强调调和、恢复与平衡，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "节制逆位强调失衡、急躁与过度消耗，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_devil",
+    "name_cn": "恶魔",
+    "name_en": "The Devil",
+    "arcana": "major",
+    "number": 15,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "执念",
+      "束缚",
+      "欲望",
+      "依赖",
+      "看见阴影"
+    ],
+    "reversed_keywords": [
+      "挣脱束缚",
+      "戒断",
+      "看清诱惑",
+      "摆脱控制",
+      "不再沉迷"
+    ],
+    "core_symbols": [
+      "恶魔",
+      "锁链",
+      "男女",
+      "火把",
+      "黑暗背景"
+    ],
+    "visual_summary": "被锁住的人其实锁链很松，提示某种束缚也许可以被看见和松开。",
+    "base_upright_meaning": "恶魔正位强调执念、束缚与欲望，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "恶魔逆位强调挣脱束缚、戒断与看清诱惑，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_tower",
+    "name_cn": "高塔",
+    "name_en": "The Tower",
+    "arcana": "major",
+    "number": 16,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "突变",
+      "崩塌",
+      "真相暴露",
+      "结构失效",
+      "强制清醒"
+    ],
+    "reversed_keywords": [
+      "延迟崩塌",
+      "抗拒真相",
+      "余震",
+      "表面维持",
+      "害怕失控"
+    ],
+    "core_symbols": [
+      "闪电",
+      "高塔",
+      "坠落的人",
+      "火焰",
+      "皇冠"
+    ],
+    "visual_summary": "闪电击中高塔，旧结构被迫破开，带来震动也带来清醒。",
+    "base_upright_meaning": "高塔正位强调突变、崩塌与真相暴露，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "高塔逆位强调延迟崩塌、抗拒真相与余震，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_star",
+    "name_cn": "星星",
+    "name_en": "The Star",
+    "arcana": "major",
+    "number": 17,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "疗愈",
+      "希望",
+      "信任",
+      "恢复",
+      "长线愿景"
+    ],
+    "reversed_keywords": [
+      "失望",
+      "信心不足",
+      "疗愈受阻",
+      "看不见希望",
+      "理想变弱"
+    ],
+    "core_symbols": [
+      "星光",
+      "裸身女子",
+      "水流",
+      "池水",
+      "鸟"
+    ],
+    "visual_summary": "女子把水倒入水池和土地，星光下的动作很安静，像恢复与重新相信。",
+    "base_upright_meaning": "星星正位强调疗愈、希望与信任，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "星星逆位强调失望、信心不足与疗愈受阻，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_moon",
+    "name_cn": "月亮",
+    "name_en": "The Moon",
+    "arcana": "major",
+    "number": 18,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "不安",
+      "潜意识",
+      "迷雾",
+      "梦境",
+      "信息不清"
+    ],
+    "reversed_keywords": [
+      "迷雾散开",
+      "识破幻象",
+      "焦虑下降",
+      "真相浮现",
+      "停止脑补"
+    ],
+    "core_symbols": [
+      "月亮",
+      "狗和狼",
+      "水池",
+      "小路",
+      "螯虾"
+    ],
+    "visual_summary": "夜路、月光和水中的生物形成不确定感，提示情绪和想象会放大信息。",
+    "base_upright_meaning": "月亮正位强调不安、潜意识与迷雾，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "月亮逆位强调迷雾散开、识破幻象与焦虑下降，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_sun",
+    "name_cn": "太阳",
+    "name_en": "The Sun",
+    "arcana": "major",
+    "number": 19,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "明朗",
+      "快乐",
+      "生命力",
+      "坦诚",
+      "积极结果"
+    ],
+    "reversed_keywords": [
+      "快乐打折",
+      "能量不足",
+      "看不见光",
+      "过度天真",
+      "延迟明朗"
+    ],
+    "core_symbols": [
+      "太阳",
+      "孩子",
+      "白马",
+      "向日葵",
+      "红旗"
+    ],
+    "visual_summary": "孩子骑白马在阳光下前进，画面开放、明亮、直接。",
+    "base_upright_meaning": "太阳正位强调明朗、快乐与生命力，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "太阳逆位强调快乐打折、能量不足与看不见光，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "judgement",
+    "name_cn": "审判",
+    "name_en": "Judgement",
+    "arcana": "major",
+    "number": 20,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "觉醒",
+      "召唤",
+      "复盘",
+      "重新评估",
+      "关键决定"
+    ],
+    "reversed_keywords": [
+      "逃避召唤",
+      "不敢面对",
+      "旧账未清",
+      "自我否定",
+      "迟迟不回应"
+    ],
+    "core_symbols": [
+      "天使吹号",
+      "复活的人",
+      "棺木",
+      "旗帜"
+    ],
+    "visual_summary": "号角响起，人们从旧状态中站起，像一次必须面对的复盘。",
+    "base_upright_meaning": "审判正位强调觉醒、召唤与复盘，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "审判逆位强调逃避召唤、不敢面对与旧账未清，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "the_world",
+    "name_cn": "世界",
+    "name_en": "The World",
+    "arcana": "major",
+    "number": 21,
+    "suit": null,
+    "rank": null,
+    "element": null,
+    "upright_keywords": [
+      "完成",
+      "整合",
+      "阶段收束",
+      "圆满",
+      "进入新周期"
+    ],
+    "reversed_keywords": [
+      "未完成",
+      "缺乏闭环",
+      "差最后一步",
+      "空落感",
+      "阶段卡住"
+    ],
+    "core_symbols": [
+      "花环",
+      "舞者",
+      "四圣兽",
+      "两根权杖"
+    ],
+    "visual_summary": "舞者在花环中完成一个循环，代表阶段性整合和新周期门槛。",
+    "base_upright_meaning": "世界正位强调完成、整合与阶段收束，通常指向一个需要被看见的核心主题。",
+    "base_reversed_meaning": "世界逆位强调未完成、缺乏闭环与差最后一步，通常提示该主题受阻、失衡或需要重新调整。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "ace_of_wands",
+    "name_cn": "权杖一",
+    "name_en": "Ace of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "ace",
+    "element": "fire",
+    "upright_keywords": [
+      "灵感点燃",
+      "新项目",
+      "行动冲动",
+      "新开始",
+      "种子"
+    ],
+    "reversed_keywords": [
+      "热情熄火",
+      "开始困难",
+      "冲劲不稳",
+      "机会未落地",
+      "动力不足"
+    ],
+    "core_symbols": [],
+    "visual_summary": "一只手从云中伸出权杖，像突然出现的行动火种。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖一正位把行动/热情/事业驱动力落到“灵感点燃、新项目、行动冲动”这些具体状态中。",
+    "base_reversed_meaning": "权杖一逆位多表现为“热情熄火、开始困难、冲劲不稳”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "two_of_wands",
+    "name_cn": "权杖二",
+    "name_en": "Two of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "two",
+    "element": "fire",
+    "upright_keywords": [
+      "规划",
+      "远方机会",
+      "站在门口",
+      "选择",
+      "平衡"
+    ],
+    "reversed_keywords": [
+      "不敢迈出",
+      "计划卡住",
+      "视野受限",
+      "失衡",
+      "犹豫"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物手握地球眺望远方，像在评估下一步版图。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖二正位把行动/热情/事业驱动力落到“规划、远方机会、站在门口”这些具体状态中。",
+    "base_reversed_meaning": "权杖二逆位多表现为“不敢迈出、计划卡住、视野受限”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "three_of_wands",
+    "name_cn": "权杖三",
+    "name_en": "Three of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "three",
+    "element": "fire",
+    "upright_keywords": [
+      "等待回报",
+      "向外扩展",
+      "合作远景",
+      "扩展",
+      "合作"
+    ],
+    "reversed_keywords": [
+      "期待落空",
+      "扩张受阻",
+      "外部回应慢",
+      "合作不顺",
+      "期待落空"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物站在高处看船远行，像项目已经放出去等待反馈。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖三正位把行动/热情/事业驱动力落到“等待回报、向外扩展、合作远景”这些具体状态中。",
+    "base_reversed_meaning": "权杖三逆位多表现为“期待落空、扩张受阻、外部回应慢”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "four_of_wands",
+    "name_cn": "权杖四",
+    "name_en": "Four of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "four",
+    "element": "fire",
+    "upright_keywords": [
+      "庆祝",
+      "阶段稳定",
+      "归属感",
+      "稳定",
+      "停顿"
+    ],
+    "reversed_keywords": [
+      "表面热闹",
+      "稳定感不足",
+      "家庭/团队不合",
+      "僵化",
+      "停滞"
+    ],
+    "core_symbols": [],
+    "visual_summary": "花环与城堡前的庆祝画面，代表阶段性安稳。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖四正位把行动/热情/事业驱动力落到“庆祝、阶段稳定、归属感”这些具体状态中。",
+    "base_reversed_meaning": "权杖四逆位多表现为“表面热闹、稳定感不足、家庭/团队不合”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "five_of_wands",
+    "name_cn": "权杖五",
+    "name_en": "Five of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "five",
+    "element": "fire",
+    "upright_keywords": [
+      "竞争",
+      "摩擦",
+      "意见混战",
+      "冲突",
+      "损失"
+    ],
+    "reversed_keywords": [
+      "减少内耗",
+      "冲突降温",
+      "避免无谓争斗",
+      "修复",
+      "走出冲突"
+    ],
+    "core_symbols": [],
+    "visual_summary": "几个人各挥权杖，像训练也像混战。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖五正位把行动/热情/事业驱动力落到“竞争、摩擦、意见混战”这些具体状态中。",
+    "base_reversed_meaning": "权杖五逆位多表现为“减少内耗、冲突降温、避免无谓争斗”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "six_of_wands",
+    "name_cn": "权杖六",
+    "name_en": "Six of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "six",
+    "element": "fire",
+    "upright_keywords": [
+      "被看见",
+      "胜利",
+      "认可",
+      "调整后前进",
+      "支持"
+    ],
+    "reversed_keywords": [
+      "认可不足",
+      "虚荣压力",
+      "胜利打折",
+      "旧模式反复",
+      "支持不足"
+    ],
+    "core_symbols": [],
+    "visual_summary": "骑马的人戴着桂冠，被人群注视。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖六正位把行动/热情/事业驱动力落到“被看见、胜利、认可”这些具体状态中。",
+    "base_reversed_meaning": "权杖六逆位多表现为“认可不足、虚荣压力、胜利打折”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "seven_of_wands",
+    "name_cn": "权杖七",
+    "name_en": "Seven of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "seven",
+    "element": "fire",
+    "upright_keywords": [
+      "防守立场",
+      "顶住压力",
+      "保护成果",
+      "防守",
+      "选择"
+    ],
+    "reversed_keywords": [
+      "防线崩溃",
+      "过度紧张",
+      "不想再撑",
+      "分散",
+      "逃避"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物站在高处抵挡下方权杖。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖七正位把行动/热情/事业驱动力落到“防守立场、顶住压力、保护成果”这些具体状态中。",
+    "base_reversed_meaning": "权杖七逆位多表现为“防线崩溃、过度紧张、不想再撑”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "eight_of_wands",
+    "name_cn": "权杖八",
+    "name_en": "Eight of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "eight",
+    "element": "fire",
+    "upright_keywords": [
+      "快速推进",
+      "消息",
+      "变化加速",
+      "推进",
+      "练习"
+    ],
+    "reversed_keywords": [
+      "延迟",
+      "节奏乱",
+      "信息堵塞",
+      "卡顿",
+      "倦怠"
+    ],
+    "core_symbols": [],
+    "visual_summary": "八根权杖飞过天空，画面没有人物，只有速度。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖八正位把行动/热情/事业驱动力落到“快速推进、消息、变化加速”这些具体状态中。",
+    "base_reversed_meaning": "权杖八逆位多表现为“延迟、节奏乱、信息堵塞”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "nine_of_wands",
+    "name_cn": "权杖九",
+    "name_en": "Nine of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "nine",
+    "element": "fire",
+    "upright_keywords": [
+      "坚持",
+      "防备",
+      "最后防线",
+      "临近完成",
+      "独立"
+    ],
+    "reversed_keywords": [
+      "疲惫到松动",
+      "疑心重",
+      "撑不下去",
+      "疲惫",
+      "防线过重"
+    ],
+    "core_symbols": [],
+    "visual_summary": "受伤的人守着一排权杖，像还没完全放下防备。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖九正位把行动/热情/事业驱动力落到“坚持、防备、最后防线”这些具体状态中。",
+    "base_reversed_meaning": "权杖九逆位多表现为“疲惫到松动、疑心重、撑不下去”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "ten_of_wands",
+    "name_cn": "权杖十",
+    "name_en": "Ten of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "ten",
+    "element": "fire",
+    "upright_keywords": [
+      "重担",
+      "责任压身",
+      "硬扛",
+      "完成",
+      "负荷"
+    ],
+    "reversed_keywords": [
+      "卸下负担",
+      "分工",
+      "不再全扛",
+      "释放负担",
+      "结局延迟"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物抱着十根权杖艰难前行。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖十正位把行动/热情/事业驱动力落到“重担、责任压身、硬扛”这些具体状态中。",
+    "base_reversed_meaning": "权杖十逆位多表现为“卸下负担、分工、不再全扛”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "page_of_wands",
+    "name_cn": "权杖侍从",
+    "name_en": "Page of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "page",
+    "element": "fire",
+    "upright_keywords": [
+      "新兴趣",
+      "探索",
+      "跃跃欲试",
+      "学习",
+      "消息"
+    ],
+    "reversed_keywords": [
+      "热情不稳",
+      "计划幼稚",
+      "表达笨拙",
+      "不成熟",
+      "消息延误"
+    ],
+    "core_symbols": [],
+    "visual_summary": "年轻人看着手中权杖，像刚被某个方向吸引。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖侍从正位把行动/热情/事业驱动力落到“新兴趣、探索、跃跃欲试”这些具体状态中。",
+    "base_reversed_meaning": "权杖侍从逆位多表现为“热情不稳、计划幼稚、表达笨拙”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "knight_of_wands",
+    "name_cn": "权杖骑士",
+    "name_en": "Knight of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "knight",
+    "element": "fire",
+    "upright_keywords": [
+      "冲刺",
+      "冒险",
+      "热烈追求",
+      "行动",
+      "推进"
+    ],
+    "reversed_keywords": [
+      "冲动冒进",
+      "三分钟热度",
+      "行动失控",
+      "冲动",
+      "失速"
+    ],
+    "core_symbols": [],
+    "visual_summary": "骑士骑马前冲，火元素很强。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖骑士正位把行动/热情/事业驱动力落到“冲刺、冒险、热烈追求”这些具体状态中。",
+    "base_reversed_meaning": "权杖骑士逆位多表现为“冲动冒进、三分钟热度、行动失控”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "queen_of_wands",
+    "name_cn": "权杖皇后",
+    "name_en": "Queen of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "queen",
+    "element": "fire",
+    "upright_keywords": [
+      "自信",
+      "魅力",
+      "生命力",
+      "成熟接纳",
+      "内在掌握"
+    ],
+    "reversed_keywords": [
+      "外热内虚",
+      "安全感不足",
+      "控制关注",
+      "情绪/资源失衡",
+      "过度内耗"
+    ],
+    "core_symbols": [],
+    "visual_summary": "皇后手持向日葵和权杖，坐姿自信。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖皇后正位把行动/热情/事业驱动力落到“自信、魅力、生命力”这些具体状态中。",
+    "base_reversed_meaning": "权杖皇后逆位多表现为“外热内虚、安全感不足、控制关注”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "king_of_wands",
+    "name_cn": "权杖国王",
+    "name_en": "King of Wands",
+    "arcana": "minor",
+    "number": null,
+    "suit": "wands",
+    "rank": "king",
+    "element": "fire",
+    "upright_keywords": [
+      "领导力",
+      "愿景",
+      "果断",
+      "成熟掌控",
+      "领导"
+    ],
+    "reversed_keywords": [
+      "独断",
+      "急躁控制",
+      "压迫感",
+      "控制过度",
+      "僵硬"
+    ],
+    "core_symbols": [],
+    "visual_summary": "国王坐在火元素王座上，像掌握行动方向。",
+    "suit_theme": "行动/热情/事业驱动力",
+    "base_upright_meaning": "权杖国王正位把行动/热情/事业驱动力落到“领导力、愿景、果断”这些具体状态中。",
+    "base_reversed_meaning": "权杖国王逆位多表现为“独断、急躁控制、压迫感”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "ace_of_cups",
+    "name_cn": "圣杯一",
+    "name_en": "Ace of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "ace",
+    "element": "water",
+    "upright_keywords": [
+      "情感开启",
+      "心动",
+      "疗愈",
+      "新开始",
+      "种子"
+    ],
+    "reversed_keywords": [
+      "情感封闭",
+      "爱意流失",
+      "感受受阻",
+      "机会未落地",
+      "动力不足"
+    ],
+    "core_symbols": [],
+    "visual_summary": "圣杯中的水向外流出，像情绪和爱意的源头。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯一正位把情绪/关系/感受/亲密落到“情感开启、心动、疗愈”这些具体状态中。",
+    "base_reversed_meaning": "圣杯一逆位多表现为“情感封闭、爱意流失、感受受阻”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "two_of_cups",
+    "name_cn": "圣杯二",
+    "name_en": "Two of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "two",
+    "element": "water",
+    "upright_keywords": [
+      "互相吸引",
+      "连接",
+      "和解",
+      "选择",
+      "平衡"
+    ],
+    "reversed_keywords": [
+      "关系不对等",
+      "脱节",
+      "沟通失衡",
+      "失衡",
+      "犹豫"
+    ],
+    "core_symbols": [],
+    "visual_summary": "两人举杯相对，头顶有象征结合的图案。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯二正位把情绪/关系/感受/亲密落到“互相吸引、连接、和解”这些具体状态中。",
+    "base_reversed_meaning": "圣杯二逆位多表现为“关系不对等、脱节、沟通失衡”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "three_of_cups",
+    "name_cn": "圣杯三",
+    "name_en": "Three of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "three",
+    "element": "water",
+    "upright_keywords": [
+      "朋友支持",
+      "庆祝",
+      "情绪分享",
+      "扩展",
+      "合作"
+    ],
+    "reversed_keywords": [
+      "小圈子压力",
+      "过度社交",
+      "关系杂音",
+      "合作不顺",
+      "期待落空"
+    ],
+    "core_symbols": [],
+    "visual_summary": "三人举杯庆祝，强调支持和群体情绪。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯三正位把情绪/关系/感受/亲密落到“朋友支持、庆祝、情绪分享”这些具体状态中。",
+    "base_reversed_meaning": "圣杯三逆位多表现为“小圈子压力、过度社交、关系杂音”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "four_of_cups",
+    "name_cn": "圣杯四",
+    "name_en": "Four of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "four",
+    "element": "water",
+    "upright_keywords": [
+      "倦怠",
+      "不满足",
+      "情绪关闭",
+      "稳定",
+      "停顿"
+    ],
+    "reversed_keywords": [
+      "重新打开",
+      "看见机会",
+      "走出麻木",
+      "僵化",
+      "停滞"
+    ],
+    "core_symbols": [],
+    "visual_summary": "坐着的人拒绝或没看见递来的杯子。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯四正位把情绪/关系/感受/亲密落到“倦怠、不满足、情绪关闭”这些具体状态中。",
+    "base_reversed_meaning": "圣杯四逆位多表现为“重新打开、看见机会、走出麻木”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "five_of_cups",
+    "name_cn": "圣杯五",
+    "name_en": "Five of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "five",
+    "element": "water",
+    "upright_keywords": [
+      "失落",
+      "遗憾",
+      "盯着失去",
+      "冲突",
+      "损失"
+    ],
+    "reversed_keywords": [
+      "开始接受",
+      "看见剩余资源",
+      "情绪修复",
+      "修复",
+      "走出冲突"
+    ],
+    "core_symbols": [],
+    "visual_summary": "黑衣人看着倒下的杯子，身后还有两只杯。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯五正位把情绪/关系/感受/亲密落到“失落、遗憾、盯着失去”这些具体状态中。",
+    "base_reversed_meaning": "圣杯五逆位多表现为“开始接受、看见剩余资源、情绪修复”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "six_of_cups",
+    "name_cn": "圣杯六",
+    "name_en": "Six of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "six",
+    "element": "water",
+    "upright_keywords": [
+      "旧情绪",
+      "回忆",
+      "单纯温暖",
+      "调整后前进",
+      "支持"
+    ],
+    "reversed_keywords": [
+      "困在过去",
+      "理想化旧人",
+      "旧模式未清",
+      "旧模式反复",
+      "支持不足"
+    ],
+    "core_symbols": [],
+    "visual_summary": "孩子递杯，画面带有童年和旧日气息。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯六正位把情绪/关系/感受/亲密落到“旧情绪、回忆、单纯温暖”这些具体状态中。",
+    "base_reversed_meaning": "圣杯六逆位多表现为“困在过去、理想化旧人、旧模式未清”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "seven_of_cups",
+    "name_cn": "圣杯七",
+    "name_en": "Seven of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "seven",
+    "element": "water",
+    "upright_keywords": [
+      "幻想很多",
+      "选择诱惑",
+      "不确定",
+      "防守",
+      "选择"
+    ],
+    "reversed_keywords": [
+      "看清幻想",
+      "收束选择",
+      "从空想到现实",
+      "分散",
+      "逃避"
+    ],
+    "core_symbols": [],
+    "visual_summary": "云中的七个杯子装着不同诱惑和可能。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯七正位把情绪/关系/感受/亲密落到“幻想很多、选择诱惑、不确定”这些具体状态中。",
+    "base_reversed_meaning": "圣杯七逆位多表现为“看清幻想、收束选择、从空想到现实”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "eight_of_cups",
+    "name_cn": "圣杯八",
+    "name_en": "Eight of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "eight",
+    "element": "water",
+    "upright_keywords": [
+      "离开",
+      "情绪撤退",
+      "寻找更深意义",
+      "推进",
+      "练习"
+    ],
+    "reversed_keywords": [
+      "舍不得走",
+      "回头反复",
+      "逃避离开",
+      "卡顿",
+      "倦怠"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物背对杯子走向远山。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯八正位把情绪/关系/感受/亲密落到“离开、情绪撤退、寻找更深意义”这些具体状态中。",
+    "base_reversed_meaning": "圣杯八逆位多表现为“舍不得走、回头反复、逃避离开”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "nine_of_cups",
+    "name_cn": "圣杯九",
+    "name_en": "Nine of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "nine",
+    "element": "water",
+    "upright_keywords": [
+      "满足",
+      "愿望感",
+      "享受",
+      "临近完成",
+      "独立"
+    ],
+    "reversed_keywords": [
+      "满足打折",
+      "空虚",
+      "过度享乐",
+      "疲惫",
+      "防线过重"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物坐在九只杯前，像在展示自己的满足。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯九正位把情绪/关系/感受/亲密落到“满足、愿望感、享受”这些具体状态中。",
+    "base_reversed_meaning": "圣杯九逆位多表现为“满足打折、空虚、过度享乐”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "ten_of_cups",
+    "name_cn": "圣杯十",
+    "name_en": "Ten of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "ten",
+    "element": "water",
+    "upright_keywords": [
+      "家庭幸福",
+      "情感圆满",
+      "共同愿景",
+      "完成",
+      "负荷"
+    ],
+    "reversed_keywords": [
+      "理想破裂",
+      "家庭/关系不和",
+      "圆满感不足",
+      "释放负担",
+      "结局延迟"
+    ],
+    "core_symbols": [],
+    "visual_summary": "彩虹下的一家人和十只杯，象征情感理想。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯十正位把情绪/关系/感受/亲密落到“家庭幸福、情感圆满、共同愿景”这些具体状态中。",
+    "base_reversed_meaning": "圣杯十逆位多表现为“理想破裂、家庭/关系不和、圆满感不足”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "page_of_cups",
+    "name_cn": "圣杯侍从",
+    "name_en": "Page of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "page",
+    "element": "water",
+    "upright_keywords": [
+      "温柔消息",
+      "心动表达",
+      "感性好奇",
+      "学习",
+      "消息"
+    ],
+    "reversed_keywords": [
+      "情绪幼稚",
+      "暧昧不清",
+      "表达不稳",
+      "不成熟",
+      "消息延误"
+    ],
+    "core_symbols": [],
+    "visual_summary": "年轻人看着杯中鱼，像突然冒出的情绪讯号。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯侍从正位把情绪/关系/感受/亲密落到“温柔消息、心动表达、感性好奇”这些具体状态中。",
+    "base_reversed_meaning": "圣杯侍从逆位多表现为“情绪幼稚、暧昧不清、表达不稳”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "knight_of_cups",
+    "name_cn": "圣杯骑士",
+    "name_en": "Knight of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "knight",
+    "element": "water",
+    "upright_keywords": [
+      "浪漫靠近",
+      "表达爱意",
+      "邀请",
+      "行动",
+      "推进"
+    ],
+    "reversed_keywords": [
+      "甜言蜜语",
+      "情绪化行动",
+      "承诺不稳",
+      "冲动",
+      "失速"
+    ],
+    "core_symbols": [],
+    "visual_summary": "骑士端着杯前行，动作柔和。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯骑士正位把情绪/关系/感受/亲密落到“浪漫靠近、表达爱意、邀请”这些具体状态中。",
+    "base_reversed_meaning": "圣杯骑士逆位多表现为“甜言蜜语、情绪化行动、承诺不稳”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "queen_of_cups",
+    "name_cn": "圣杯皇后",
+    "name_en": "Queen of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "queen",
+    "element": "water",
+    "upright_keywords": [
+      "共情",
+      "照顾感受",
+      "情绪成熟",
+      "成熟接纳",
+      "内在掌握"
+    ],
+    "reversed_keywords": [
+      "共情过载",
+      "情绪边界弱",
+      "敏感内耗",
+      "情绪/资源失衡",
+      "过度内耗"
+    ],
+    "core_symbols": [],
+    "visual_summary": "皇后凝视圣杯，像深深感知情绪。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯皇后正位把情绪/关系/感受/亲密落到“共情、照顾感受、情绪成熟”这些具体状态中。",
+    "base_reversed_meaning": "圣杯皇后逆位多表现为“共情过载、情绪边界弱、敏感内耗”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "king_of_cups",
+    "name_cn": "圣杯国王",
+    "name_en": "King of Cups",
+    "arcana": "minor",
+    "number": null,
+    "suit": "cups",
+    "rank": "king",
+    "element": "water",
+    "upright_keywords": [
+      "情绪稳定",
+      "成熟包容",
+      "温和掌舵",
+      "成熟掌控",
+      "领导"
+    ],
+    "reversed_keywords": [
+      "情绪压抑",
+      "表面平静",
+      "逃避表达",
+      "控制过度",
+      "僵硬"
+    ],
+    "core_symbols": [],
+    "visual_summary": "国王坐在水中的王座上，稳定但被情绪包围。",
+    "suit_theme": "情绪/关系/感受/亲密",
+    "base_upright_meaning": "圣杯国王正位把情绪/关系/感受/亲密落到“情绪稳定、成熟包容、温和掌舵”这些具体状态中。",
+    "base_reversed_meaning": "圣杯国王逆位多表现为“情绪压抑、表面平静、逃避表达”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "ace_of_swords",
+    "name_cn": "宝剑一",
+    "name_en": "Ace of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "ace",
+    "element": "air",
+    "upright_keywords": [
+      "清晰判断",
+      "真相",
+      "新想法",
+      "新开始",
+      "种子"
+    ],
+    "reversed_keywords": [
+      "判断混乱",
+      "话语伤人",
+      "真相不明",
+      "机会未落地",
+      "动力不足"
+    ],
+    "core_symbols": [],
+    "visual_summary": "云中伸出的剑刺向天空，代表清晰但锋利的念头。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑一正位把思考/沟通/冲突/判断落到“清晰判断、真相、新想法”这些具体状态中。",
+    "base_reversed_meaning": "宝剑一逆位多表现为“判断混乱、话语伤人、真相不明”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "two_of_swords",
+    "name_cn": "宝剑二",
+    "name_en": "Two of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "two",
+    "element": "air",
+    "upright_keywords": [
+      "僵持",
+      "回避选择",
+      "自我保护",
+      "选择",
+      "平衡"
+    ],
+    "reversed_keywords": [
+      "僵局松动",
+      "不得不面对",
+      "信息打开",
+      "失衡",
+      "犹豫"
+    ],
+    "core_symbols": [],
+    "visual_summary": "蒙眼的人交叉双剑坐在水边。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑二正位把思考/沟通/冲突/判断落到“僵持、回避选择、自我保护”这些具体状态中。",
+    "base_reversed_meaning": "宝剑二逆位多表现为“僵局松动、不得不面对、信息打开”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "three_of_swords",
+    "name_cn": "宝剑三",
+    "name_en": "Three of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "three",
+    "element": "air",
+    "upright_keywords": [
+      "心痛",
+      "失望",
+      "关系伤口",
+      "扩展",
+      "合作"
+    ],
+    "reversed_keywords": [
+      "伤口修复",
+      "痛感释放",
+      "慢慢释怀",
+      "合作不顺",
+      "期待落空"
+    ],
+    "core_symbols": [],
+    "visual_summary": "三把剑刺入心脏，画面直接指向痛感。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑三正位把思考/沟通/冲突/判断落到“心痛、失望、关系伤口”这些具体状态中。",
+    "base_reversed_meaning": "宝剑三逆位多表现为“伤口修复、痛感释放、慢慢释怀”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "four_of_swords",
+    "name_cn": "宝剑四",
+    "name_en": "Four of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "four",
+    "element": "air",
+    "upright_keywords": [
+      "休息",
+      "暂停",
+      "恢复",
+      "抽离",
+      "稳定",
+      "停顿"
+    ],
+    "reversed_keywords": [
+      "恢复不足",
+      "被迫醒来",
+      "休息变逃避",
+      "僵化",
+      "停滞"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物躺在教堂般的空间里，剑悬于墙上。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑四正位把思考/沟通/冲突/判断落到“休息、暂停、恢复”这些具体状态中。",
+    "base_reversed_meaning": "宝剑四逆位多表现为“恢复不足、被迫醒来、休息变逃避”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "five_of_swords",
+    "name_cn": "宝剑五",
+    "name_en": "Five of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "five",
+    "element": "air",
+    "upright_keywords": [
+      "争执胜负",
+      "消耗性冲突",
+      "赢了也不舒服",
+      "冲突",
+      "损失"
+    ],
+    "reversed_keywords": [
+      "停止争斗",
+      "承认代价",
+      "修复可能",
+      "修复",
+      "走出冲突"
+    ],
+    "core_symbols": [],
+    "visual_summary": "有人拿着剑，远处有人离开，胜负感很冷。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑五正位把思考/沟通/冲突/判断落到“争执胜负、消耗性冲突、赢了也不舒服”这些具体状态中。",
+    "base_reversed_meaning": "宝剑五逆位多表现为“停止争斗、承认代价、修复可能”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "six_of_swords",
+    "name_cn": "宝剑六",
+    "name_en": "Six of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "six",
+    "element": "air",
+    "upright_keywords": [
+      "过渡",
+      "离开混乱",
+      "低调前行",
+      "调整后前进",
+      "支持"
+    ],
+    "reversed_keywords": [
+      "走不出去",
+      "旧问题跟随",
+      "迁移受阻",
+      "旧模式反复",
+      "支持不足"
+    ],
+    "core_symbols": [],
+    "visual_summary": "小船载着人和剑渡水而去。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑六正位把思考/沟通/冲突/判断落到“过渡、离开混乱、低调前行”这些具体状态中。",
+    "base_reversed_meaning": "宝剑六逆位多表现为“走不出去、旧问题跟随、迁移受阻”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "seven_of_swords",
+    "name_cn": "宝剑七",
+    "name_en": "Seven of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "seven",
+    "element": "air",
+    "upright_keywords": [
+      "策略",
+      "隐瞒",
+      "不完全坦白",
+      "防守",
+      "选择"
+    ],
+    "reversed_keywords": [
+      "暴露",
+      "不再躲藏",
+      "策略失败",
+      "分散",
+      "逃避"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物悄悄抱走几把剑，回头观察。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑七正位把思考/沟通/冲突/判断落到“策略、隐瞒、不完全坦白”这些具体状态中。",
+    "base_reversed_meaning": "宝剑七逆位多表现为“暴露、不再躲藏、策略失败”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "eight_of_swords",
+    "name_cn": "宝剑八",
+    "name_en": "Eight of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "eight",
+    "element": "air",
+    "upright_keywords": [
+      "受限",
+      "困住",
+      "自我设限",
+      "推进",
+      "练习"
+    ],
+    "reversed_keywords": [
+      "看见出口",
+      "松绑",
+      "走出困局",
+      "卡顿",
+      "倦怠"
+    ],
+    "core_symbols": [],
+    "visual_summary": "蒙眼被绑的人被剑围住，但脚下仍有空间。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑八正位把思考/沟通/冲突/判断落到“受限、困住、自我设限”这些具体状态中。",
+    "base_reversed_meaning": "宝剑八逆位多表现为“看见出口、松绑、走出困局”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "nine_of_swords",
+    "name_cn": "宝剑九",
+    "name_en": "Nine of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "nine",
+    "element": "air",
+    "upright_keywords": [
+      "焦虑",
+      "失眠",
+      "自责",
+      "脑内放大",
+      "临近完成",
+      "独立"
+    ],
+    "reversed_keywords": [
+      "焦虑下降",
+      "求助",
+      "从噩梦醒来",
+      "疲惫",
+      "防线过重"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物坐在床上捂脸，身后九把剑像夜里的念头。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑九正位把思考/沟通/冲突/判断落到“焦虑、失眠、自责”这些具体状态中。",
+    "base_reversed_meaning": "宝剑九逆位多表现为“焦虑下降、求助、从噩梦醒来”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "ten_of_swords",
+    "name_cn": "宝剑十",
+    "name_en": "Ten of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "ten",
+    "element": "air",
+    "upright_keywords": [
+      "结束痛苦",
+      "最低点",
+      "彻底耗尽",
+      "完成",
+      "负荷"
+    ],
+    "reversed_keywords": [
+      "从低谷恢复",
+      "痛苦收尾",
+      "重新站起",
+      "释放负担",
+      "结局延迟"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物被十把剑刺倒，远处有微光。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑十正位把思考/沟通/冲突/判断落到“结束痛苦、最低点、彻底耗尽”这些具体状态中。",
+    "base_reversed_meaning": "宝剑十逆位多表现为“从低谷恢复、痛苦收尾、重新站起”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "page_of_swords",
+    "name_cn": "宝剑侍从",
+    "name_en": "Page of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "page",
+    "element": "air",
+    "upright_keywords": [
+      "观察",
+      "试探表达",
+      "警觉学习",
+      "学习",
+      "消息"
+    ],
+    "reversed_keywords": [
+      "口舌不稳",
+      "多疑",
+      "消息不成熟",
+      "不成熟",
+      "消息延误"
+    ],
+    "core_symbols": [],
+    "visual_summary": "年轻人持剑侧身，像随时准备回应。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑侍从正位把思考/沟通/冲突/判断落到“观察、试探表达、警觉学习”这些具体状态中。",
+    "base_reversed_meaning": "宝剑侍从逆位多表现为“口舌不稳、多疑、消息不成熟”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "knight_of_swords",
+    "name_cn": "宝剑骑士",
+    "name_en": "Knight of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "knight",
+    "element": "air",
+    "upright_keywords": [
+      "快速沟通",
+      "理性冲锋",
+      "急切推进",
+      "行动",
+      "推进"
+    ],
+    "reversed_keywords": [
+      "鲁莽言语",
+      "冲动判断",
+      "攻击性",
+      "冲动",
+      "失速"
+    ],
+    "core_symbols": [],
+    "visual_summary": "骑士持剑高速前冲，空气感强。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑骑士正位把思考/沟通/冲突/判断落到“快速沟通、理性冲锋、急切推进”这些具体状态中。",
+    "base_reversed_meaning": "宝剑骑士逆位多表现为“鲁莽言语、冲动判断、攻击性”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "queen_of_swords",
+    "name_cn": "宝剑皇后",
+    "name_en": "Queen of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "queen",
+    "element": "air",
+    "upright_keywords": [
+      "清醒",
+      "边界",
+      "理性表达",
+      "成熟接纳",
+      "内在掌握"
+    ],
+    "reversed_keywords": [
+      "冷硬",
+      "防御过重",
+      "刻薄",
+      "情绪/资源失衡",
+      "过度内耗"
+    ],
+    "core_symbols": [],
+    "visual_summary": "皇后持剑端坐，手势像允许靠近但有边界。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑皇后正位把思考/沟通/冲突/判断落到“清醒、边界、理性表达”这些具体状态中。",
+    "base_reversed_meaning": "宝剑皇后逆位多表现为“冷硬、防御过重、刻薄”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "king_of_swords",
+    "name_cn": "宝剑国王",
+    "name_en": "King of Swords",
+    "arcana": "minor",
+    "number": null,
+    "suit": "swords",
+    "rank": "king",
+    "element": "air",
+    "upright_keywords": [
+      "理性权威",
+      "判断力",
+      "规则与逻辑",
+      "成熟掌控",
+      "领导"
+    ],
+    "reversed_keywords": [
+      "冷酷",
+      "专断",
+      "过度理性",
+      "控制过度",
+      "僵硬"
+    ],
+    "core_symbols": [],
+    "visual_summary": "国王直握宝剑，代表清晰规则和判断。",
+    "suit_theme": "思考/沟通/冲突/判断",
+    "base_upright_meaning": "宝剑国王正位把思考/沟通/冲突/判断落到“理性权威、判断力、规则与逻辑”这些具体状态中。",
+    "base_reversed_meaning": "宝剑国王逆位多表现为“冷酷、专断、过度理性”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "ace_of_pentacles",
+    "name_cn": "星币一",
+    "name_en": "Ace of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "ace",
+    "element": "earth",
+    "upright_keywords": [
+      "现实机会",
+      "资源",
+      "金钱/工作种子",
+      "新开始",
+      "种子"
+    ],
+    "reversed_keywords": [
+      "机会未落地",
+      "现实阻碍",
+      "资源浪费",
+      "机会未落地",
+      "动力不足"
+    ],
+    "core_symbols": [],
+    "visual_summary": "云中递出星币，远处有花园和拱门。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币一正位把现实/资源/金钱/身体/稳定落到“现实机会、资源、金钱/工作种子”这些具体状态中。",
+    "base_reversed_meaning": "星币一逆位多表现为“机会未落地、现实阻碍、资源浪费”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "two_of_pentacles",
+    "name_cn": "星币二",
+    "name_en": "Two of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "two",
+    "element": "earth",
+    "upright_keywords": [
+      "平衡事务",
+      "多线并行",
+      "灵活调整",
+      "选择",
+      "平衡"
+    ],
+    "reversed_keywords": [
+      "忙乱",
+      "失衡",
+      "顾此失彼",
+      "失衡",
+      "犹豫"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物 juggling 两枚星币，背景海浪起伏。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币二正位把现实/资源/金钱/身体/稳定落到“平衡事务、多线并行、灵活调整”这些具体状态中。",
+    "base_reversed_meaning": "星币二逆位多表现为“忙乱、失衡、顾此失彼”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "three_of_pentacles",
+    "name_cn": "星币三",
+    "name_en": "Three of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "three",
+    "element": "earth",
+    "upright_keywords": [
+      "协作",
+      "技能被看见",
+      "专业建设",
+      "扩展",
+      "合作"
+    ],
+    "reversed_keywords": [
+      "合作不顺",
+      "标准不一",
+      "能力未被认可",
+      "合作不顺",
+      "期待落空"
+    ],
+    "core_symbols": [],
+    "visual_summary": "工匠在教堂中工作，旁边有人查看图纸。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币三正位把现实/资源/金钱/身体/稳定落到“协作、技能被看见、专业建设”这些具体状态中。",
+    "base_reversed_meaning": "星币三逆位多表现为“合作不顺、标准不一、能力未被认可”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "four_of_pentacles",
+    "name_cn": "星币四",
+    "name_en": "Four of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "four",
+    "element": "earth",
+    "upright_keywords": [
+      "守住资源",
+      "安全感",
+      "控制边界",
+      "稳定",
+      "停顿"
+    ],
+    "reversed_keywords": [
+      "松动控制",
+      "不再抓紧",
+      "资源焦虑",
+      "僵化",
+      "停滞"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物紧抱星币，脚下和头上也有星币。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币四正位把现实/资源/金钱/身体/稳定落到“守住资源、安全感、控制边界”这些具体状态中。",
+    "base_reversed_meaning": "星币四逆位多表现为“松动控制、不再抓紧、资源焦虑”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "five_of_pentacles",
+    "name_cn": "星币五",
+    "name_en": "Five of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "five",
+    "element": "earth",
+    "upright_keywords": [
+      "匮乏",
+      "被排除",
+      "现实困难",
+      "冲突",
+      "损失"
+    ],
+    "reversed_keywords": [
+      "寻求帮助",
+      "走出匮乏",
+      "资源回流",
+      "修复",
+      "走出冲突"
+    ],
+    "core_symbols": [],
+    "visual_summary": "两人在雪中经过亮着灯的教堂窗外。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币五正位把现实/资源/金钱/身体/稳定落到“匮乏、被排除、现实困难”这些具体状态中。",
+    "base_reversed_meaning": "星币五逆位多表现为“寻求帮助、走出匮乏、资源回流”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "six_of_pentacles",
+    "name_cn": "星币六",
+    "name_en": "Six of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "six",
+    "element": "earth",
+    "upright_keywords": [
+      "给予与接受",
+      "资源分配",
+      "支持",
+      "调整后前进",
+      "支持"
+    ],
+    "reversed_keywords": [
+      "不平等交换",
+      "亏欠感",
+      "资源控制",
+      "旧模式反复",
+      "支持不足"
+    ],
+    "core_symbols": [],
+    "visual_summary": "一人向他人分发金币，手中有天平。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币六正位把现实/资源/金钱/身体/稳定落到“给予与接受、资源分配、支持”这些具体状态中。",
+    "base_reversed_meaning": "星币六逆位多表现为“不平等交换、亏欠感、资源控制”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "seven_of_pentacles",
+    "name_cn": "星币七",
+    "name_en": "Seven of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "seven",
+    "element": "earth",
+    "upright_keywords": [
+      "等待成果",
+      "评估投入",
+      "长期耕耘",
+      "防守",
+      "选择"
+    ],
+    "reversed_keywords": [
+      "急于求成",
+      "投入回报失衡",
+      "耐心不足",
+      "分散",
+      "逃避"
+    ],
+    "core_symbols": [],
+    "visual_summary": "人物看着已经长出的星币，像在评估收成。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币七正位把现实/资源/金钱/身体/稳定落到“等待成果、评估投入、长期耕耘”这些具体状态中。",
+    "base_reversed_meaning": "星币七逆位多表现为“急于求成、投入回报失衡、耐心不足”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "eight_of_pentacles",
+    "name_cn": "星币八",
+    "name_en": "Eight of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "eight",
+    "element": "earth",
+    "upright_keywords": [
+      "练习",
+      "专业积累",
+      "稳定打磨",
+      "推进",
+      "练习"
+    ],
+    "reversed_keywords": [
+      "重复倦怠",
+      "技能瓶颈",
+      "偷懒或过劳",
+      "卡顿",
+      "倦怠"
+    ],
+    "core_symbols": [],
+    "visual_summary": "工匠一枚枚雕刻星币，强调长期练习。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币八正位把现实/资源/金钱/身体/稳定落到“练习、专业积累、稳定打磨”这些具体状态中。",
+    "base_reversed_meaning": "星币八逆位多表现为“重复倦怠、技能瓶颈、偷懒或过劳”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "nine_of_pentacles",
+    "name_cn": "星币九",
+    "name_en": "Nine of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "nine",
+    "element": "earth",
+    "upright_keywords": [
+      "独立丰盛",
+      "自我价值",
+      "成果享受",
+      "临近完成",
+      "独立"
+    ],
+    "reversed_keywords": [
+      "表面丰盛",
+      "依赖认可",
+      "安全感不足",
+      "疲惫",
+      "防线过重"
+    ],
+    "core_symbols": [],
+    "visual_summary": "女子站在葡萄园中，身边有鸟和星币。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币九正位把现实/资源/金钱/身体/稳定落到“独立丰盛、自我价值、成果享受”这些具体状态中。",
+    "base_reversed_meaning": "星币九逆位多表现为“表面丰盛、依赖认可、安全感不足”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "ten_of_pentacles",
+    "name_cn": "星币十",
+    "name_en": "Ten of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "ten",
+    "element": "earth",
+    "upright_keywords": [
+      "长期稳定",
+      "家庭/组织资源",
+      "传承",
+      "完成",
+      "负荷"
+    ],
+    "reversed_keywords": [
+      "结构内矛盾",
+      "资源分配问题",
+      "稳定裂缝",
+      "释放负担",
+      "结局延迟"
+    ],
+    "core_symbols": [],
+    "visual_summary": "家族、老人、孩子与十枚星币共处一处。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币十正位把现实/资源/金钱/身体/稳定落到“长期稳定、家庭/组织资源、传承”这些具体状态中。",
+    "base_reversed_meaning": "星币十逆位多表现为“结构内矛盾、资源分配问题、稳定裂缝”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "page_of_pentacles",
+    "name_cn": "星币侍从",
+    "name_en": "Page of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "page",
+    "element": "earth",
+    "upright_keywords": [
+      "学习现实技能",
+      "新工作/学习机会",
+      "踏实开始",
+      "学习",
+      "消息"
+    ],
+    "reversed_keywords": [
+      "行动慢",
+      "眼高手低",
+      "机会理解不足",
+      "不成熟",
+      "消息延误"
+    ],
+    "core_symbols": [],
+    "visual_summary": "年轻人专注看着星币，像在学习如何落地。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币侍从正位把现实/资源/金钱/身体/稳定落到“学习现实技能、新工作/学习机会、踏实开始”这些具体状态中。",
+    "base_reversed_meaning": "星币侍从逆位多表现为“行动慢、眼高手低、机会理解不足”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "knight_of_pentacles",
+    "name_cn": "星币骑士",
+    "name_en": "Knight of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "knight",
+    "element": "earth",
+    "upright_keywords": [
+      "踏实推进",
+      "责任感",
+      "慢但稳",
+      "行动",
+      "推进"
+    ],
+    "reversed_keywords": [
+      "停滞",
+      "保守",
+      "拖延",
+      "冲动",
+      "失速"
+    ],
+    "core_symbols": [],
+    "visual_summary": "骑士骑着静止的马，手持星币观察前方。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币骑士正位把现实/资源/金钱/身体/稳定落到“踏实推进、责任感、慢但稳”这些具体状态中。",
+    "base_reversed_meaning": "星币骑士逆位多表现为“停滞、保守、拖延”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "queen_of_pentacles",
+    "name_cn": "星币皇后",
+    "name_en": "Queen of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "queen",
+    "element": "earth",
+    "upright_keywords": [
+      "照顾现实",
+      "稳定滋养",
+      "生活经营",
+      "成熟接纳",
+      "内在掌握"
+    ],
+    "reversed_keywords": [
+      "过度操心",
+      "安全感焦虑",
+      "现实压力内化",
+      "情绪/资源失衡",
+      "过度内耗"
+    ],
+    "core_symbols": [],
+    "visual_summary": "皇后凝视星币，周围自然丰盛。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币皇后正位把现实/资源/金钱/身体/稳定落到“照顾现实、稳定滋养、生活经营”这些具体状态中。",
+    "base_reversed_meaning": "星币皇后逆位多表现为“过度操心、安全感焦虑、现实压力内化”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  },
+  {
+    "card_id": "king_of_pentacles",
+    "name_cn": "星币国王",
+    "name_en": "King of Pentacles",
+    "arcana": "minor",
+    "number": null,
+    "suit": "pentacles",
+    "rank": "king",
+    "element": "earth",
+    "upright_keywords": [
+      "资源掌控",
+      "事业稳定",
+      "成熟经营",
+      "成熟掌控",
+      "领导"
+    ],
+    "reversed_keywords": [
+      "物质控制",
+      "保守固执",
+      "只看利益",
+      "控制过度",
+      "僵硬"
+    ],
+    "core_symbols": [],
+    "visual_summary": "国王坐在被葡萄和星币环绕的王座上。",
+    "suit_theme": "现实/资源/金钱/身体/稳定",
+    "base_upright_meaning": "星币国王正位把现实/资源/金钱/身体/稳定落到“资源掌控、事业稳定、成熟经营”这些具体状态中。",
+    "base_reversed_meaning": "星币国王逆位多表现为“物质控制、保守固执、只看利益”，提示这个主题出现阻滞或失衡。",
+    "source_basis": [
+      "Rider-Waite-Smith 公共传统",
+      "原创中文归纳，不直接复制外部牌义文本"
+    ]
+  }
+]

@@ -1,0 +1,63 @@
+{
+  "version": "v0.2",
+  "generated_at": "2026-05-03 06:58:58",
+  "namespace_rules": {
+    "card": {
+      "pattern": "card::{card_id}",
+      "example": "card::four_of_swords",
+      "source": "01_core_cards/cards_base.jsonl"
+    },
+    "card_orientation": {
+      "pattern": "cardori::{card_id}::{orientation}",
+      "example": "cardori::four_of_swords::upright"
+    },
+    "context_profile": {
+      "pattern": "ctxp::{card_id}::{orientation}::{domain}",
+      "example": "ctxp::four_of_swords::upright::love",
+      "source_key": "profile_id"
+    },
+    "context_position": {
+      "pattern": "ctx::{card_id}::{orientation}::{domain}::{position_id}",
+      "example": "ctx::four_of_swords::upright::love::other_person_state",
+      "source_key": "id"
+    },
+    "combo": {
+      "pattern": "combo::{card_id_a}::{card_id_b}",
+      "example": "combo::the_moon::seven_of_swords",
+      "note": "card_id_a/card_id_b 使用 cards_base 中的牌序排序，避免重复。"
+    },
+    "question_taxonomy": {
+      "pattern": "qtax::{id}",
+      "example": "qtax::qt_0001"
+    },
+    "golden_case": {
+      "pattern": "gcase::{case_id}",
+      "example": "gcase::love_001"
+    },
+    "spread": {
+      "pattern": "spread::{spread_id}",
+      "example": "spread::three_self_relation_other"
+    },
+    "position": {
+      "pattern": "pos::{position_id}",
+      "example": "pos::other_person_state"
+    },
+    "risk_rule": {
+      "pattern": "risk::{risk_type}",
+      "example": "risk::medical_health"
+    },
+    "style": {
+      "pattern": "style::{style_id}",
+      "example": "style::gentle_companion"
+    }
+  },
+  "canonical_fields": {
+    "card_id": "snake_case English card id",
+    "orientation": "upright | reversed",
+    "domain": "love | career | self_state | decision | study | daily | finance_reflection | *_safety | obsession",
+    "position_id": "position_grammar 中定义的原子牌位",
+    "spread_id": "spreads 中定义的牌阵 ID",
+    "risk_level": "low | medium | high | critical",
+    "safety_action": "normal_reading | rewrite_then_read | compare_options | refuse_prediction_redirect | crisis_support | limit_repeated_reading | privacy_rewrite"
+  }
+}

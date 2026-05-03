@@ -1,0 +1,152 @@
+{
+  "version": "v0.2",
+  "generated_at": "2026-05-03 04:25:46",
+  "counts": {
+    "profiles": 624,
+    "position_meanings": 8112,
+    "human_like_samples": 640
+  },
+  "retrieval_key": "card_id + orientation + domain + position_id",
+  "domains": {
+    "love": {
+      "cn": "感情",
+      "lens": "关系互动、情绪连接、边界和回应节奏",
+      "tone": "温柔但克制",
+      "claim": "low_to_medium",
+      "forbid": [
+        "断言对方真实想法",
+        "断言一定复合/分手",
+        "断言出轨",
+        "制造等待依赖"
+      ],
+      "advice": "回到互动证据、自己的感受和清楚边界。"
+    },
+    "career": {
+      "cn": "事业",
+      "lens": "工作状态、职业路径、资源、能力发挥和现实约束",
+      "tone": "清醒分析",
+      "claim": "medium",
+      "forbid": [
+        "断言一定录用/升职/裁员",
+        "替用户做职业决定",
+        "预测具体薪资",
+        "忽略现实条件"
+      ],
+      "advice": "把感受拆成任务、资源、风险、退路和时间表。"
+    },
+    "self_state": {
+      "cn": "自我状态",
+      "lens": "情绪、能量、内在需求、压力来源和自我照顾",
+      "tone": "温柔陪伴",
+      "claim": "medium",
+      "forbid": [
+        "心理疾病诊断",
+        "替代心理治疗",
+        "羞辱用户",
+        "把情绪神秘化"
+      ],
+      "advice": "先承认感受，再找到一个能落地的照顾动作。"
+    },
+    "decision": {
+      "cn": "决策",
+      "lens": "选择路径、收益、代价、风险和验证动作",
+      "tone": "清醒但不替用户决定",
+      "claim": "medium",
+      "forbid": [
+        "替用户做最终决定",
+        "把牌当唯一依据",
+        "忽略现实风险",
+        "绝对化结果"
+      ],
+      "advice": "把选项拆成收益、代价、不可接受风险和最小验证。"
+    }
+  },
+  "positions": [
+    {
+      "position_id": "current_state",
+      "name_cn": "当前状态",
+      "function": "描述当下能量、处境和心理位置",
+      "rule": "读成现在状态，不读成最终结论"
+    },
+    {
+      "position_id": "obstacle",
+      "name_cn": "主要阻碍",
+      "function": "指出卡住用户的机制",
+      "rule": "读成阻碍机制，不读成命运判决"
+    },
+    {
+      "position_id": "strength",
+      "name_cn": "自身优势",
+      "function": "指出用户可以依靠的力量、能力或资源",
+      "rule": "读成可调动资源，不要过度夸大"
+    },
+    {
+      "position_id": "advice",
+      "name_cn": "建议",
+      "function": "给出用户可执行、可控制的下一步方向",
+      "rule": "必须落到行动建议"
+    },
+    {
+      "position_id": "near_future_trend",
+      "name_cn": "近期趋势",
+      "function": "描述当前模式延续下的可能走向",
+      "rule": "用倾向表达，不说绝对结果"
+    },
+    {
+      "position_id": "outcome",
+      "name_cn": "结果倾向",
+      "function": "表达当前条件下的阶段性结果倾向",
+      "rule": "结果不是命运"
+    },
+    {
+      "position_id": "self_state",
+      "name_cn": "我的状态",
+      "function": "描述用户自己的感受、需求、边界和行动模式",
+      "rule": "聚焦用户可感知经验"
+    },
+    {
+      "position_id": "other_person_state",
+      "name_cn": "对方互动表现",
+      "function": "只能读对方在互动中的表现和可能状态",
+      "rule": "不能断言对方真实心理"
+    },
+    {
+      "position_id": "relationship_dynamic",
+      "name_cn": "关系动态",
+      "function": "描述两人之间的互动结构、距离、张力和循环",
+      "rule": "读关系动力，不替任何一方读心"
+    },
+    {
+      "position_id": "option_a",
+      "name_cn": "选项A",
+      "function": "描述选择A的特征、收益、代价和风险",
+      "rule": "比较路径，不替用户决定"
+    },
+    {
+      "position_id": "option_b",
+      "name_cn": "选项B",
+      "function": "描述选择B的特征、收益、代价和风险",
+      "rule": "比较路径，不替用户决定"
+    },
+    {
+      "position_id": "inner_need",
+      "name_cn": "内在需求",
+      "function": "指出更深层的渴望、恐惧或未被照顾的部分",
+      "rule": "适合自我探索，避免诊断"
+    },
+    {
+      "position_id": "external_influence",
+      "name_cn": "外部影响",
+      "function": "描述环境、他人、制度、资源或时机因素",
+      "rule": "强调外部条件，不把责任全部推给用户"
+    }
+  ],
+  "quality_rules": [
+    "必须体现牌位，不要只背基础牌义。",
+    "必须体现领域语境，不要感情/事业/决策混读。",
+    "必须保留不确定性，不要用一定、必然、注定。",
+    "建议位必须给可控行动。",
+    "趋势/结果位必须写成条件性倾向。",
+    "对方状态位只能读互动表现，不能读真实心理。"
+  ]
+}

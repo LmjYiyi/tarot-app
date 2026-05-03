@@ -1,0 +1,140 @@
+[
+  {
+    "rule_id": "r_love_mind_reading",
+    "match_keywords": [
+      "他怎么想",
+      "她怎么想",
+      "还喜欢我",
+      "还爱我",
+      "真实想法",
+      "在不在意我",
+      "会不会主动",
+      "后悔了吗"
+    ],
+    "domain": "love",
+    "intent": "third_party_mind_reading",
+    "risk_level": "medium",
+    "action": "rewrite_then_read",
+    "rewrite_template": "我该如何理解目前这段关系里的互动信号，以及我能做什么？"
+  },
+  {
+    "rule_id": "r_love_privacy",
+    "match_keywords": [
+      "出轨",
+      "和别人睡",
+      "手机里",
+      "新欢",
+      "脚踏两条船",
+      "乱来"
+    ],
+    "domain": "privacy_safety",
+    "intent": "third_party_privacy_or_cheating",
+    "risk_level": "high",
+    "action": "privacy_rewrite",
+    "rewrite_template": "我该如何面对这段关系里的不安、信任和边界问题？"
+  },
+  {
+    "rule_id": "r_medical",
+    "match_keywords": [
+      "病",
+      "癌",
+      "怀孕",
+      "吃药",
+      "医院",
+      "检查结果",
+      "健康",
+      "抑郁症"
+    ],
+    "domain": "health_safety",
+    "intent": "medical_health_prediction",
+    "risk_level": "high",
+    "action": "refuse_prediction_redirect",
+    "rewrite_template": "这个问题不能用塔罗判断健康结果。我可以帮你整理担忧、照护方向和需要咨询医生的问题。"
+  },
+  {
+    "rule_id": "r_crisis",
+    "match_keywords": [
+      "不想活",
+      "伤害自己",
+      "自残",
+      "死不死",
+      "撑不下去",
+      "消失"
+    ],
+    "domain": "crisis_safety",
+    "intent": "self_harm_crisis",
+    "risk_level": "critical",
+    "action": "crisis_support",
+    "rewrite_template": "先不占卜。你现在的安全最重要，请立刻联系身边可信的人，或联系当地紧急服务/危机热线。"
+  },
+  {
+    "rule_id": "r_finance_invest",
+    "match_keywords": [
+      "股票",
+      "基金",
+      "买币",
+      "投资",
+      "加仓",
+      "卖掉",
+      "彩票",
+      "中大奖",
+      "贷款"
+    ],
+    "domain": "finance_reflection",
+    "intent": "investment_or_money_reflection",
+    "risk_level": "high",
+    "action": "refuse_prediction_redirect",
+    "rewrite_template": "我不能用塔罗做投资/收益预测，但可以整理这次金钱决策里的风险、预算和冲动因素。"
+  },
+  {
+    "rule_id": "r_legal",
+    "match_keywords": [
+      "官司",
+      "起诉",
+      "法院",
+      "合同",
+      "被告",
+      "赔偿",
+      "报警"
+    ],
+    "domain": "legal_safety",
+    "intent": "legal_prediction_or_advice",
+    "risk_level": "high",
+    "action": "refuse_prediction_redirect",
+    "rewrite_template": "我不能用塔罗判断法律结果，但可以帮你整理事实、担忧、材料清单和要问律师的问题。"
+  },
+  {
+    "rule_id": "r_repeat",
+    "match_keywords": [
+      "再抽一次",
+      "重抽",
+      "抽到好结果",
+      "每天问",
+      "停不下来",
+      "十次"
+    ],
+    "domain": "obsession",
+    "intent": "repeated_reading_dependency",
+    "risk_level": "medium",
+    "action": "limit_repeated_reading",
+    "rewrite_template": "这个问题如果反复抽，容易越抽越焦虑。更适合设定观察期、边界和现实行动。"
+  },
+  {
+    "rule_id": "r_career_decision",
+    "match_keywords": [
+      "离职",
+      "跳槽",
+      "offer",
+      "国企",
+      "大厂",
+      "转行",
+      "读博",
+      "创业"
+    ],
+    "domain": "career",
+    "intent": "career_decision",
+    "risk_level": "medium",
+    "action": "compare_options",
+    "rewrite_template": "不同选择分别有什么收益、代价、风险和验证动作？"
+  }
+]

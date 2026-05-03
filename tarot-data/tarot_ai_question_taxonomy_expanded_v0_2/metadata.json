@@ -1,0 +1,195 @@
+{
+  "version": "v0.2",
+  "generated_at": "2026-05-02 20:47:27",
+  "total_rows": 443,
+  "domain_counts": {
+    "love": 137,
+    "privacy_safety": 16,
+    "career": 57,
+    "self_state": 47,
+    "decision": 54,
+    "study": 24,
+    "daily": 20,
+    "finance_reflection": 20,
+    "health_safety": 16,
+    "legal_safety": 12,
+    "crisis_safety": 12,
+    "fate_safety": 16,
+    "obsession": 12
+  },
+  "risk_counts": {
+    "medium": 244,
+    "low": 125,
+    "high": 62,
+    "critical": 12
+  },
+  "top_intents": [
+    [
+      "third_party_mind_reading",
+      69
+    ],
+    [
+      "general_option_decision",
+      54
+    ],
+    [
+      "self_reflection",
+      35
+    ],
+    [
+      "relationship_action_decision",
+      24
+    ],
+    [
+      "study_planning_or_anxiety",
+      24
+    ],
+    [
+      "relationship_self_pattern",
+      20
+    ],
+    [
+      "daily_light_reading",
+      20
+    ],
+    [
+      "investment_or_money_reflection",
+      20
+    ],
+    [
+      "relationship_trend",
+      17
+    ],
+    [
+      "third_party_privacy_or_cheating",
+      16
+    ],
+    [
+      "medical_health_prediction",
+      16
+    ],
+    [
+      "fate_or_disaster_prediction",
+      16
+    ],
+    [
+      "career_planning_variant",
+      16
+    ],
+    [
+      "legal_prediction_or_advice",
+      12
+    ],
+    [
+      "self_harm_crisis",
+      12
+    ],
+    [
+      "repeated_reading_dependency",
+      12
+    ],
+    [
+      "self_reflection_variant",
+      12
+    ],
+    [
+      "fate_based_relationship",
+      7
+    ],
+    [
+      "job_change_decision",
+      5
+    ],
+    [
+      "career_growth",
+      4
+    ],
+    [
+      "offer_decision",
+      3
+    ],
+    [
+      "career_path_compare",
+      3
+    ],
+    [
+      "workplace_relationship",
+      3
+    ],
+    [
+      "team_fit",
+      2
+    ],
+    [
+      "promotion",
+      2
+    ],
+    [
+      "interview_review",
+      2
+    ],
+    [
+      "career_location",
+      2
+    ],
+    [
+      "company_fit",
+      2
+    ],
+    [
+      "career_state",
+      1
+    ],
+    [
+      "career_block",
+      1
+    ],
+    [
+      "layoff_anxiety",
+      1
+    ],
+    [
+      "project_trend",
+      1
+    ],
+    [
+      "career_change",
+      1
+    ],
+    [
+      "entrepreneurship",
+      1
+    ],
+    [
+      "skill_gap",
+      1
+    ],
+    [
+      "career_pacing",
+      1
+    ],
+    [
+      "academic_career",
+      1
+    ],
+    [
+      "career_trend",
+      1
+    ],
+    [
+      "career_support",
+      1
+    ],
+    [
+      "career_values",
+      1
+    ]
+  ],
+  "recommended_usage": [
+    "作为前置问题路由器的训练/评测数据",
+    "用于 LLM intent classification few-shot",
+    "用于 RAG 检索相似问题并套用安全改写",
+    "用于后端硬规则与模型分类结果互相校验",
+    "用于运营持续标注真实用户问题"
+  ]
+}

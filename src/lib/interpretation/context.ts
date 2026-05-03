@@ -3,8 +3,15 @@ import { analyzeGeneralStructure, diagnoseQuestion } from "@/lib/interpretation/
 import { buildCombinationSummary } from "@/lib/interpretation/combination-summary";
 import { analyzeReadingGrammar } from "@/lib/interpretation/grammar";
 import { buildInterpretationPlan } from "@/lib/interpretation/plan";
+import {
+  buildScenarioStrategyNotes,
+  inferScenarioStrategy,
+} from "@/lib/interpretation/scenario-strategy";
 import { serializeInterpretationPlan } from "@/lib/interpretation/serializer";
 import { getSpreadReadingTemplate } from "@/lib/interpretation/templates";
+import { formatTarotEngineContext } from "@/lib/tarot-engine/format-context";
+import { retrieveTarotEngineContext } from "@/lib/tarot-engine/retrieve-context";
+import type { TarotEngineContext } from "@/lib/tarot-engine/types";
 import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
 import type {
   DrawLog,
@@ -23,6 +30,7 @@ type BuildContextInput = {
   readingIntent?: ReadingIntent;
   userFeedback?: UserFeedback;
   locale: string;
+  tarotEngineContext?: TarotEngineContext;
 };
 
 type ResolvedSelectedCard = {
@@ -148,6 +156,15 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     template: responseBlueprint,
   });
   const questionDiagnosis = diagnoseQuestion(input.question, input.readingIntent);
+  const scenarioStrategy = inferScenarioStrategy({
+    question: input.question,
+    intent: input.readingIntent,
+    diagnosis: questionDiagnosis,
+  });
+  const scenarioStrategyNotes = buildScenarioStrategyNotes({
+    strategy: scenarioStrategy,
+    selectedCards,
+  });
   const interpretationPlan = buildInterpretationPlan({
     template: responseBlueprint,
     spread,
@@ -165,6 +182,14 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     cardIds: input.cards.map((card) => card.cardId),
     locale: input.locale,
   });
+  const tarotEngineContext =
+    input.tarotEngineContext ??
+    (await retrieveTarotEngineContext({
+      question: input.question,
+      spreadSlug: input.spreadSlug,
+      cards: input.cards,
+      readingIntent: input.readingIntent,
+    }));
 
   const userPrompt = [
     `用户问题：${input.question || "我想看清自己当前最需要面对的课题。"}`,
@@ -200,18 +225,32 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     ),
     "牌间弱参考（不可原文引用）：",
     combinationSummary,
+    "Tarot KB v0.2 检索摘要：",
+    [
+      `领域映射：${tarotEngineContext.domain}`,
+      `命中精细牌义：${tarotEngineContext.cardContexts.filter((item) => item.contextPositionMeaning).length}/${tarotEngineContext.cardContexts.length}`,
+      `命中组合资料：${tarotEngineContext.pairContexts.length}`,
+      `命中问题路由：${tarotEngineContext.questionMatches.length}`,
+      `命中安全规则：${tarotEngineContext.safetyMatches.length}`,
+      `命中案例参考：${tarotEngineContext.goldenCases.length}`,
+      `资料ID：${tarotEngineContext.contextIds.slice(0, 24).join("，")}`,
+    ].join("\n"),
     "用户直觉反馈：",
     feedbackSummary,
+    "场景策略契约：",
+    scenarioStrategyNotes,
     "推理规则：",
     "1. 结构分析笔记是优先依据；先写整组牌的主线张力，再写关键牌位，禁止逐张流水账。",
     "2. 每个关键判断都必须绑定至少一个依据：牌名、牌阵位置、正逆位、结构分析或用户反馈。",
     "3. 先说明牌面事实，再整合用户反馈，再提炼心理状态、核心矛盾、现实映射、趋势与建议。",
     "4. 若某张牌提供了「领域牌义」，优先用它回应用户选择的领域；基础牌义只作为背景补充，不要反客为主。",
     "5. 牌间弱参考只用于提醒哪些牌需要联动观察，不是可引用文案，也不是优先依据；禁止写“组合意义中”“组合意义是”“资料显示”等表达。",
+    "5b. Tarot KB v0.2 是本次运行时检索到的精细资料：优先吸收「位置感读法」「牌位语法」「组合禁区」「Golden Cases」里的边界，但不要在用户可见文本中说“KB”“资料包”“案例库”。",
     "6. 大阿卡纳比例、花色分布、宫廷牌、数字阶段、逆位比例、支持/抵消关系必须至少选择三类自然融入正文。",
     questionDiagnosis.safetyDirectives.length
       ? `7. 用户问题触发安全策略，必须执行：${questionDiagnosis.safetyDirectives.join("；")}`
       : null,
+    `7b. 必须执行场景策略契约：按「${scenarioStrategy.label}」的语气、必须包含、必须避免和断言强度写作；若场景契约与通用牌义冲突，以场景契约为准。`,
     "8. 如果用户没有填写直觉反馈，严禁写“用户未填写”“无法判断你是否认同/不安”等缺席说明；这类信息不应该呈现给用户。直接解读牌面即可。",
     "9. 不要使用绝对预言（必然、一定、命中注定），用更像是、倾向于、需要注意的表达。",
     "10. 避免巴纳姆式空话，不要说任何人都适用的泛泛描述。",
@@ -238,6 +277,7 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
       (block) =>
         `## ${block.kind.toUpperCase()} | ${block.title}\n${block.text}\n标签：${block.tags.join(", ")}`,
     )
+    .concat(formatTarotEngineContext(tarotEngineContext))
     .join("\n\n");
 
   return {
@@ -250,6 +290,8 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     feedbackSummary,
     responseBlueprint,
     questionDiagnosis,
+    scenarioStrategy,
+    tarotEngineContext,
     userFeedback: input.userFeedback,
     readingIntent: input.readingIntent,
     spreadName: spread?.nameZh ?? input.spreadSlug,

@@ -1,0 +1,47 @@
+﻿category,path,description,recommended_use,primary_key,row_count
+core_cards,01_core_cards/cards_base.json,78 张牌基础信息 / 图像象征,抽牌标准化、牌图象征补充,card_id,78
+core_cards,01_core_cards/cards_base.jsonl,78 张牌基础信息 / 图像象征,抽牌标准化、牌图象征补充,card_id,78
+core_cards,01_core_cards/cards_base.csv,78 张牌基础信息 / 图像象征,抽牌标准化、牌图象征补充,card_id,
+core_cards,01_core_cards/card_visual_symbols.json,78 张牌基础信息 / 图像象征,抽牌标准化、牌图象征补充,card_id,78
+core_cards,01_core_cards/card_visual_symbols.jsonl,78 张牌基础信息 / 图像象征,抽牌标准化、牌图象征补充,card_id,78
+question_router,02_question_router/question_taxonomy_expanded_v0_2.jsonl,问题分类、风险分级、安全改写、推荐牌阵,入口路由、intent classification、RAG 检索,id / rule_id,443
+question_router,02_question_router/question_taxonomy_expanded_v0_2.json,问题分类、风险分级、安全改写、推荐牌阵,入口路由、intent classification、RAG 检索,id / rule_id,443
+question_router,02_question_router/question_taxonomy_expanded_v0_2.csv,问题分类、风险分级、安全改写、推荐牌阵,入口路由、intent classification、RAG 检索,id / rule_id,
+question_router,02_question_router/intent_schema_v0_2.json,问题分类、风险分级、安全改写、推荐牌阵,入口路由、intent classification、RAG 检索,id / rule_id,
+question_router,02_question_router/router_rules_v0_2.json,问题分类、风险分级、安全改写、推荐牌阵,入口路由、intent classification、RAG 检索,id / rule_id,8
+question_router,02_question_router/metadata.json,问题分类、风险分级、安全改写、推荐牌阵,入口路由、intent classification、RAG 检索,id / rule_id,
+safety,03_safety/safety_rules.json,高风险问题安全边界,后端硬控，优先于生成,risk_type,10
+safety,03_safety/safety_rules.jsonl,高风险问题安全边界,后端硬控，优先于生成,risk_type,10
+spreads_positions,04_spreads_positions/position_grammar.json,牌位语法 / 牌阵定义,根据推荐牌阵映射 position_id,position_id / spread_id,13
+spreads_positions,04_spreads_positions/position_grammar.jsonl,牌位语法 / 牌阵定义,根据推荐牌阵映射 position_id,position_id / spread_id,13
+spreads_positions,04_spreads_positions/spreads.json,牌位语法 / 牌阵定义,根据推荐牌阵映射 position_id,position_id / spread_id,7
+spreads_positions,04_spreads_positions/spreads.jsonl,牌位语法 / 牌阵定义,根据推荐牌阵映射 position_id,position_id / spread_id,7
+card_context_meanings,05_card_context_meanings/card_context_profiles_624.jsonl,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,624
+card_context_meanings,05_card_context_meanings/card_context_profiles_624.json,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,624
+card_context_meanings,05_card_context_meanings/card_context_profiles_624.csv,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,
+card_context_meanings,05_card_context_meanings/card_context_position_meanings_8112.jsonl,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,8112
+card_context_meanings,05_card_context_meanings/card_context_position_meanings_8112.json,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,8112
+card_context_meanings,05_card_context_meanings/card_context_position_meanings_8112.csv,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,
+card_context_meanings,05_card_context_meanings/high_frequency_human_like_samples.jsonl,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,640
+card_context_meanings,05_card_context_meanings/high_frequency_human_like_samples.json,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,640
+card_context_meanings,05_card_context_meanings/high_frequency_human_like_samples.csv,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,
+card_context_meanings,05_card_context_meanings/schema_and_usage_v0_2.json,语境化牌义 / 位置感牌义 / 高频真人表达样本,生成单牌解读主数据源,profile_id / id / sample_id,
+card_combinations,06_card_combinations/card_combinations_all_pairs_3003.jsonl,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,3003
+card_combinations,06_card_combinations/card_combinations_all_pairs_3003.json,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,3003
+card_combinations,06_card_combinations/card_combinations_all_pairs_3003.csv,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,
+card_combinations,06_card_combinations/card_combinations_priority_detailed.jsonl,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,703
+card_combinations,06_card_combinations/card_combinations_priority_detailed.json,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,703
+card_combinations,06_card_combinations/card_combinations_priority_detailed.csv,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,
+card_combinations,06_card_combinations/card_combinations_curated_seed.jsonl,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,30
+card_combinations,06_card_combinations/card_combinations_curated_seed.json,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,30
+card_combinations,06_card_combinations/card_combinations_curated_seed.csv,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,
+card_combinations,06_card_combinations/combo_synthesis_rules_v0_2.json,全量两两组合 / 高频组合细读 / 精选组合,多牌解读、组合牌合成、RAG 检索,combo_id / curated_id,
+golden_cases,07_golden_cases/golden_cases_expanded_100.jsonl,好坏案例库 / 质检标准,few-shot、judge、人工复盘、评测,case_id,100
+golden_cases,07_golden_cases/golden_cases_expanded_100.json,好坏案例库 / 质检标准,few-shot、judge、人工复盘、评测,case_id,100
+golden_cases,07_golden_cases/golden_cases_expanded_100.csv,好坏案例库 / 质检标准,few-shot、judge、人工复盘、评测,case_id,
+golden_cases,07_golden_cases/golden_cases_expanded_100.md,好坏案例库 / 质检标准,few-shot、judge、人工复盘、评测,case_id,
+golden_cases,07_golden_cases/quality_rubrics_v0_2.json,好坏案例库 / 质检标准,few-shot、judge、人工复盘、评测,case_id,
+conversation_style,08_conversation_style/style_samples.json,语气风格 / 用户反馈追问,让输出像真人占卜师，支持互动读牌,style_id / domain,6
+conversation_style,08_conversation_style/style_samples.jsonl,语气风格 / 用户反馈追问,让输出像真人占卜师，支持互动读牌,style_id / domain,6
+conversation_style,08_conversation_style/followup_questions.json,语气风格 / 用户反馈追问,让输出像真人占卜师，支持互动读牌,style_id / domain,
+sources,09_sources/source_registry.json,资料源登记和版权备注,数据来源审计和后续扩展,source_id,9

@@ -1,6 +1,6 @@
 import { z, ZodError } from "zod";
 
-import { generateInterpretation } from "@/lib/ai/provider";
+import { interpretTarot } from "@/lib/tarot-engine/interpret-tarot";
 import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
 
 export const runtime = "nodejs";
@@ -92,18 +92,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await generateInterpretation(input);
+    const result = await interpretTarot(input);
 
     return new Response(result.stream, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "no-store",
-        "x-model": result.model,
-        "x-interpretation-pipeline": result.pipeline ?? "unknown",
-        "x-interpretation-ms":
-          typeof result.debug?.total_ms === "number" ? String(result.debug.total_ms) : "unknown",
-        "x-interpretation-fallback-reason":
-          typeof result.debug?.fallbackReason === "string" ? result.debug.fallbackReason : "none",
+        ...result.headers,
       },
     });
   } catch (error) {

@@ -1,0 +1,42 @@
+{
+  "version": "v0.2",
+  "generated_at": "2026-05-03 04:30:47",
+  "total_all_pairs": 3003,
+  "total_priority_pairs": 703,
+  "total_curated": 30,
+  "how_to_read_two_cards": [
+    "先不要急着把两张牌各自解释一遍。",
+    "先找共同主题：两张牌都在说什么？",
+    "再找张力：一张推进，另一张阻止？一张情绪，另一张理性？",
+    "再放进场景：感情读互动，事业读资源，自我读状态，决策读代价。",
+    "最后给用户可控动作：核实信息、沟通边界、调整节奏、做小步验证。"
+  ],
+  "relation_type_rules": {
+    "major_major": "两个大主题碰撞，适合读人生阶段、价值选择、深层转化。",
+    "major_minor": "大主题落入具体生活层面，小阿卡纳说明它如何发生。",
+    "same_suit_minor": "同一元素内的阶段递进，适合读同一问题的变化链条。",
+    "same_rank_minor": "同一阶段在不同领域共振，适合读多线同构问题。",
+    "mixed_minor": "不同生活领域交叉影响，适合读现实复杂性。"
+  },
+  "element_relation_rules": {
+    "same_element": "同元素加强，主题更集中，但也可能过度。",
+    "supportive_elements": "元素互相支持，行动和想法/情绪和现实较容易配合。",
+    "tension_elements": "元素有张力，需要调和，不适合直接硬推。",
+    "neutral_elements": "中性组合，看牌义本身和牌位。",
+    "major_or_unknown": "有大阿卡纳参与时，优先读大主题。"
+  },
+  "safety_rules": [
+    "月亮 + 宝剑七等组合不能直接断言欺骗。",
+    "恶魔相关组合不能强化执念和依赖。",
+    "死神/高塔相关组合不能恐吓用户。",
+    "宝剑九/月亮相关组合要避免加重焦虑。",
+    "正义相关组合不能替代法律判断。",
+    "星币五/财务问题不能承诺收益或贫富结果。"
+  ],
+  "retrieval_recommendation": [
+    "先按具体 combo_id 查 all_pairs。",
+    "如果命中 priority_detailed，优先使用 human_like_* 字段。",
+    "如果命中 curated，优先使用 curated 的 theme/advice/avoid。",
+    "输出时结合当前 domain 和 spread position，不要孤立解释组合。"
+  ]
+}

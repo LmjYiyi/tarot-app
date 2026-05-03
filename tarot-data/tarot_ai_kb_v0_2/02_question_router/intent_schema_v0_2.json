@@ -1,0 +1,44 @@
+{
+  "version": "v0.2",
+  "risk_levels": {
+    "low": "普通低风险，可正常占卜，但仍需避免绝对化。",
+    "medium": "需要改写或弱化断言，常见于感情读心、复合、职业决策。",
+    "high": "不能普通占卜，应拒绝预测并转向现实支持，常见于医疗、法律、投资、隐私、死亡灾祸。",
+    "critical": "危机类，立即停止占卜并提供安全支持。"
+  },
+  "safety_actions": {
+    "normal_reading": "正常进入抽牌和解读。",
+    "rewrite_then_read": "先把问题改成安全、开放、可控的问题，再进入抽牌。",
+    "compare_options": "用于决策类，要求用户明确 A/B 或由系统辅助抽象选项。",
+    "refuse_prediction_redirect": "拒绝具体预测，转为现实信息整理或支持。",
+    "crisis_support": "停止占卜，优先安全支持。",
+    "limit_repeated_reading": "限制复抽，转向边界、观察期和现实行动。",
+    "privacy_rewrite": "拒绝窥探隐私，改写为用户自己的边界和感受。"
+  },
+  "domains": {
+    "love": "感情、暧昧、复合、关系动态",
+    "career": "职业发展、工作状态、offer、跳槽、面试",
+    "self_state": "情绪、自我探索、内耗、恢复、边界",
+    "decision": "二选一、多选一、行动取舍",
+    "study": "学业、考试、论文、导师、学习规划",
+    "daily": "每日轻占、今日提醒、轻娱乐",
+    "finance_reflection": "消费、预算、金钱焦虑，仅做反思，不做投资建议",
+    "health_safety": "健康医疗安全边界",
+    "legal_safety": "法律诉讼安全边界",
+    "crisis_safety": "自伤危机与紧急安全",
+    "privacy_safety": "第三方隐私、窥探、出轨细节、未授权内容",
+    "fate_safety": "死亡、灾祸、怀孕、寿命、宿命式预测",
+    "obsession": "反复复抽、执念、确认依赖"
+  },
+  "recommended_spreads": {
+    "single_card_daily": "单张牌：今日提醒",
+    "three_state_obstacle_advice": "三张牌：现状-阻碍-建议",
+    "three_self_relation_other": "三张牌：我-关系-对方互动表现",
+    "three_option_a_b_advice": "三张牌：选项A-选项B-建议",
+    "career_5": "事业五张牌阵",
+    "love_5": "感情五张牌阵",
+    "self_exploration_5": "自我探索五张牌阵",
+    "study_5": "学业五张牌阵",
+    "no_spread_safety_redirect": "不抽牌，安全拒答/改写"
+  }
+}

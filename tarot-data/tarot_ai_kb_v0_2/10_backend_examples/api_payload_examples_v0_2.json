@@ -1,0 +1,65 @@
+{
+  "version": "v0.2",
+  "single_reading_request": {
+    "user_question": "他现在到底怎么想我？",
+    "question_router_result": {
+      "domain": "love",
+      "intent": "third_party_mind_reading",
+      "risk_level": "medium",
+      "safety_action": "rewrite_then_read",
+      "rewritten_question": "我该如何理解目前这段关系里的互动信号，以及我能做什么？",
+      "recommended_spread": "three_self_relation_other"
+    },
+    "draw_result": [
+      {
+        "position_id": "self_state",
+        "card_id": "the_moon",
+        "orientation": "upright"
+      },
+      {
+        "position_id": "relationship_dynamic",
+        "card_id": "two_of_cups",
+        "orientation": "reversed"
+      },
+      {
+        "position_id": "other_person_state",
+        "card_id": "four_of_swords",
+        "orientation": "upright"
+      }
+    ]
+  },
+  "retrieval_plan": [
+    {
+      "step": "question_router",
+      "lookup": "02_question_router/question_taxonomy_expanded_v0_2.jsonl",
+      "key": "semantic/raw_question + router_rules"
+    },
+    {
+      "step": "spread_positions",
+      "lookup": "04_spreads_positions/spreads.json",
+      "key": "spread_id"
+    },
+    {
+      "step": "card_context",
+      "lookup": "05_card_context_meanings/card_context_position_meanings_8112.jsonl",
+      "key": "card_id + orientation + domain + position_id"
+    },
+    {
+      "step": "combinations",
+      "lookup": "06_card_combinations/card_combinations_curated_seed.jsonl -> priority -> all_pairs",
+      "key": "pair(card_id_a, card_id_b)"
+    },
+    {
+      "step": "quality_control",
+      "lookup": "07_golden_cases/golden_cases_expanded_100.jsonl + quality_rubrics_v0_2.json",
+      "key": "domain + intent + risk_level"
+    }
+  ],
+  "generation_guardrails": [
+    "使用 rewritten_question，不直接回答高风险原问题。",
+    "对方互动表现位只能读互动表现，不能读真实心理。",
+    "趋势/结果位使用“倾向、可能、如果当前模式延续”。",
+    "建议位必须给可执行动作。",
+    "输出前检查 do_not_say、forbidden、safety_rules。"
+  ]
+}

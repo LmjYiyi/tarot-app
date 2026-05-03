@@ -1,0 +1,411 @@
+{
+  "kb_name": "tarot_ai_kb",
+  "version": "v0.2",
+  "generated_at": "2026-05-03 06:58:58",
+  "description": "塔罗 AI 应用知识库总包：问题路由、安全、牌义、牌位、牌阵、组合、案例、风格。",
+  "source_packages": {
+    "seed": "tarot_ai_complete_seed_dataset_v0_1.zip",
+    "golden_cases": "tarot_ai_golden_cases_expanded_v0_2.zip",
+    "question_taxonomy": "tarot_ai_question_taxonomy_expanded_v0_2.zip",
+    "card_context": "tarot_ai_card_context_meanings_expanded_v0_2.zip",
+    "card_combinations": "tarot_ai_card_combinations_expanded_v0_2.zip"
+  },
+  "directory_structure": [
+    "00_docs",
+    "01_core_cards",
+    "02_question_router",
+    "03_safety",
+    "04_spreads_positions",
+    "05_card_context_meanings",
+    "06_card_combinations",
+    "07_golden_cases",
+    "08_conversation_style",
+    "09_sources",
+    "10_backend_examples",
+    "11_manifests"
+  ],
+  "file_registry": [
+    {
+      "category": "core_cards",
+      "path": "01_core_cards/cards_base.json",
+      "description": "78 张牌基础信息 / 图像象征",
+      "recommended_use": "抽牌标准化、牌图象征补充",
+      "primary_key": "card_id",
+      "row_count": 78
+    },
+    {
+      "category": "core_cards",
+      "path": "01_core_cards/cards_base.jsonl",
+      "description": "78 张牌基础信息 / 图像象征",
+      "recommended_use": "抽牌标准化、牌图象征补充",
+      "primary_key": "card_id",
+      "row_count": 78
+    },
+    {
+      "category": "core_cards",
+      "path": "01_core_cards/cards_base.csv",
+      "description": "78 张牌基础信息 / 图像象征",
+      "recommended_use": "抽牌标准化、牌图象征补充",
+      "primary_key": "card_id",
+      "row_count": null
+    },
+    {
+      "category": "core_cards",
+      "path": "01_core_cards/card_visual_symbols.json",
+      "description": "78 张牌基础信息 / 图像象征",
+      "recommended_use": "抽牌标准化、牌图象征补充",
+      "primary_key": "card_id",
+      "row_count": 78
+    },
+    {
+      "category": "core_cards",
+      "path": "01_core_cards/card_visual_symbols.jsonl",
+      "description": "78 张牌基础信息 / 图像象征",
+      "recommended_use": "抽牌标准化、牌图象征补充",
+      "primary_key": "card_id",
+      "row_count": 78
+    },
+    {
+      "category": "question_router",
+      "path": "02_question_router/question_taxonomy_expanded_v0_2.jsonl",
+      "description": "问题分类、风险分级、安全改写、推荐牌阵",
+      "recommended_use": "入口路由、intent classification、RAG 检索",
+      "primary_key": "id / rule_id",
+      "row_count": 443
+    },
+    {
+      "category": "question_router",
+      "path": "02_question_router/question_taxonomy_expanded_v0_2.json",
+      "description": "问题分类、风险分级、安全改写、推荐牌阵",
+      "recommended_use": "入口路由、intent classification、RAG 检索",
+      "primary_key": "id / rule_id",
+      "row_count": 443
+    },
+    {
+      "category": "question_router",
+      "path": "02_question_router/question_taxonomy_expanded_v0_2.csv",
+      "description": "问题分类、风险分级、安全改写、推荐牌阵",
+      "recommended_use": "入口路由、intent classification、RAG 检索",
+      "primary_key": "id / rule_id",
+      "row_count": null
+    },
+    {
+      "category": "question_router",
+      "path": "02_question_router/intent_schema_v0_2.json",
+      "description": "问题分类、风险分级、安全改写、推荐牌阵",
+      "recommended_use": "入口路由、intent classification、RAG 检索",
+      "primary_key": "id / rule_id",
+      "row_count": null
+    },
+    {
+      "category": "question_router",
+      "path": "02_question_router/router_rules_v0_2.json",
+      "description": "问题分类、风险分级、安全改写、推荐牌阵",
+      "recommended_use": "入口路由、intent classification、RAG 检索",
+      "primary_key": "id / rule_id",
+      "row_count": 8
+    },
+    {
+      "category": "question_router",
+      "path": "02_question_router/metadata.json",
+      "description": "问题分类、风险分级、安全改写、推荐牌阵",
+      "recommended_use": "入口路由、intent classification、RAG 检索",
+      "primary_key": "id / rule_id",
+      "row_count": null
+    },
+    {
+      "category": "safety",
+      "path": "03_safety/safety_rules.json",
+      "description": "高风险问题安全边界",
+      "recommended_use": "后端硬控，优先于生成",
+      "primary_key": "risk_type",
+      "row_count": 10
+    },
+    {
+      "category": "safety",
+      "path": "03_safety/safety_rules.jsonl",
+      "description": "高风险问题安全边界",
+      "recommended_use": "后端硬控，优先于生成",
+      "primary_key": "risk_type",
+      "row_count": 10
+    },
+    {
+      "category": "spreads_positions",
+      "path": "04_spreads_positions/position_grammar.json",
+      "description": "牌位语法 / 牌阵定义",
+      "recommended_use": "根据推荐牌阵映射 position_id",
+      "primary_key": "position_id / spread_id",
+      "row_count": 13
+    },
+    {
+      "category": "spreads_positions",
+      "path": "04_spreads_positions/position_grammar.jsonl",
+      "description": "牌位语法 / 牌阵定义",
+      "recommended_use": "根据推荐牌阵映射 position_id",
+      "primary_key": "position_id / spread_id",
+      "row_count": 13
+    },
+    {
+      "category": "spreads_positions",
+      "path": "04_spreads_positions/spreads.json",
+      "description": "牌位语法 / 牌阵定义",
+      "recommended_use": "根据推荐牌阵映射 position_id",
+      "primary_key": "position_id / spread_id",
+      "row_count": 7
+    },
+    {
+      "category": "spreads_positions",
+      "path": "04_spreads_positions/spreads.jsonl",
+      "description": "牌位语法 / 牌阵定义",
+      "recommended_use": "根据推荐牌阵映射 position_id",
+      "primary_key": "position_id / spread_id",
+      "row_count": 7
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/card_context_profiles_624.jsonl",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": 624
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/card_context_profiles_624.json",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": 624
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/card_context_profiles_624.csv",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": null
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/card_context_position_meanings_8112.jsonl",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": 8112
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/card_context_position_meanings_8112.json",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": 8112
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/card_context_position_meanings_8112.csv",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": null
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/high_frequency_human_like_samples.jsonl",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": 640
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/high_frequency_human_like_samples.json",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": 640
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/high_frequency_human_like_samples.csv",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": null
+    },
+    {
+      "category": "card_context_meanings",
+      "path": "05_card_context_meanings/schema_and_usage_v0_2.json",
+      "description": "语境化牌义 / 位置感牌义 / 高频真人表达样本",
+      "recommended_use": "生成单牌解读主数据源",
+      "primary_key": "profile_id / id / sample_id",
+      "row_count": null
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_all_pairs_3003.jsonl",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": 3003
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_all_pairs_3003.json",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": 3003
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_all_pairs_3003.csv",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": null
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_priority_detailed.jsonl",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": 703
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_priority_detailed.json",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": 703
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_priority_detailed.csv",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": null
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_curated_seed.jsonl",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": 30
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_curated_seed.json",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": 30
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/card_combinations_curated_seed.csv",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": null
+    },
+    {
+      "category": "card_combinations",
+      "path": "06_card_combinations/combo_synthesis_rules_v0_2.json",
+      "description": "全量两两组合 / 高频组合细读 / 精选组合",
+      "recommended_use": "多牌解读、组合牌合成、RAG 检索",
+      "primary_key": "combo_id / curated_id",
+      "row_count": null
+    },
+    {
+      "category": "golden_cases",
+      "path": "07_golden_cases/golden_cases_expanded_100.jsonl",
+      "description": "好坏案例库 / 质检标准",
+      "recommended_use": "few-shot、judge、人工复盘、评测",
+      "primary_key": "case_id",
+      "row_count": 100
+    },
+    {
+      "category": "golden_cases",
+      "path": "07_golden_cases/golden_cases_expanded_100.json",
+      "description": "好坏案例库 / 质检标准",
+      "recommended_use": "few-shot、judge、人工复盘、评测",
+      "primary_key": "case_id",
+      "row_count": 100
+    },
+    {
+      "category": "golden_cases",
+      "path": "07_golden_cases/golden_cases_expanded_100.csv",
+      "description": "好坏案例库 / 质检标准",
+      "recommended_use": "few-shot、judge、人工复盘、评测",
+      "primary_key": "case_id",
+      "row_count": null
+    },
+    {
+      "category": "golden_cases",
+      "path": "07_golden_cases/golden_cases_expanded_100.md",
+      "description": "好坏案例库 / 质检标准",
+      "recommended_use": "few-shot、judge、人工复盘、评测",
+      "primary_key": "case_id",
+      "row_count": null
+    },
+    {
+      "category": "golden_cases",
+      "path": "07_golden_cases/quality_rubrics_v0_2.json",
+      "description": "好坏案例库 / 质检标准",
+      "recommended_use": "few-shot、judge、人工复盘、评测",
+      "primary_key": "case_id",
+      "row_count": null
+    },
+    {
+      "category": "conversation_style",
+      "path": "08_conversation_style/style_samples.json",
+      "description": "语气风格 / 用户反馈追问",
+      "recommended_use": "让输出像真人占卜师，支持互动读牌",
+      "primary_key": "style_id / domain",
+      "row_count": 6
+    },
+    {
+      "category": "conversation_style",
+      "path": "08_conversation_style/style_samples.jsonl",
+      "description": "语气风格 / 用户反馈追问",
+      "recommended_use": "让输出像真人占卜师，支持互动读牌",
+      "primary_key": "style_id / domain",
+      "row_count": 6
+    },
+    {
+      "category": "conversation_style",
+      "path": "08_conversation_style/followup_questions.json",
+      "description": "语气风格 / 用户反馈追问",
+      "recommended_use": "让输出像真人占卜师，支持互动读牌",
+      "primary_key": "style_id / domain",
+      "row_count": null
+    },
+    {
+      "category": "sources",
+      "path": "09_sources/source_registry.json",
+      "description": "资料源登记和版权备注",
+      "recommended_use": "数据来源审计和后续扩展",
+      "primary_key": "source_id",
+      "row_count": 9
+    }
+  ],
+  "entity_summary": {
+    "cards_base": 78,
+    "question_taxonomy": 443,
+    "safety_rules": 10,
+    "position_grammar": 13,
+    "spreads": 7,
+    "card_context_profiles": 624,
+    "card_context_position_meanings": 8112,
+    "card_combination_all_pairs": 3003,
+    "card_combination_priority": 703,
+    "card_combination_curated": 30,
+    "golden_cases": 100,
+    "human_like_context_samples": 640
+  }
+}

@@ -1,0 +1,83 @@
+[
+  {
+    "source_id": "biddy_card_library",
+    "name": "Biddy Tarot Card Meanings Library",
+    "url": "https://support.biddytarot.com/hc/en-us/articles/13184136583311-Where-do-I-find-the-Tarot-Card-Meanings-Library",
+    "use_for": [
+      "字段设计参考：upright/reversed、keywords、symbolism、guidance、suggested questions、context tips"
+    ],
+    "license_note": "不要整段复制；仅作结构和质量标准参考。"
+  },
+  {
+    "source_id": "biddy_powerful_questions",
+    "name": "Biddy Tarot Powerful Questions",
+    "url": "https://support.biddytarot.com/hc/en-us/articles/360001927456-How-to-Ask-More-Powerful-Questions-When-Reading-Tarot",
+    "use_for": [
+      "问题改写规则：open-ended、specific、empowering"
+    ],
+    "license_note": "仅作原则参考。"
+  },
+  {
+    "source_id": "biddy_what_not_to_ask",
+    "name": "Biddy Tarot What NOT To Ask",
+    "url": "https://biddytarot.com/blog/what-not-to-ask-the-tarot/",
+    "use_for": [
+      "安全边界：彩票、死亡、怀孕、疾病、官司、第三方隐私等"
+    ],
+    "license_note": "仅作原则参考。"
+  },
+  {
+    "source_id": "labyrinthos_card_pages",
+    "name": "Labyrinthos Tarot Card Meanings",
+    "url": "https://labyrinthos.co/blogs/tarot-card-meanings-list",
+    "use_for": [
+      "牌面描述、关键词、love/career/finance 等分场景结构参考"
+    ],
+    "license_note": "不要复制原文；仅作字段和知识校验参考。"
+  },
+  {
+    "source_id": "huggingface_deckaura_78",
+    "name": "Blacik/tarot-card-meanings-78 on Hugging Face",
+    "url": "https://huggingface.co/datasets/Blacik/tarot-card-meanings-78",
+    "use_for": [
+      "78 张牌结构化字段参考：upright、reversed、love、career、yes/no"
+    ],
+    "license_note": "核实具体数据使用条款；本包未直接复制该数据文本。"
+  },
+  {
+    "source_id": "pypi_tarot_card_meanings",
+    "name": "tarot-card-meanings PyPI",
+    "url": "https://pypi.org/project/tarot-card-meanings/",
+    "use_for": [
+      "工程原型参考；MIT 包含 78 张牌字段"
+    ],
+    "license_note": "如直接使用需保留 MIT license。"
+  },
+  {
+    "source_id": "wikimedia_rws",
+    "name": "Wikimedia Commons Rider-Waite tarot deck",
+    "url": "https://commons.wikimedia.org/wiki/Category:Rider-Waite_tarot_deck",
+    "use_for": [
+      "牌面图像素材和公共领域信息核验"
+    ],
+    "license_note": "原始 Rider-Waite 在美国/英国为 public domain，但部分重上色版本可能有版权，逐文件核实。"
+  },
+  {
+    "source_id": "tarotschema",
+    "name": "TarotSchema",
+    "url": "https://www.tarotschema.com/",
+    "use_for": [
+      "机器可读牌阵/牌义 schema 参考"
+    ],
+    "license_note": "结构 MIT，文字 CC-BY 4.0；直接使用需署名。"
+  },
+  {
+    "source_id": "microsoft_responsible_ai",
+    "name": "Microsoft Responsible AI Principles",
+    "url": "https://www.microsoft.com/en-us/ai/principles-and-approach",
+    "use_for": [
+      "AI 安全、透明、可靠、问责原则参考"
+    ],
+    "license_note": "原则参考，不复制内容。"
+  }
+]
