@@ -23,6 +23,8 @@ type StreamingInterpretationProps = {
   onClose: () => void;
   text: string;
   isStreaming: boolean;
+  cardPreviewText?: string;
+  isCardPreviewStreaming?: boolean;
   sharePath?: string | null;
   adaptiveAnswers?: AdaptiveAnswer[];
   spreadName: string;
@@ -37,6 +39,8 @@ export function StreamingInterpretation({
   onClose,
   text,
   isStreaming,
+  cardPreviewText = "",
+  isCardPreviewStreaming = false,
   sharePath,
   adaptiveAnswers,
   spreadName,
@@ -47,11 +51,15 @@ export function StreamingInterpretation({
 }: StreamingInterpretationProps) {
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [expandedCard, setExpandedCard] = useState<ResultCard | null>(null);
   const hasContent = Boolean(text.trim());
   const progress = isStreaming ? Math.min(94, 18 + Math.floor(text.length / 42)) : 100;
   const singleCard = cards.length === 1;
   const showQuestion = question.trim().length > 0;
-  const showCardMeaningPreview = isStreaming && !singleCard;
+  const isDailySingleReading = singleCard && !showQuestion;
+  const showRetrievedCardPreview =
+    isDailySingleReading && (isCardPreviewStreaming || Boolean(cardPreviewText.trim()));
+  const showCardMeaningPreview = isStreaming && cards.length > 0 && !isDailySingleReading;
 
   const shareUrl = useMemo(() => {
     if (!sharePath) return null;
@@ -73,8 +81,16 @@ export function StreamingInterpretation({
   );
 
   const plainText = useMemo(
-    () => buildPlainText({ spreadName, question, cards, text: displayText, shareUrl }),
-    [cards, displayText, question, shareUrl, spreadName],
+    () =>
+      buildPlainText({
+        spreadName,
+        question,
+        cards,
+        cardPreviewText,
+        text: displayText,
+        shareUrl,
+      }),
+    [cardPreviewText, cards, displayText, question, shareUrl, spreadName],
   );
 
   useEffect(() => {
@@ -179,7 +195,7 @@ export function StreamingInterpretation({
 
         <div className="relative z-10 min-h-0 overflow-y-auto px-5 py-6 sm:px-7">
           <div className="grid gap-7 xl:grid-cols-[400px_minmax(0,1fr)]">
-            <aside className="space-y-8">
+            <aside className="space-y-8 xl:sticky xl:top-0 xl:max-h-[calc(96vh-11.5rem)] xl:self-start xl:overflow-y-auto xl:pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {showQuestion ? (
                 <section className="border-t border-[var(--line)] pt-5">
                   <p className="eyebrow-ink">你的问题</p>
@@ -196,10 +212,12 @@ export function StreamingInterpretation({
                 </div>
                 <div className={singleCard ? "flex justify-center" : "grid grid-cols-2 gap-3"}>
                   {cards.map(({ card, reversed, positionOrder, positionName }) => (
-                    <article
+                    <button
+                      type="button"
                       key={`${card.id}-${positionOrder}`}
+                      onClick={() => setExpandedCard({ card, reversed, positionOrder, positionName })}
                       className={cn(
-                        "p-1",
+                        "group p-1 outline-none",
                         singleCard
                           ? "flex w-full max-w-[250px] flex-col items-center gap-4 text-center"
                           : "flex min-w-0 flex-col items-center gap-2.5 text-center",
@@ -207,7 +225,7 @@ export function StreamingInterpretation({
                     >
                       <div
                         className={cn(
-                          "relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[var(--coral-edge)] bg-[var(--surface-tint)] shadow-[0_8px_20px_rgba(74,59,50,0.14)]",
+                          "relative aspect-[300/524] overflow-hidden rounded-[10px] border border-[var(--coral-edge)] bg-[var(--surface-tint)] shadow-[0_8px_20px_rgba(74,59,50,0.14)] transition group-hover:-translate-y-0.5 group-hover:shadow-[0_14px_28px_rgba(74,59,50,0.20)] group-focus-visible:ring-2 group-focus-visible:ring-[var(--coral)]",
                           singleCard ? "w-[132px] max-w-full" : "w-full max-w-[116px]",
                         )}
                       >
@@ -234,13 +252,23 @@ export function StreamingInterpretation({
                           {reversed ? "逆位" : "正位"}
                         </p>
                       </div>
-                    </article>
+                    </button>
                   ))}
                 </div>
+                <p className="mt-4 text-center text-[12px] leading-5 text-[var(--ink-muted)]">
+                  点击牌面查看这张牌的细节。
+                </p>
               </section>
             </aside>
 
             <article className="space-y-8 border-t border-[var(--line)] px-1 pt-6 sm:px-3">
+              {showRetrievedCardPreview ? (
+                <RetrievedCardPreview
+                  text={cardPreviewText}
+                  isStreaming={isCardPreviewStreaming}
+                />
+              ) : null}
+
               {showCardMeaningPreview ? (
                 <CardMeaningPreview
                   key={previewKey}
@@ -275,9 +303,87 @@ export function StreamingInterpretation({
             </article>
           </div>
         </div>
+
+        {expandedCard ? (
+          <CardDetailPopover card={expandedCard} onClose={() => setExpandedCard(null)} />
+        ) : null}
       </div>
     </div>,
     document.body,
+  );
+}
+
+function CardDetailPopover({
+  card: entry,
+  onClose,
+}: {
+  card: ResultCard;
+  onClose: () => void;
+}) {
+  const orientation = entry.reversed ? "逆位" : "正位";
+  const keywords = entry.reversed ? entry.card.keywordsReversed : entry.card.keywordsUpright;
+  const meaning = entry.reversed ? entry.card.meaningReversed : entry.card.meaningUpright;
+
+  return (
+    <div className="absolute inset-0 z-30 flex items-center justify-center bg-[rgba(32,24,18,0.22)] px-4 py-5 backdrop-blur-[2px]">
+      <div className="relative flex max-h-[88%] w-full max-w-3xl flex-col overflow-hidden rounded-[18px] border border-[var(--coral-edge)] bg-[rgba(253,248,225,0.98)] shadow-[0_26px_80px_rgba(74,59,50,0.34)]">
+        <div className="flex items-start justify-between gap-4 border-b border-[var(--line)] px-5 py-4">
+          <div>
+            <p className="eyebrow-ink">{entry.positionName ?? `牌位 ${entry.positionOrder}`}</p>
+            <h3 className="mt-1 font-serif-display text-[clamp(1.7rem,4vw,2.6rem)] leading-tight text-[var(--ink)]">
+              {entry.card.nameZh}
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] text-[22px] leading-none text-[var(--ink-soft)] transition hover:bg-[var(--surface-raised)] hover:text-[var(--ink)]"
+            aria-label="关闭牌面详情"
+          >
+            ×
+          </button>
+        </div>
+        <div className="grid min-h-0 gap-5 overflow-y-auto px-5 py-5 md:grid-cols-[220px_minmax(0,1fr)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="mx-auto w-[180px] md:w-full">
+            <div className="relative aspect-[300/524] overflow-hidden rounded-[12px] border border-[var(--coral-edge)] bg-[var(--surface-tint)] shadow-[0_12px_30px_rgba(74,59,50,0.18)]">
+              {entry.card.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={entry.card.imageUrl}
+                  alt={entry.card.nameZh}
+                  className={`h-full w-full object-cover ${entry.reversed ? "rotate-180" : ""}`}
+                />
+              ) : null}
+            </div>
+          </div>
+          <div className="min-w-0 space-y-5">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--ink-faint)]">
+                {orientation}
+              </p>
+              <p className="mt-2 text-[14.5px] leading-7 text-[var(--ink-soft)]">
+                {meaning}
+              </p>
+            </div>
+            {keywords.length ? (
+              <div className="flex flex-wrap gap-2">
+                {keywords.slice(0, 6).map((keyword) => (
+                  <span
+                    key={keyword}
+                    className="border border-[var(--line)] bg-[var(--surface)] px-3 py-1 text-[12px] text-[var(--ink-muted)]"
+                  >
+                    {keyword}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            <div className="border-t border-[var(--line)] pt-4 text-[13px] leading-6 text-[var(--ink-muted)]">
+              这层只展开牌面本身，不会中断右侧正在展开的牌义内容。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -291,6 +397,36 @@ function WaitingForInterpretation() {
           <span className="relative inline-flex h-3 w-3 rounded-full bg-[var(--coral)]" />
         </span>
         正在把牌位、正逆位和整组结构合成最终解读。
+      </div>
+    </section>
+  );
+}
+
+function RetrievedCardPreview({
+  text,
+  isStreaming,
+}: {
+  text: string;
+  isStreaming: boolean;
+}) {
+  return (
+    <section className="border-t border-[var(--line)] pt-6">
+      <div className="mb-5 flex items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow-ink">今日单张牌义预览</p>
+          <h3 className="mt-2 font-serif-display text-[clamp(1.75rem,3vw,2.35rem)] leading-tight text-[var(--ink)]">
+            今日牌面先声
+          </h3>
+        </div>
+        {isStreaming ? (
+          <span className="mt-1 inline-flex items-center gap-2 rounded-full bg-[var(--coral-wash)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--coral-deep)]">
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--coral)]" />
+            streaming
+          </span>
+        ) : null}
+      </div>
+      <div className="max-h-[360px] overflow-y-auto whitespace-pre-wrap border-l border-[var(--coral-edge)] pl-4 text-[14.5px] leading-7 text-[var(--ink-soft)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {text.trim() ? text : "正在从今日单张牌义链路取回牌面预览。"}
       </div>
     </section>
   );
@@ -342,9 +478,9 @@ function CardMeaningPreview({
   return (
     <section className="border-t border-[var(--line)] pt-6">
       <div className="mb-6">
-        <p className="eyebrow-ink">本次牌义预览</p>
+        <p className="eyebrow-ink">{cards.length === 1 ? "今日单张预览" : "本次牌义预览"}</p>
         <h3 className="mt-2 font-serif-display text-[clamp(1.8rem,3vw,2.5rem)] leading-tight text-[var(--ink)]">
-          先看每张牌落在这里的意思
+          {cards.length === 1 ? "先看这张牌今天落下的提醒" : "先看每张牌落在这里的意思"}
         </h3>
       </div>
       <div className="space-y-5">
@@ -394,11 +530,14 @@ function buildCardMeaningPreview(
   const domainMeaning = getDomainMeaning(card, reversed, readingIntent);
   const keywords = (reversed ? card.keywordsReversed : card.keywordsUpright).slice(0, 3);
   const position = positionName ?? `牌位 ${positionOrder}`;
+  const isDailySinglePreview = !question.trim() && positionOrder === 1;
   const body = normalizePreviewPronouns(
     [
       `在“${position}”这个位置，${card.nameZh}的${orientation}先把注意力放到${keywords.join("、") || "当前状态"}上。`,
       domainMeaning ?? baseMeaning,
-      getPositionBridge(position, readingIntent),
+      isDailySinglePreview
+        ? "这一步先作为今日单张牌的检索式牌义提醒，重点是给出当下可感知、可执行的小线索。"
+        : getPositionBridge(position, readingIntent),
     ]
       .filter(Boolean)
       .join(""),
@@ -475,12 +614,14 @@ function buildPlainText({
   spreadName,
   question,
   cards,
+  cardPreviewText,
   text: displayText,
   shareUrl,
 }: {
   spreadName: string;
   question: string;
   cards: ResultCard[];
+  cardPreviewText: string;
   text: string;
   shareUrl: string | null;
 }) {
@@ -488,6 +629,7 @@ function buildPlainText({
     ({ card, reversed, positionName, positionOrder }) =>
       `${positionName ?? `牌位 ${positionOrder}`}：${card.nameZh}（${reversed ? "逆位" : "正位"}）`,
   );
+  const readingLabel = "完整解读：";
 
   return [
     `Arcana Flow · ${spreadName}`,
@@ -495,8 +637,11 @@ function buildPlainText({
     "",
     "抽到的牌：",
     ...cardLines,
+    cardPreviewText.trim() ? "" : null,
+    cardPreviewText.trim() ? "今日单张牌义预览：" : null,
+    cardPreviewText.trim() ? cardPreviewText.trim() : null,
     "",
-    "完整解读：",
+    readingLabel,
     displayText.trim(),
     shareUrl ? "" : null,
     shareUrl ? `分享链接：${shareUrl}` : null,

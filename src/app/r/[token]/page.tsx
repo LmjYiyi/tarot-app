@@ -127,6 +127,7 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
             spreadName={spread?.nameZh ?? "塔罗解读"}
             question={displayQuestion}
             interpretation={reading.aiInterpretation}
+            cardPreviewText={reading.cardPreviewText}
             sharePath={`/r/${token}`}
             cards={shareActionCards}
             intentLabel={readingIntentLabel}
@@ -196,6 +197,17 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
           />
 
           <div className="mx-auto max-w-[720px]">
+            {isDailySingle && reading.cardPreviewText?.trim() ? (
+              <section className="mb-16 border-t border-[var(--line)] pt-10">
+                <p className="eyebrow">今日单张牌义预览</p>
+                <h3 className="mt-3 font-serif-display text-[clamp(1.85rem,3vw,2.6rem)] leading-tight text-[var(--ink)]">
+                  今日牌面先声
+                </h3>
+                <div className="mt-7 whitespace-pre-wrap border-l border-[var(--coral-edge)] pl-5 text-[15.5px] leading-8 text-[var(--ink-soft)]">
+                  {reading.cardPreviewText}
+                </div>
+              </section>
+            ) : null}
             <AnnotatedInterpretation
               text={reading.aiInterpretation}
               adaptiveAnswers={reading.adaptiveAnswers}

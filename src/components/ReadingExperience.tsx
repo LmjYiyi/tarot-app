@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { CardBack } from "@/components/DeckShuffle";
 import { InteractiveDeck, type RitualPhase, type SelectMode } from "@/components/InteractiveDeck";
@@ -13,6 +13,7 @@ import { addLocalReading } from "@/lib/readings/local-history";
 import {
   getDefaultIntentForSpread,
   getDefaultQuestionForIntent,
+  getQuestionPlaceholderForSpread,
 } from "@/lib/tarot/default-reading";
 import { getAllCards, getCardById } from "@/lib/tarot/catalog";
 import {
@@ -54,6 +55,7 @@ type ReturnDialogSnapshot = {
   readingIntent: ReadingIntent;
   cards: DrawnCard[];
   drawLog: DrawLog | null;
+  cardPreviewText?: string;
   interpretation: string;
   sharePath: string | null;
 };
@@ -238,6 +240,8 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const [cutPosition, setCutPosition] = useState<number | null>(null);
   const [cards, setCards] = useState<DrawnCard[]>([]);
   const [drawLog, setDrawLog] = useState<DrawLog | null>(null);
+  const [cardPreviewText, setCardPreviewText] = useState("");
+  const [cardPreviewStreaming, setCardPreviewStreaming] = useState(false);
   const [interpretation, setInterpretation] = useState("");
   const [sharePath, setSharePath] = useState<string | null>(null);
   const [resultDialogOpen, setResultDialogOpen] = useState(false);
@@ -248,8 +252,8 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const mainSpreadRef = useRef<HTMLDivElement | null>(null);
   const revealPauseTimeoutRef = useRef<number | null>(null);
   const interpretAbortControllerRef = useRef<AbortController | null>(null);
-  const dailyAutoInterpretStartedRef = useRef(false);
-  const handleInterpretRef = useRef<(() => Promise<void>) | null>(null);
+  const cardPreviewAbortControllerRef = useRef<AbortController | null>(null);
+  const cardPreviewTextRef = useRef("");
 
   const isSingleCard = spread.cardCount <= 1;
   const isDailySingle = spread.slug === "single-guidance";
@@ -338,6 +342,9 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         if (snapshot.readingIntent) setReadingIntent(snapshot.readingIntent);
         setCards(snapshot.cards ?? []);
         setDrawLog(snapshot.drawLog ?? null);
+        setCardPreviewText(snapshot.cardPreviewText ?? "");
+        cardPreviewTextRef.current = snapshot.cardPreviewText ?? "";
+        setCardPreviewStreaming(false);
         setInterpretation(snapshot.interpretation ?? "");
         setSharePath(snapshot.sharePath ?? null);
         setPhase("done");
@@ -382,6 +389,9 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       if (interpretAbortControllerRef.current) {
         interpretAbortControllerRef.current.abort();
       }
+      if (cardPreviewAbortControllerRef.current) {
+        cardPreviewAbortControllerRef.current.abort();
+      }
     };
   }, []);
 
@@ -405,6 +415,9 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
 
   function resetReadingState() {
     setError(null);
+    setCardPreviewText("");
+    cardPreviewTextRef.current = "";
+    setCardPreviewStreaming(false);
     setInterpretation("");
     setSharePath(null);
     setResultDialogOpen(false);
@@ -413,7 +426,6 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     setCutPosition(null);
     setStickyDeckVisible(false);
     setPostRevealContentVisible(false);
-    dailyAutoInterpretStartedRef.current = false;
     if (revealPauseTimeoutRef.current !== null) {
       window.clearTimeout(revealPauseTimeoutRef.current);
       revealPauseTimeoutRef.current = null;
@@ -421,6 +433,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     if (interpretAbortControllerRef.current) {
       interpretAbortControllerRef.current.abort();
       interpretAbortControllerRef.current = null;
+    }
+    if (cardPreviewAbortControllerRef.current) {
+      cardPreviewAbortControllerRef.current.abort();
+      cardPreviewAbortControllerRef.current = null;
     }
   }
 
@@ -508,6 +524,73 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     resetReadingState();
   }
 
+  const handleDailyCardPreview = useCallback(async () => {
+    if (!isDailySingle || cards.length === 0) return "";
+
+    if (cardPreviewAbortControllerRef.current) {
+      cardPreviewAbortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    cardPreviewAbortControllerRef.current = controller;
+
+    try {
+      const finalQuestion = "";
+
+      setCardPreviewStreaming(true);
+      setCardPreviewText("");
+      cardPreviewTextRef.current = "";
+
+      const response = await fetch("/api/interpret-engine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          question: finalQuestion,
+          spreadSlug: spread.slug,
+          cards,
+          drawLog,
+          readingIntent,
+          locale: "zh-CN",
+        }),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error("牌面预览暂时没有回应，请稍后再试。");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullText += decoder.decode(value, { stream: true });
+        cardPreviewTextRef.current = fullText;
+        setCardPreviewText(fullText);
+      }
+
+      if (!fullText.trim()) {
+        throw new Error("牌面预览暂时没有回应，请稍后再试。");
+      }
+
+      return fullText;
+    } catch (caughtError) {
+      if (caughtError instanceof Error && caughtError.name === "AbortError") return "";
+      console.warn(
+        "[daily-card-preview] failed",
+        caughtError instanceof Error ? caughtError.message : caughtError,
+      );
+      return "";
+    } finally {
+      setCardPreviewStreaming(false);
+      if (cardPreviewAbortControllerRef.current === controller) {
+        cardPreviewAbortControllerRef.current = null;
+      }
+    }
+  }, [cards, drawLog, isDailySingle, readingIntent, spread.slug]);
+
   async function handleInterpret() {
     const controller = new AbortController();
     interpretAbortControllerRef.current = controller;
@@ -518,13 +601,16 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       setError(null);
       setPhase("reading");
       setInterpretation("");
+      const cardPreviewPromise = isDailySingle
+        ? handleDailyCardPreview()
+        : Promise.resolve("");
       setSharePath(null);
       setResultDialogOpen(true);
 
       let fullText = "";
       let model = "unknown";
 
-      const response = await fetch(resolveInterpretEndpoint(), {
+      const response = await fetch(isDailySingle ? "/api/interpret" : resolveInterpretEndpoint(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
@@ -559,6 +645,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
 
       if (controller.signal.aborted) return;
 
+      const previewTextForSave = isDailySingle
+        ? (await cardPreviewPromise) || cardPreviewTextRef.current
+        : undefined;
+
       const saveResponse = await fetch("/api/readings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -569,6 +659,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
           cards,
           drawLog,
           readingIntent,
+          cardPreviewText: previewTextForSave,
           aiInterpretation: fullText,
           model,
         }),
@@ -628,23 +719,13 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       readingIntent,
       cards,
       drawLog,
+      cardPreviewText,
       interpretation,
       sharePath,
     };
 
     window.sessionStorage.setItem(returnDialogStorageKey, JSON.stringify(snapshot));
   }
-
-  handleInterpretRef.current = handleInterpret;
-
-  useEffect(() => {
-    if (!isDailySingle) return;
-    if (!postRevealContentVisible || phase !== "revealed" || cards.length === 0) return;
-    if (dailyAutoInterpretStartedRef.current) return;
-
-    dailyAutoInterpretStartedRef.current = true;
-    void handleInterpretRef.current?.();
-  }, [cards.length, isDailySingle, phase, postRevealContentVisible]);
 
   const interactionBusy =
     phase === "shuffling" ||
@@ -687,6 +768,8 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         }}
         text={interpretation}
         isStreaming={phase === "reading"}
+        cardPreviewText={cardPreviewText}
+        isCardPreviewStreaming={cardPreviewStreaming}
         sharePath={sharePath}
         spreadName={spread.nameZh}
         question={question}
@@ -992,7 +1075,7 @@ function IdleSetup({
                       value={question}
                       onChange={(event) => onQuestionChange(event.target.value.slice(0, 280))}
                       rows={5}
-                      placeholder="例如：这段关系接下来最需要看清什么？"
+                      placeholder={getQuestionPlaceholderForSpread(spread.slug)}
                       className="journal-hand journal-writing-area w-full resize-none border-0 bg-transparent py-2 pl-5 pr-0 text-[23px] leading-[3rem] text-[var(--ink)] outline-none transition placeholder:text-[rgba(74,59,50,0.30)] focus:text-[var(--ink)]"
                     />
                   </label>
@@ -1340,7 +1423,7 @@ function DirectReadingPanel({
           </p>
         </div>
         <Button onClick={onSubmit} disabled={busy || phase === "reading"} className="journal-hand shrink-0 !rounded-none !border-x-0 !border-y !border-[var(--line-strong)] !bg-transparent px-5 py-2 text-[19px] !font-normal !text-[var(--coral-deep)] !shadow-none hover:!border-[var(--coral-edge)] hover:!bg-transparent hover:!text-[var(--coral)]">
-          {phase === "reading" ? "读牌中..." : isDailySingle ? "看牌面建议" : "看解读"}
+          {phase === "reading" ? "读牌中..." : isDailySingle ? "看完整解读" : "看解读"}
         </Button>
       </div>
       <p className="journal-hand border-t border-[var(--line)] pt-4 text-[15.5px] leading-7 text-[var(--ink-soft)]">

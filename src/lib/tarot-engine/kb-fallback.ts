@@ -199,21 +199,26 @@ function buildStructure(input: KbDrivenFallbackInput) {
       const rule = item.positionRule?.interpretation_rule
         ? `这个位置要${trimSentenceEnd(item.positionRule.interpretation_rule)}`
         : "这个位置要按牌位任务来读";
-      return `${getSelectedLabel(item)}：${getCardReading(item)}${rule ? ` ${rule}。` : ""}`;
+      const orientationNote =
+        item.orientation === "reversed"
+          ? "逆位让这股能量更像是向内卡住、延迟显现，或需要先被承认再处理。"
+          : "正位说明这股能量已经比较清楚，可以直接放进现实行动里看。";
+      return `${getSelectedLabel(item)}：${getCardReading(item)}${orientationNote}${rule ? ` ${rule}。` : ""}`;
     })
-    .join("\n");
+    .join("\n\n");
 }
 
 function buildTension(input: KbDrivenFallbackInput) {
   const context = input.tarotEngineContext;
   const obstacle = findContextByPosition(context, "obstacle");
   const current = findContextByPosition(context, "current_state", "self_state", "relationship_dynamic");
+  const core = findContextByPosition(context, "core", "central_issue", "question_core") ?? firstContext(context);
 
   if (obstacle && current && obstacle !== current) {
-    return `核心矛盾在${current.appCard.nameZh}和${obstacle.appCard.nameZh}之间：前者说明当前能量如何呈现，后者指出真正卡住的机制。${getCardReading(obstacle)}这提示你先处理卡点，而不是急着问最后会怎样。`;
+    return `核心矛盾在${current.appCard.nameZh}和${obstacle.appCard.nameZh}之间：前者说明当前能量如何呈现，后者指出真正卡住的机制。${getCardReading(obstacle)}这不是在说事情没有出口，而是在提醒你：如果不先处理这个卡点，后面的趋势牌很容易只是在重复同一种消耗。`;
   }
 
-  return `${formatCardSentence(current ?? firstContext(context))}关键不在于马上下结论，而是看这个主题如何影响你的节奏、判断和下一步行动。`;
+  return `${formatCardSentence(core)}这部分最需要被读成一面镜子：它照出的不是一个固定结果，而是你现在最容易绕开的压力点。先看清它如何影响你的节奏、判断和下一步行动，再决定哪里要推进，哪里要放慢。`;
 }
 
 function buildReality(input: KbDrivenFallbackInput) {
@@ -221,12 +226,12 @@ function buildReality(input: KbDrivenFallbackInput) {
   const safetyNote = safetyOpening(input.tarotEngineContext.safetyMatches);
   const base =
     input.tarotEngineContext.domain === "love"
-      ? "放到关系里，重点是看互动证据、回应节奏和边界，而不是替对方读心。"
+      ? "放到关系里，重点是看互动证据、回应节奏和边界，而不是替对方读心。先问自己：哪些回应是真实发生过的，哪些只是期待或担心。"
       : input.tarotEngineContext.domain === "career"
-        ? "放到事业里，重点是看资源、节奏、协作条件和现实代价，而不是直接判断成败。"
+        ? "放到事业里，重点是看资源、节奏、协作条件和现实代价，而不是直接判断成败。先确认手里有什么、缺什么、哪些成本不能被忽略。"
         : input.tarotEngineContext.domain === "decision"
-          ? "放到决策里，重点是拆开选择的收益、代价和验证动作，而不是替你选答案。"
-          : "放到自我状态里，重点是看能量、压力和真实需求，而不是给自己贴标签。";
+          ? "放到决策里，重点是拆开选择的收益、代价和验证动作，而不是替你选答案。真正有用的是让每条路都变得可比较、可验证。"
+          : "放到自我状态里，重点是看能量、压力和真实需求，而不是给自己贴标签。它更像是在问：你哪里已经累了，哪里其实还想重新开始。";
 
   return [base, pairSummary, safetyNote].filter(Boolean).join(" ");
 }
@@ -249,7 +254,9 @@ function buildAdvice(input: KbDrivenFallbackInput) {
     ? ` 结合今天的星座小提醒，可以把动作收得更轻一点：${input.dailyAstrology.modalityAdvice}${input.dailyAstrology.microPrompt}`
     : "";
 
-  return `${formatCardAdvice(advice ?? fallback)}${astrologyAction}`;
+  const selected = advice ?? fallback;
+  const cardName = selected?.appCard.nameZh ?? "这张牌";
+  return `${formatCardAdvice(selected)}把这个动作收得足够小：今天只需要完成一个能回应${cardName}的现实步骤，比如确认一句话、整理一个条件、暂停一个消耗反应，或把真正的感受写下来。重点不是立刻解决整件事，而是让牌面给出的提醒进入现实，产生可以复盘的反馈。${astrologyAction}`;
 }
 
 function getDailyCard(input: KbDrivenFallbackInput) {
@@ -325,7 +332,7 @@ function buildDailyTip(input: KbDrivenFallbackInput) {
 }
 
 function buildObservation(input: KbDrivenFallbackInput) {
-  return `观察窗口放在${input.responseBlueprint.timeScope.observationWindow}。重点看三个信号：现实反馈是否更具体，你的身体和情绪是否更稳定，以及下一步行动后局面是变清楚，还是继续让你消耗。`;
+  return `观察窗口放在${input.responseBlueprint.timeScope.observationWindow}。重点看三个信号：第一，做完小步行动后，身体和情绪是更稳定还是更紧绷；第二，现实反馈是否变得更具体，尤其是沟通、资源、时间或承诺有没有更清楚；第三，你是否更知道下一步该推进、暂停、重新沟通，还是先照顾自己的状态。如果这些信号仍然混乱，说明课题还需要继续拆小，而不是立刻做大决定。`;
 }
 
 function buildPathSection(input: KbDrivenFallbackInput, positionId: "option_a" | "option_b") {

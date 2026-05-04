@@ -581,38 +581,45 @@ function buildGenericFallback(payload: InterpretationPayload) {
   const cards = payload.selectedCards;
   const primary = cards[0];
   const finalCard = cards.at(-1);
+  const questionText = visibleQuestion(payload.question.trim());
+  const domain = payload.readingIntent ? domainTheme[payload.readingIntent.domain] : "当前问题";
   const section = (index: number, fallback: string) =>
     payload.responseBlueprint.sections[index] ?? fallback;
+  const describePosition = (item: InterpretationPayload["selectedCards"][number]) =>
+    `${item.position.name}落在${cardLabel(item)}。${describeCard(item)}放在这个牌位上，它不是一句“好/坏”的判断，而是在指出这件事里有一股具体能量需要被看见：${item.position.focus}。`;
+  const middleCards = cards.slice(1, -1);
+  const supportLine = middleCards.length
+    ? `周围牌给出的线索是：${middleCards
+        .map((item) => `${item.position.name}的${item.card.nameZh}把主题带向${cardKeywords(item, 2)}`)
+        .join("；")}。这些牌需要围绕核心牌一起看，而不是各自孤立解释。`
+    : "";
 
   return [
     section(0, "1. 牌面先说"),
     cards.length
-      ? `这次牌面由${cards.map(cardLabel).join("、")}组成。先看牌位的任务，再看它们之间如何支持或拉扯，而不是把每张牌孤立解释。`
+      ? `这次牌面由${cards.map(cardLabel).join("、")}组成。${questionText ? `针对“${questionText}”，` : ""}它更像是在把一个正在成形的内在结构摊开：哪一张牌是核心压力，哪一张牌说明过去或背景，哪一张牌代表当下可用的能量，哪一张牌提示接下来会怎样移动。先不用急着问结论，牌面更希望你看清这件事正在如何牵动你。`
       : "这次没有解析到有效牌面，因此不能给出负责任的塔罗解读。",
     "",
     section(1, "2. 牌阵结构"),
-    cards
-      .map(
-        (item) =>
-          `${item.position.name}的${cardLabel(item)}提示${cardKeywords(item)}，它在这组牌里负责${item.position.focus}。`,
-      )
-      .join("\n"),
+    cards.length
+      ? cards.map(describePosition).join("\n\n")
+      : "牌阵结构需要有效牌面才能展开。",
     "",
     section(2, "3. 关键矛盾"),
     primary
-      ? `最需要先看的，是${primary.position.name}里的${primary.card.nameZh}。它提示你先确认真正的压力点，再决定哪里要推进、哪里要放慢。`
+      ? `${primary.position.name}里的${cardLabel(primary)}是这次解读的重心。${primary.orientation === "逆位" ? "逆位说明这个主题没有顺畅流动，可能表现为拖延、回避、消耗、过度补偿，或明知道该调整却还没有真正动起来。" : "正位说明这个主题已经浮到台面上，比较适合被直接承认和处理。"}${supportLine ? `${supportLine}` : ""}真正的矛盾不是“会不会变好”这么简单，而是你能否先承认核心牌指出的压力点，再判断哪些行动值得继续、哪些期待需要降速。`
       : "关键矛盾需要有效牌面才能判断。",
     "",
     section(3, "4. 现实映射"),
-    `放到${payload.readingIntent ? domainTheme[payload.readingIntent.domain] : "当前问题"}里，这组牌更适合被当作现实检查：哪些资源可用，哪些情绪或沟通需要被处理，哪些动作能在短期内验证。`,
+    `放到${domain}里，这组牌更适合被当作一面现实镜子。你需要看的不是抽象的命运走向，而是三个具体问题：现在真正消耗你的是什么；哪些资源、关系或习惯仍然可以支撑你；接下来哪一个动作能够让局面从“想象”回到“可验证”。如果牌面里有较多逆位，重点会更偏向内部堵塞和节奏调整；如果正位较多，则说明已经有能量可以被拿来行动。`,
     "",
     section(4, "5. 行动建议"),
     finalCard
-      ? `先围绕${finalCard.card.nameZh}做一个小步行动：把问题拆成一个可以今天完成的动作，并记录完成后的反馈。`
+      ? `先围绕${cardLabel(finalCard)}做一个小步行动。把它的关键词“${cardKeywords(finalCard, 2)}”翻译成今天能完成的一件事：写下一句需要确认的话、整理一个现实条件、完成一个被拖住的小步骤，或暂停一个会继续消耗你的反应。重点不是一次解决整件事，而是让牌面给出的提醒进入现实，产生可以观察的反馈。`
       : "请先重新抽取有效牌面。",
     "",
     section(5, "6. 观察指标"),
-    `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看现实反馈是否更具体，以及你是否更清楚下一步该推进、暂停还是重新沟通。`,
+    `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看三类信号：第一，做完小步行动后，身体和情绪是更松一点，还是更紧；第二，现实反馈是否比原来更具体，尤其是沟通、资源、时间或承诺有没有变清楚；第三，你是否更知道下一步该推进、暂停、重新沟通，还是先照顾自己的状态。如果这些信号仍然混乱，说明这组牌指向的课题还需要继续拆小，而不是立刻做大决定。`,
   ].join("\n");
 }
 

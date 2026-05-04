@@ -491,6 +491,11 @@ span:focus-within > .annotated-phrase {
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(74, 59, 50, 0.22); }
 
+/* Hide page scrollbar on spread detail pages (still scrollable) */
+html:has([data-spread-page]) { scrollbar-width: none; }
+html:has([data-spread-page])::-webkit-scrollbar { display: none; }
+html:has([data-spread-page]) body::-webkit-scrollbar { display: none; }
+
 /* ============================================================
    Editorial Parchment override — reserved utility
    ============================================================ */

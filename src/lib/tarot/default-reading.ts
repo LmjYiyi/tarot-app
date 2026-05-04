@@ -10,6 +10,22 @@ export function getDefaultIntentForSpread(spreadSlug: string): ReadingIntent {
   return { domain: "self", goal: "advice" };
 }
 
+const questionPlaceholderBySpread: Record<string, string> = {
+  "single-guidance": "例如：今天我最该留意的提醒是什么？",
+  "career-five": "例如：接下来三个月，我的事业最该把力气放在哪里？",
+  "three-card": "例如：这件事的背景、现状和下一步走向是什么？",
+  "cross-five": "例如：这件事的核心症结和真正的阻碍是什么？",
+  "relationship-six": "例如：这段关系现在卡在哪里，怎样沟通会更顺？",
+  "lovers-pyramid": "例如：我和对方现在的关系正朝哪里走？",
+  "path-of-choice": "例如：A 和 B 这两条路，各自的代价和机会是什么？",
+  "self-state": "例如：最近的压力来自哪里，我可以先调整什么？",
+  "celtic-cross": "例如：这件事的核心张力、走向和最终落点是什么？",
+};
+
+export function getQuestionPlaceholderForSpread(spreadSlug: string): string {
+  return questionPlaceholderBySpread[spreadSlug] ?? "例如：我现在最想看清的是什么？";
+}
+
 export function getDefaultQuestionForIntent(intent: ReadingIntent, spreadNameZh: string): string {
   const domainPrompts: Record<ReadingDomain, string> = {
     career: "我想看看接下来的事业发展趋势和建议。",

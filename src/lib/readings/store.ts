@@ -45,6 +45,7 @@ const readingInputSchema = z.object({
   readingIntent: readingIntentSchema.optional(),
   userFeedback: userFeedbackSchema.optional(),
   adaptiveAnswers: z.array(adaptiveAnswerSchema).optional(),
+  cardPreviewText: z.string().max(4000).optional(),
   aiInterpretation: z.string().min(1),
   model: z.string().default("unknown"),
 });
@@ -67,6 +68,7 @@ type SupabaseReadingRow = {
   reading_intent: ReadingIntent | null;
   user_feedback: UserFeedback | null;
   adaptive_answers: AdaptiveAnswer[] | null;
+  card_preview_text: string | null;
   ai_interpretation: string;
   model: string | null;
   created_at: string;
@@ -95,6 +97,7 @@ function toRecord(row: SupabaseReadingRow): ReadingRecord {
     readingIntent: row.reading_intent ?? undefined,
     userFeedback: row.user_feedback ?? undefined,
     adaptiveAnswers: row.adaptive_answers ?? undefined,
+    cardPreviewText: row.card_preview_text ?? undefined,
     aiInterpretation: row.ai_interpretation,
     model: row.model ?? "unknown",
     createdAt: row.created_at,
@@ -122,6 +125,7 @@ export async function saveReading(input: ReadingInput): Promise<ReadingRecord> {
         reading_intent: parsed.readingIntent ?? null,
         user_feedback: parsed.userFeedback ?? null,
         adaptive_answers: parsed.adaptiveAnswers ?? null,
+        card_preview_text: parsed.cardPreviewText ?? null,
         ai_interpretation: parsed.aiInterpretation,
         model: parsed.model,
       })

@@ -18,6 +18,7 @@ type ReadingShareActionsProps = {
   spreadName: string;
   question: string;
   interpretation: string;
+  cardPreviewText?: string | null;
   sharePath: string;
   cards: ReadingShareActionCard[];
   intentLabel?: string | null;
@@ -28,6 +29,7 @@ export function ReadingShareActions({
   spreadName,
   question,
   interpretation,
+  cardPreviewText,
   sharePath,
   cards,
   intentLabel,
@@ -52,12 +54,22 @@ export function ReadingShareActions({
         spreadName,
         question,
         cards,
+        cardPreviewText: cardPreviewText ?? "",
         interpretation: cleanInterpretation,
         shareUrl,
         intentLabel,
         drawModeLabel,
       }),
-    [cards, cleanInterpretation, drawModeLabel, intentLabel, question, shareUrl, spreadName],
+    [
+      cardPreviewText,
+      cards,
+      cleanInterpretation,
+      drawModeLabel,
+      intentLabel,
+      question,
+      shareUrl,
+      spreadName,
+    ],
   );
 
   async function handleCopy() {
@@ -96,6 +108,7 @@ function buildPlainText({
   spreadName,
   question,
   cards,
+  cardPreviewText,
   interpretation,
   shareUrl,
   intentLabel,
@@ -104,6 +117,7 @@ function buildPlainText({
   spreadName: string;
   question: string;
   cards: ReadingShareActionCard[];
+  cardPreviewText: string;
   interpretation: string;
   shareUrl: string;
   intentLabel?: string | null;
@@ -122,6 +136,9 @@ function buildPlainText({
     "",
     "抽到的牌：",
     ...cardLines,
+    cardPreviewText.trim() ? "" : null,
+    cardPreviewText.trim() ? "今日单张牌义预览：" : null,
+    cardPreviewText.trim() ? cardPreviewText.trim() : null,
     "",
     "完整解读：",
     interpretation.trim(),

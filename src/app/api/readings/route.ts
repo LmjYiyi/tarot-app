@@ -38,6 +38,7 @@ const requestSchema = z.object({
     .nullable(),
   userFeedback: userFeedbackSchema.optional(),
   adaptiveAnswers: z.array(adaptiveAnswerSchema).optional(),
+  cardPreviewText: z.string().max(4000).optional(),
   cards: z
     .array(
       z.object({
