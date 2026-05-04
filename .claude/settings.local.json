@@ -81,7 +81,8 @@
       "Bash(echo \"exitcode=$?\")",
       "Bash(echo \"exit: $?\")",
       "Bash(npx vitest *)",
-      "Bash(Select-String ':3117')"
+      "Bash(Select-String ':3117')",
+      "Bash(git check-ignore *)"
     ]
   }
 }

@@ -260,6 +260,7 @@ export async function generateLegacyInterpretation(input: GenerateLegacyInput) {
       },
     };
   }
+  const activeClient = client;
 
   const timings: Record<string, number> = {};
   const idleTimeoutMs = Number.isFinite(INTERPRETATION_IDLE_TIMEOUT_MS)
@@ -287,7 +288,7 @@ export async function generateLegacyInterpretation(input: GenerateLegacyInput) {
     async function generateText(attempt: number) {
       const generationStart = Date.now();
       const messageStream = await withTimeout(
-        client.messages.create(
+        activeClient.messages.create(
           {
             model: DEFAULT_MODEL,
             max_tokens: resolveInterpretationMaxTokens(payload),
