@@ -1,0 +1,192 @@
+{
+  "generatedAt": "2026-05-03T14:14:40.914Z",
+  "note": "Project-owned safety rules derived from reusable ethics and AI-safety references; not copied from copyrighted text.",
+  "rules": [
+    {
+      "id": "self_harm_crisis",
+      "riskType": "self_harm_or_immediate_crisis",
+      "riskLevel": "blocked",
+      "sourceIds": [
+        "S12",
+        "S13",
+        "S14",
+        "S16"
+      ],
+      "triggers": [
+        "自杀",
+        "不想活",
+        "自残",
+        "伤害自己",
+        "结束生命",
+        "撑不下去"
+      ],
+      "forbidden": [
+        "继续占卜预测",
+        "把危机解释成命运或业力",
+        "给延迟求助建议"
+      ],
+      "requiredResponse": [
+        "停止占卜流程",
+        "建议立即联系当地紧急服务或可信任的人",
+        "鼓励寻求专业危机支持"
+      ],
+      "backendHardControl": true
+    },
+    {
+      "id": "medical_boundary",
+      "riskType": "medical_or_health_advice",
+      "riskLevel": "boundary_only",
+      "sourceIds": [
+        "S08",
+        "S12",
+        "S16"
+      ],
+      "triggers": [
+        "疾病",
+        "症状",
+        "诊断",
+        "治疗",
+        "吃药",
+        "手术",
+        "怀孕",
+        "疼痛",
+        "失眠"
+      ],
+      "forbidden": [
+        "诊断",
+        "判断病情严重程度",
+        "建议停药",
+        "保证没事",
+        "替代医生"
+      ],
+      "requiredResponse": [
+        "说明不提供医疗判断",
+        "可整理压力和照护线索",
+        "建议症状持续或加重时寻求专业医疗支持"
+      ],
+      "backendHardControl": true
+    },
+    {
+      "id": "legal_boundary",
+      "riskType": "legal_advice_or_case_prediction",
+      "riskLevel": "boundary_only",
+      "sourceIds": [
+        "S08",
+        "S09",
+        "S16"
+      ],
+      "triggers": [
+        "法院",
+        "官司",
+        "起诉",
+        "胜诉",
+        "败诉",
+        "律师",
+        "合同",
+        "判决"
+      ],
+      "forbidden": [
+        "预测胜诉败诉",
+        "给法律意见",
+        "鼓励冲动诉讼",
+        "替律师判断"
+      ],
+      "requiredResponse": [
+        "说明不是法律意见",
+        "建议整理事实、证据和沟通记录",
+        "建议咨询合格法律专业人士"
+      ],
+      "backendHardControl": true
+    },
+    {
+      "id": "financial_boundary",
+      "riskType": "financial_or_investment_advice",
+      "riskLevel": "boundary_only",
+      "sourceIds": [
+        "S08",
+        "S16"
+      ],
+      "triggers": [
+        "股票",
+        "基金",
+        "数字货币",
+        "抄底",
+        "梭哈",
+        "贷款",
+        "借钱",
+        "买房",
+        "投资"
+      ],
+      "forbidden": [
+        "承诺收益",
+        "给买卖点",
+        "鼓励重仓",
+        "建议借钱投资"
+      ],
+      "requiredResponse": [
+        "转成风险承受度和现金流盘点",
+        "建议独立核验信息",
+        "必要时咨询持牌专业人士"
+      ],
+      "backendHardControl": true
+    },
+    {
+      "id": "third_party_privacy",
+      "riskType": "third_party_mind_reading_or_privacy",
+      "riskLevel": "caution",
+      "sourceIds": [
+        "S08",
+        "S09"
+      ],
+      "triggers": [
+        "他怎么想",
+        "她怎么想",
+        "TA怎么想",
+        "对方心里",
+        "是不是有别人",
+        "爱不爱我"
+      ],
+      "forbidden": [
+        "替第三方下内心结论",
+        "断言背叛",
+        "窥探隐私",
+        "性别化默认称呼"
+      ],
+      "requiredResponse": [
+        "回到可观察行为",
+        "使用TA或对方",
+        "关注用户感受和边界动作"
+      ],
+      "backendHardControl": true
+    },
+    {
+      "id": "absolute_prediction",
+      "riskType": "absolute_or_precise_prediction",
+      "riskLevel": "caution",
+      "sourceIds": [
+        "S08",
+        "S13",
+        "S16"
+      ],
+      "triggers": [
+        "一定",
+        "必然",
+        "注定",
+        "百分百",
+        "具体哪天",
+        "什么时候会"
+      ],
+      "forbidden": [
+        "给绝对结论",
+        "给精确日期",
+        "命定论表达"
+      ],
+      "requiredResponse": [
+        "改成趋势、条件和观察窗口",
+        "保留用户选择权",
+        "给可控行动"
+      ],
+      "backendHardControl": true
+    }
+  ]
+}

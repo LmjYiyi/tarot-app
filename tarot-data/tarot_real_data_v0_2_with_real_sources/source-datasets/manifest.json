@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-05-03T14:14:40.914Z",
+  "sourceReport": "tarot-data/deep-research-report (3).md",
+  "policy": {
+    "directUse": "Only public-domain, MIT, CC-BY/CC0, or similarly reusable data is saved as reusable data.",
+    "restrictedUse": "Copyrighted or unclear sources are metadata-only and must be rewritten by humans before product use.",
+    "attribution": "TarotSchema CC-BY written content and Wikimedia file-level licenses require attribution when surfaced."
+  },
+  "files": [
+    {
+      "file": "tarot-data/source-datasets/source_registry.verified.json",
+      "records": 24
+    },
+    {
+      "file": "tarot-data/source-datasets/waite_pictorial_key_cards.json",
+      "records": 78
+    },
+    {
+      "file": "tarot-data/source-datasets/metabismuth_tarot_json.json",
+      "records": null
+    },
+    {
+      "file": "tarot-data/source-datasets/tarotschema_schema.json",
+      "records": null
+    },
+    {
+      "file": "tarot-data/source-datasets/wikimedia_rws_images.json",
+      "records": 182
+    },
+    {
+      "file": "tarot-data/source-datasets/deckaura_pypi_metadata.json",
+      "records": 2
+    },
+    {
+      "file": "tarot-data/source-datasets/derived_safety_rules.json",
+      "records": null
+    }
+  ]
+}

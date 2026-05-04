@@ -80,10 +80,10 @@ const phaseLabelFull: Record<FlowPhase, string> = {
 };
 
 const phaseLabelSingle: Record<FlowPhase, string> = {
-  idle: "01 · 提问",
+  idle: "01 · 洗牌",
   shuffling: "02 · 洗牌",
   cutting: "02 · 洗牌",
-  selecting: "03 · 抽牌",
+  selecting: "03 · 出牌",
   revealing: "04 · 翻牌",
   revealed: "05 · 准备解读",
   reading: "06 · 解读",
@@ -118,6 +118,20 @@ function preloadDrawnCardImages(drawn: DrawnCard[]) {
       image.decoding = "async";
       image.src = src;
     });
+}
+
+function resolveInterpretEndpoint() {
+  const mode = process.env.NEXT_PUBLIC_INTERPRET_API_MODE?.trim().toLowerCase();
+
+  if (mode === "legacy" || mode === "old" || mode === "ai") {
+    return "/api/interpret-legacy";
+  }
+
+  if (mode === "engine" || mode === "new" || mode === "kb") {
+    return "/api/interpret-engine";
+  }
+
+  return "/api/interpret";
 }
 
 const domainOptions: Array<{ value: ReadingDomain; label: string }> = [
@@ -234,8 +248,11 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const mainSpreadRef = useRef<HTMLDivElement | null>(null);
   const revealPauseTimeoutRef = useRef<number | null>(null);
   const interpretAbortControllerRef = useRef<AbortController | null>(null);
+  const dailyAutoInterpretStartedRef = useRef(false);
+  const handleInterpretRef = useRef<(() => Promise<void>) | null>(null);
 
   const isSingleCard = spread.cardCount <= 1;
+  const isDailySingle = spread.slug === "single-guidance";
   const phaseLabel = isSingleCard ? phaseLabelSingle : phaseLabelFull;
 
   const resolvedCards = useMemo(
@@ -373,6 +390,11 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   }
 
   function resolveQuestion() {
+    if (isDailySingle) {
+      setQuestion("");
+      return "";
+    }
+
     const trimmed = question.trim();
     if (trimmed) return trimmed;
 
@@ -391,6 +413,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     setCutPosition(null);
     setStickyDeckVisible(false);
     setPostRevealContentVisible(false);
+    dailyAutoInterpretStartedRef.current = false;
     if (revealPauseTimeoutRef.current !== null) {
       window.clearTimeout(revealPauseTimeoutRef.current);
       revealPauseTimeoutRef.current = null;
@@ -404,7 +427,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   function handleStartShuffle() {
     resetReadingState();
     const finalQuestion = resolveQuestion();
-    const recentMatch = getRecentQuestionMatch(spread.slug, finalQuestion);
+    const recentMatch = isDailySingle ? null : getRecentQuestionMatch(spread.slug, finalQuestion);
 
     if (recentMatch) {
       const availableAt = new Date(recentMatch.createdAt + repeatQuestionWindowMs);
@@ -420,7 +443,9 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       return;
     }
 
-    rememberQuestionRitual(spread.slug, finalQuestion);
+    if (!isDailySingle) {
+      rememberQuestionRitual(spread.slug, finalQuestion);
+    }
 
     const reversedRate = includeReversals ? getConfiguredReversedRate() : 0;
     const newDeck = shuffleDeck({ reversedRate });
@@ -433,6 +458,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   }
 
   function handleShuffleAnimationDone() {
+    if (isDailySingle) {
+      handleSelectionDone([0]);
+      return;
+    }
     if (isSingleCard) {
       setPhase("selecting");
       return;
@@ -492,7 +521,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       setSharePath(null);
       setResultDialogOpen(true);
 
-      const response = await fetch("/api/interpret", {
+      let fullText = "";
+      let model = "unknown";
+
+      const response = await fetch(resolveInterpretEndpoint(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
@@ -510,16 +542,19 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         throw new Error("牌面暂时没有回应，请稍后再试。");
       }
 
-      const model = response.headers.get("x-model") ?? "unknown";
+      model = response.headers.get("x-model") ?? "unknown";
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let fullText = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         fullText += decoder.decode(value, { stream: true });
         setInterpretation(fullText);
+      }
+
+      if (!fullText.trim()) {
+        throw new Error("牌面暂时没有回应，请稍后再试。");
       }
 
       if (controller.signal.aborted) return;
@@ -600,6 +635,17 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     window.sessionStorage.setItem(returnDialogStorageKey, JSON.stringify(snapshot));
   }
 
+  handleInterpretRef.current = handleInterpret;
+
+  useEffect(() => {
+    if (!isDailySingle) return;
+    if (!postRevealContentVisible || phase !== "revealed" || cards.length === 0) return;
+    if (dailyAutoInterpretStartedRef.current) return;
+
+    dailyAutoInterpretStartedRef.current = true;
+    void handleInterpretRef.current?.();
+  }, [cards.length, isDailySingle, phase, postRevealContentVisible]);
+
   const interactionBusy =
     phase === "shuffling" ||
     phase === "cutting" ||
@@ -678,7 +724,17 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         </p>
       </header>
 
-      {phase === "idle" ? (
+      {phase === "idle" && isDailySingle ? (
+        <DailySingleSetup
+          spread={spread}
+          repeatNotice={error}
+          includeReversals={includeReversals}
+          onIncludeReversalsChange={setIncludeReversals}
+          onStart={handleStartShuffle}
+        />
+      ) : null}
+
+      {phase === "idle" && !isDailySingle ? (
         <IdleSetup
           question={question}
           questionLength={question.length}
@@ -760,6 +816,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
                   onSubmit={handleInterpret}
                   busy={interactionBusy}
                   phase={phase}
+                  isDailySingle={isDailySingle}
                 />
                 {error ? (
                   <div className="rounded-[12px] border border-[var(--coral-edge)] bg-[var(--coral-wash)] px-4 py-3 text-sm leading-6 text-[var(--coral-deep)]">
@@ -772,6 +829,90 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         </div>
       ) : null}
     </div>
+  );
+}
+
+function DailySingleSetup({
+  spread,
+  repeatNotice,
+  includeReversals,
+  onIncludeReversalsChange,
+  onStart,
+}: {
+  spread: SpreadDefinition;
+  repeatNotice: string | null;
+  includeReversals: boolean;
+  onIncludeReversalsChange: (includeReversals: boolean) => void;
+  onStart: () => void;
+}) {
+  return (
+    <section className="relative border-t border-[var(--line)] pt-14">
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+        <div className="min-w-0 space-y-10">
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-3">
+              <span className="h-px w-12 bg-[var(--coral)] opacity-40" />
+              <p className="eyebrow !tracking-[0.3em]">DAILY CARD</p>
+            </div>
+            <div>
+              <h2 className="font-serif-display text-[clamp(2.5rem,5vw,4.2rem)] leading-[1.05] tracking-tight text-[var(--ink)]">
+                今天先不用提问
+                <br />
+                <span className="italic text-[var(--coral-deep)]">让一张牌自己出来</span>
+              </h2>
+              <div className="mt-8 max-w-2xl space-y-4">
+                <p className="text-[16.5px] leading-relaxed text-[var(--ink-soft)]">
+                  这次只是轻轻抽一张今日建议牌。洗牌时会有牌面交替掠过，
+                  洗完后系统会直接从洗好的牌堆里翻出一张，不需要再写问题或选择领域。
+                </p>
+                <p className="text-[15px] leading-relaxed text-[var(--ink-muted)]">
+                  解读会围绕这一张牌本身展开，保留牌面提醒、现实落点和一个当天可尝试的小动作。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute -inset-4 -z-10 rounded-[24px] bg-[var(--surface-raised)]/30 blur-xl" />
+            <SpreadPreview spread={spread} />
+          </div>
+        </div>
+
+        <div className="relative min-w-0 lg:sticky lg:top-20">
+          <div className="space-y-7 border-t border-[var(--line)] pt-7">
+            <div className="mx-auto h-[255px] w-[153px]">
+              <CardBack />
+            </div>
+
+            <div className="space-y-4">
+              <label className="flex cursor-pointer items-center justify-between gap-4 border-y border-[var(--line)] py-4 text-[14px] text-[var(--ink-soft)]">
+                <span className="journal-hand text-[17px]">包含逆位</span>
+                <input
+                  type="checkbox"
+                  checked={includeReversals}
+                  onChange={(event) => onIncludeReversalsChange(event.target.checked)}
+                  className="h-4 w-4 accent-[var(--coral)]"
+                />
+              </label>
+              <Button
+                onClick={onStart}
+                className="journal-hand w-full !rounded-none !border-x-0 !border-y !border-[var(--line-strong)] !bg-transparent py-4 text-[22px] !font-normal !text-[var(--coral-deep)] !shadow-none transition hover:!border-[var(--coral-edge)] hover:!bg-transparent hover:!text-[var(--coral)]"
+              >
+                开始今日洗牌
+              </Button>
+              <p className="journal-hand text-center text-[16px] leading-relaxed text-[var(--ink-muted)]">
+                洗完会直接翻开这张建议牌，并自动展开牌面解读。
+              </p>
+              {repeatNotice ? (
+                <div className="border border-[var(--coral-edge)] bg-[var(--coral-wash)] px-4 py-3 text-[13.5px] leading-6 text-[var(--coral-deep)]">
+                  {repeatNotice}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1179,10 +1320,12 @@ function DirectReadingPanel({
   onSubmit,
   busy,
   phase,
+  isDailySingle = false,
 }: {
   onSubmit: () => void;
   busy: boolean;
   phase: FlowPhase;
+  isDailySingle?: boolean;
 }) {
   return (
     <section className="space-y-5 border-t border-[var(--line)] py-5">
@@ -1190,18 +1333,20 @@ function DirectReadingPanel({
         <div className="max-w-[520px]">
           <p className="journal-label">牌面解读</p>
           <h2 className="journal-hand mt-1.5 text-[31px] leading-tight text-[var(--ink)]">
-            牌面已经展开
+            {isDailySingle ? "今日牌已经翻开" : "牌面已经展开"}
           </h2>
           <p className="journal-hand mt-2 text-[17px] leading-7 text-[var(--ink-muted)]">
             接下来会基于你的问题、牌阵位置和这次抽出的牌面展开完整读牌。
           </p>
         </div>
         <Button onClick={onSubmit} disabled={busy || phase === "reading"} className="journal-hand shrink-0 !rounded-none !border-x-0 !border-y !border-[var(--line-strong)] !bg-transparent px-5 py-2 text-[19px] !font-normal !text-[var(--coral-deep)] !shadow-none hover:!border-[var(--coral-edge)] hover:!bg-transparent hover:!text-[var(--coral)]">
-          {phase === "reading" ? "读牌中..." : "看解读"}
+          {phase === "reading" ? "读牌中..." : isDailySingle ? "看牌面建议" : "看解读"}
         </Button>
       </div>
       <p className="journal-hand border-t border-[var(--line)] pt-4 text-[15.5px] leading-7 text-[var(--ink-soft)]">
-        需要更有针对性的追问与临场判断时，可以把这次牌面记录留给后续的真人占卜预约。
+        {isDailySingle
+          ? "这是一张单张建议牌，适合当作生活提醒，不适合替代现实中的重要决定。"
+          : "需要更有针对性的追问与临场判断时，可以把这次牌面记录留给后续的真人占卜预约。"}
       </p>
     </section>
   );

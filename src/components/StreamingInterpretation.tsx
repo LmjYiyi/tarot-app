@@ -50,6 +50,8 @@ export function StreamingInterpretation({
   const hasContent = Boolean(text.trim());
   const progress = isStreaming ? Math.min(94, 18 + Math.floor(text.length / 42)) : 100;
   const singleCard = cards.length === 1;
+  const showQuestion = question.trim().length > 0;
+  const showCardMeaningPreview = isStreaming && !singleCard;
 
   const shareUrl = useMemo(() => {
     if (!sharePath) return null;
@@ -178,12 +180,14 @@ export function StreamingInterpretation({
         <div className="relative z-10 min-h-0 overflow-y-auto px-5 py-6 sm:px-7">
           <div className="grid gap-7 xl:grid-cols-[400px_minmax(0,1fr)]">
             <aside className="space-y-8">
-              <section className="border-t border-[var(--line)] pt-5">
-                <p className="eyebrow-ink">你的问题</p>
-                <p className="mt-2 font-fraunces text-[19px] italic leading-8 text-[var(--ink-soft)]">
-                  “{question || "我想看清自己当前最需要面对的课题。"}”
-                </p>
-              </section>
+              {showQuestion ? (
+                <section className="border-t border-[var(--line)] pt-5">
+                  <p className="eyebrow-ink">你的问题</p>
+                  <p className="mt-2 font-fraunces text-[19px] italic leading-8 text-[var(--ink-soft)]">
+                    “{question}”
+                  </p>
+                </section>
+              ) : null}
 
               <section className="border-t border-[var(--line)] pt-5">
                 <div className="mb-5 flex items-center justify-between gap-3">
@@ -237,7 +241,7 @@ export function StreamingInterpretation({
             </aside>
 
             <article className="space-y-8 border-t border-[var(--line)] px-1 pt-6 sm:px-3">
-              {isStreaming ? (
+              {showCardMeaningPreview ? (
                 <CardMeaningPreview
                   key={previewKey}
                   cards={cards}

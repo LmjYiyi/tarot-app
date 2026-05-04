@@ -25,6 +25,11 @@ function getSectionId(index: number) {
   return `meaning-section-${index + 1}`;
 }
 
+const cardTextDirectories = [
+  path.join(process.cwd(), "tarot-data", "tarot_real_data_v0_2_with_real_sources"),
+  path.join(process.cwd(), "tarot-data"),
+];
+
 export async function generateStaticParams() {
   return getAllCards().map((card) => ({ slug: card.slug }));
 }
@@ -55,10 +60,12 @@ async function getCardText(slug: string) {
   ]);
 
   for (const candidate of candidates) {
-    try {
-      return await fs.readFile(path.join(process.cwd(), "tarot-data", `${candidate}.txt`), "utf8");
-    } catch {
-      // Try the next local filename shape.
+    for (const directory of cardTextDirectories) {
+      try {
+        return await fs.readFile(path.join(directory, `${candidate}.txt`), "utf8");
+      } catch {
+        // Try the next local filename shape or data directory.
+      }
     }
   }
 

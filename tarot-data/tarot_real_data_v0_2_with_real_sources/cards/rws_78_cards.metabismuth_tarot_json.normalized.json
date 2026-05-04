@@ -1,0 +1,786 @@
+{
+  "description": "Canonical 78-card RWS-compatible card list normalized from metabismuth/tarot-json tarot.json. No generated meanings included.",
+  "count": 78,
+  "cards": [
+    {
+      "name": "The Fool",
+      "number": "0",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Magician",
+      "number": "1",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The High Priestess",
+      "number": "2",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Empress",
+      "number": "3",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Emperor",
+      "number": "4",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Hierophant",
+      "number": "5",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Lovers",
+      "number": "6",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Chariot",
+      "number": "7",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Strength",
+      "number": "8",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Hermit",
+      "number": "9",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Wheel of Fortune",
+      "number": "10",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Justice",
+      "number": "11",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Hanged Man",
+      "number": "12",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Death",
+      "number": "13",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Temperance",
+      "number": "14",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Devil",
+      "number": "15",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Tower",
+      "number": "16",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Star",
+      "number": "17",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Moon",
+      "number": "18",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The Sun",
+      "number": "19",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Judgement",
+      "number": "20",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "The World",
+      "number": "21",
+      "arcana": "Major Arcana",
+      "suit": null,
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Ace of Cups",
+      "number": "1",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Two of Cups",
+      "number": "2",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Three of Cups",
+      "number": "3",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Four of Cups",
+      "number": "4",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Five of Cups",
+      "number": "5",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Six of Cups",
+      "number": "6",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Seven of Cups",
+      "number": "7",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Eight of Cups",
+      "number": "8",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Nine of Cups",
+      "number": "9",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Ten of Cups",
+      "number": "10",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Page of Cups",
+      "number": "11",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Knight of Cups",
+      "number": "12",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Queen of Cups",
+      "number": "13",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "King of Cups",
+      "number": "14",
+      "arcana": "Minor Arcana",
+      "suit": "Cups",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Ace of Swords",
+      "number": "1",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Two of Swords",
+      "number": "2",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Three of Swords",
+      "number": "3",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Four of Swords",
+      "number": "4",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Five of Swords",
+      "number": "5",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Six of Swords",
+      "number": "6",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Seven of Swords",
+      "number": "7",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Eight of Swords",
+      "number": "8",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Nine of Swords",
+      "number": "9",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Ten of Swords",
+      "number": "10",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Page of Swords",
+      "number": "11",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Knight of Swords",
+      "number": "12",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Queen of Swords",
+      "number": "13",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "King of Swords",
+      "number": "14",
+      "arcana": "Minor Arcana",
+      "suit": "Swords",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Ace of Wands",
+      "number": "1",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Two of Wands",
+      "number": "2",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Three of Wands",
+      "number": "3",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Four of Wands",
+      "number": "4",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Five of Wands",
+      "number": "5",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Six of Wands",
+      "number": "6",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Seven of Wands",
+      "number": "7",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Eight of Wands",
+      "number": "8",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Nine of Wands",
+      "number": "9",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Ten of Wands",
+      "number": "10",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Page of Wands",
+      "number": "11",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Knight of Wands",
+      "number": "12",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Queen of Wands",
+      "number": "13",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "King of Wands",
+      "number": "14",
+      "arcana": "Minor Arcana",
+      "suit": "Wands",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Ace of Pentacles",
+      "number": "1",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Two of Pentacles",
+      "number": "2",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Three of Pentacles",
+      "number": "3",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Four of Pentacles",
+      "number": "4",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Five of Pentacles",
+      "number": "5",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Six of Pentacles",
+      "number": "6",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Seven of Pentacles",
+      "number": "7",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Eight of Pentacles",
+      "number": "8",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Nine of Pentacles",
+      "number": "9",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Ten of Pentacles",
+      "number": "10",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Page of Pentacles",
+      "number": "11",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Knight of Pentacles",
+      "number": "12",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "Queen of Pentacles",
+      "number": "13",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    },
+    {
+      "name": "King of Pentacles",
+      "number": "14",
+      "arcana": "Minor Arcana",
+      "suit": "Pentacles",
+      "source_id": "S01",
+      "source_dataset": "metabismuth/tarot-json tarot.json",
+      "source_url": "https://raw.githubusercontent.com/metabismuth/tarot-json/refs/heads/master/tarot.json",
+      "license": "MIT for project metadata; RWS deck public domain in US per repo README"
+    }
+  ]
+}

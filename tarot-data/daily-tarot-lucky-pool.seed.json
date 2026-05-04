@@ -1,0 +1,117 @@
+{
+  "datasetId": "daily_tarot_lucky_pool_seed_v0_1",
+  "language": "zh-CN",
+  "sourceNote": "根据本项目整理的《塔罗牌日签数据结构设计》转成的运行种子。现代网站仅作分类参考，不复制外部每日运势文案。",
+  "majorArcanaLuckyPools": {
+    "the-fool": {
+      "ruler": "天王星 / 风",
+      "candidateColors": ["亮黄色", "浅蓝色", "透明白"],
+      "candidateCrystals": ["白水晶", "碧玺", "玛瑙", "绿松石", "锂云母"]
+    },
+    "the-magician": {
+      "ruler": "水星",
+      "candidateColors": ["亮橙色", "金色", "柠檬黄"],
+      "candidateCrystals": ["黄水晶", "火欧泊", "玛瑙", "虎眼石", "石榴石"]
+    },
+    "the-high-priestess": {
+      "ruler": "月亮",
+      "candidateColors": ["银白色", "湖蓝色", "纯白色"],
+      "candidateCrystals": ["月光石", "珍珠", "海蓝宝", "青金石", "蓝晶石"]
+    },
+    "the-empress": {
+      "ruler": "金星",
+      "candidateColors": ["玫瑰粉", "翠绿色", "柔和蓝"],
+      "candidateCrystals": ["祖母绿", "粉晶", "绿松石", "橄榄石", "红玉髓"]
+    },
+    "the-emperor": {
+      "ruler": "白羊座 / 火星",
+      "candidateColors": ["绯红色", "砖红色", "橘红色"],
+      "candidateCrystals": ["红宝石", "红碧玉", "拓帕石", "祖母绿", "红玉髓"]
+    },
+    "the-hierophant": {
+      "ruler": "金牛座 / 土",
+      "candidateColors": ["深绿色", "大地棕", "靛蓝色"],
+      "candidateCrystals": ["拓帕石", "青金石", "黄水晶", "绿松石", "钻石"]
+    },
+    "the-lovers": {
+      "ruler": "双子座",
+      "candidateColors": ["浅黄色", "珍珠白", "樱花粉"],
+      "candidateCrystals": ["变石", "粉晶", "玛瑙", "红宝石", "紫黄晶"]
+    },
+    "the-chariot": {
+      "ruler": "巨蟹座",
+      "candidateColors": ["银色", "浅蓝色", "月光白"],
+      "candidateCrystals": ["虎眼石", "黄铁矿", "玉髓", "琥珀", "硅硼钙石"]
+    },
+    "strength": {
+      "ruler": "狮子座 / 太阳",
+      "candidateColors": ["灿金色", "明橘色", "亮黄色"],
+      "candidateCrystals": ["猫眼石", "虎眼石", "拓帕石", "黄水晶", "钻石"]
+    },
+    "the-hermit": {
+      "ruler": "处女座",
+      "candidateColors": ["橄榄绿", "浅灰色", "泥土褐"],
+      "candidateCrystals": ["橄榄石", "血石", "茶晶", "蓝宝石", "拉长石"]
+    },
+    "wheel-of-fortune": {
+      "ruler": "木星",
+      "candidateColors": ["皇家紫", "深海蓝", "璀璨金"],
+      "candidateCrystals": ["翡翠", "青金石", "蓝宝石", "绿东陵", "玛瑙"]
+    },
+    "justice": {
+      "ruler": "天秤座",
+      "candidateColors": ["祖母绿", "柔粉色", "象牙白"],
+      "candidateCrystals": ["青金石", "猫眼石", "黑玉", "白水晶", "萤石"]
+    },
+    "the-hanged-man": {
+      "ruler": "海王星 / 水",
+      "candidateColors": ["深邃蓝", "海水绿", "银灰色"],
+      "candidateCrystals": ["紫黄晶", "海蓝宝", "虎眼石", "琥珀", "月光石"]
+    },
+    "death": {
+      "ruler": "天蝎座 / 冥王星",
+      "candidateColors": ["纯黑色", "勃艮第酒红", "暗紫"],
+      "candidateCrystals": ["黑曜石", "琥珀", "血石", "黑玛瑙", "捷克陨石"]
+    },
+    "temperance": {
+      "ruler": "射手座",
+      "candidateColors": ["丁香紫", "宝蓝色", "亮洋红"],
+      "candidateCrystals": ["彩虹萤石", "紫水晶", "碧玉", "黄铁矿", "绿松石"]
+    },
+    "the-devil": {
+      "ruler": "摩羯座 / 土星",
+      "candidateColors": ["墨黑色", "深灰色", "炭褐色"],
+      "candidateCrystals": ["黑碧玺", "黑曜石", "阿帕契之泪", "赤铁矿"]
+    },
+    "the-tower": {
+      "ruler": "火星",
+      "candidateColors": ["血红色", "纯黑色", "烈焰橙"],
+      "candidateCrystals": ["茶晶", "红宝石", "磁石", "黑玛瑙", "石榴石"]
+    },
+    "the-star": {
+      "ruler": "水瓶座 / 天王星",
+      "candidateColors": ["电光蓝", "星光银", "罗兰紫"],
+      "candidateCrystals": ["海蓝宝", "白水晶", "绿松石", "天青石", "锂云母"]
+    },
+    "the-moon": {
+      "ruler": "双鱼座 / 月亮",
+      "candidateColors": ["海藻绿", "珠光银", "靛蓝色"],
+      "candidateCrystals": ["月光石", "透石膏", "拉长石", "珍珠", "海蓝宝"]
+    },
+    "the-sun": {
+      "ruler": "太阳",
+      "candidateColors": ["耀眼金", "亮黄色", "暖橙色"],
+      "candidateCrystals": ["红玉髓", "黄水晶", "太阳石", "琥珀", "虎眼石"]
+    },
+    "judgement": {
+      "ruler": "冥王星 / 火",
+      "candidateColors": ["焰红色", "明橙色", "亮金色"],
+      "candidateCrystals": ["天使石", "赤铁矿", "孔雀石", "黑曜石", "萤石"]
+    },
+    "the-world": {
+      "ruler": "土星 / 土",
+      "candidateColors": ["宇宙靛", "纯黑色", "大地绿"],
+      "candidateCrystals": ["白水晶", "青金石", "黑玛瑙", "萤石", "透石膏"]
+    }
+  }
+}

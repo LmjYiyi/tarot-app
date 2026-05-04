@@ -11,6 +11,10 @@ import {
   summarizeQualityRequirements,
 } from "@/lib/interpretation/quality-gate";
 import { buildKbDrivenFallback } from "@/lib/tarot-engine/kb-fallback";
+import {
+  buildKbStructuredResult,
+  renderStructuredResultForQuality,
+} from "@/lib/tarot-engine/structured-result";
 import type { DrawLog, DrawnCard, ReadingIntent, UserFeedback } from "@/lib/tarot/types";
 
 const DEFAULT_MODEL = process.env.MINIMAX_MODEL ?? "MiniMax-M2.7";
@@ -24,6 +28,8 @@ const INTERPRETATION_TIMEOUT_MS = Number(process.env.MINIMAX_INTERPRETATION_TIME
 const INTERPRETATION_IDLE_TIMEOUT_MS = Number(
   process.env.MINIMAX_INTERPRETATION_IDLE_TIMEOUT_MS ?? 25000,
 );
+
+type InterpretationGenerationMode = "legacy" | "grounded_ai";
 
 type GenerateInput = {
   question: string;
@@ -48,6 +54,75 @@ type CreateInterpretationStreamInput = {
   startedAt?: number;
   onCompleteText?: (result: CompletedInterpretationText) => void | Promise<void>;
 };
+
+function getInterpretationGenerationMode(): InterpretationGenerationMode {
+  return process.env.TAROT_INTERPRET_GENERATION_MODE === "grounded_ai"
+    ? "grounded_ai"
+    : "legacy";
+}
+
+function isGroundedAiBlockedBySafety(payload: InterpretationPayload) {
+  return payload.tarotEngineContext.safetyMatches.some(
+    ({ rule }) => rule.risk_level === "high" || rule.risk_level === "critical",
+  );
+}
+
+function buildGroundedGenerationPrompt(
+  payload: InterpretationPayload,
+  qualityRequirements: string,
+  attempt: number,
+) {
+  const structuredGrounding = buildKbStructuredResult({
+    question: payload.question,
+    spreadSlug: payload.responseBlueprint.slug,
+    tarotEngineContext: payload.tarotEngineContext,
+  });
+  const material = {
+    question: structuredGrounding.question,
+    spread: structuredGrounding.spread,
+    cards: structuredGrounding.cards.map((card) => ({
+      cardName: card.cardName,
+      orientation: card.orientation,
+      positionName: card.positionName,
+      meaning: card.meaning,
+      advice: card.advice ?? [],
+    })),
+    combinations: structuredGrounding.combinations.map((combination) => ({
+      cardNames: combination.cardNames,
+      positions: combination.positions.map((position) => position.positionName),
+      summary: combination.summary,
+    })),
+    safety: structuredGrounding.safety,
+    readingSeed: structuredGrounding.reading,
+    supplementalText: renderStructuredResultForQuality(structuredGrounding),
+  };
+  const retryIntro =
+    attempt === 0
+      ? "请按原始写作合同生成最终用户可见的完整塔罗解读，并把下面的补充资料自然融入需要增强的地方。"
+      : "上一次输出没有通过质量验收。请按同一份原始写作合同重新生成，并把补充资料自然融入需要增强的地方。";
+
+  return [
+    retryIntro,
+    "",
+    "生成边界：",
+    "1. 原始写作合同是主体；补充资料只用于增强细节、牌位理解、组合联动和安全边界。",
+    "2. 不要把补充资料逐字段翻译成正文，也不要让补充资料覆盖原始写作合同的咨询式表达。",
+    "3. 不得改变牌名、正逆位、牌位、用户问题、领域、安全边界或观察窗口。",
+    "4. 关键判断优先来自牌面和用户问题；补充资料用于让判断更具体、更稳，不用于替代整篇解读。",
+    "5. 不要写“KB”“资料包”“结构化结果”“检索材料”“补充资料”“根据规则”等内部措辞。",
+    "6. 安全边界存在时，优先写现实支持、边界和可观察信号，不做确定预测。",
+    "7. 语言要保留咨询感和牌桌感，避免机械复述字段，避免逐条翻译 JSON。",
+    "",
+    "原始写作合同：",
+    payload.userPrompt,
+    "",
+    "补充资料：",
+    JSON.stringify(material),
+    "",
+    "质量验收要求：",
+    qualityRequirements,
+  ].join("\n");
+}
 
 function getClient() {
   const apiKey = process.env.MINIMAX_API_KEY;
@@ -649,6 +724,7 @@ function resolveInterpretationMaxTokens(
 export async function createInterpretationStream(input: CreateInterpretationStreamInput) {
   const { payload, fallbackText } = input;
   const startedAt = input.startedAt ?? Date.now();
+  const generationMode = getInterpretationGenerationMode();
   const readingIntent = payload.readingIntent;
   const userFeedback = payload.userFeedback;
   const question = payload.question;
@@ -682,9 +758,33 @@ export async function createInterpretationStream(input: CreateInterpretationStre
       citations: payload.citations,
       model: "mock-static-reader",
       pipeline: "local_fallback",
+      generationMode,
       debug: {
         ...tarotKbDebug,
+        generationMode,
         fallbackReason: "missing_minimax_api_key",
+        total_ms: Date.now() - startedAt,
+      },
+    };
+  }
+
+  if (generationMode === "grounded_ai" && isGroundedAiBlockedBySafety(payload)) {
+    const text = sanitizeInterpretationText(
+      fallbackText,
+      payload.responseBlueprint,
+      sanitizeOptions,
+    );
+
+    return {
+      stream: createTextStream(text),
+      citations: payload.citations,
+      model: "local-interpretation-fallback",
+      pipeline: "kb_grounded_fallback",
+      generationMode,
+      debug: {
+        ...tarotKbDebug,
+        generationMode,
+        fallbackReason: "safety_blocked_grounded_ai",
         total_ms: Date.now() - startedAt,
       },
     };
@@ -716,6 +816,12 @@ export async function createInterpretationStream(input: CreateInterpretationStre
 
     async function generateText(attempt: number) {
       const generationStart = Date.now();
+      const promptText =
+        generationMode === "grounded_ai"
+          ? buildGroundedGenerationPrompt(payload, qualityRequirements, attempt)
+          : attempt === 0
+            ? `${payload.userPrompt}\n\n质量验收要求：\n${qualityRequirements}`
+            : `${payload.userPrompt}\n\n上一次输出没有通过质量验收。请重新生成，必须满足：\n${qualityRequirements}`;
       const messageStream = await withTimeout(
         aiClient.messages.create(
           {
@@ -739,10 +845,7 @@ export async function createInterpretationStream(input: CreateInterpretationStre
                 content: [
                   {
                     type: "text",
-                    text:
-                      attempt === 0
-                        ? `${payload.userPrompt}\n\n质量验收要求：\n${qualityRequirements}`
-                        : `${payload.userPrompt}\n\n上一次输出没有通过质量验收。请重新生成，必须满足：\n${qualityRequirements}`,
+                    text: promptText,
                   },
                 ],
               },
@@ -820,13 +923,21 @@ export async function createInterpretationStream(input: CreateInterpretationStre
     timings.quality_retries = retryCount;
 
     const pipeline =
-      usedQualityFallback
-        ? "ai_quality_fallback"
-        : retryCount > 0
-          ? "ai_quality_gated_retry"
-          : quality.repaired
-            ? "ai_quality_gated"
-            : "ai_generated";
+      generationMode === "grounded_ai"
+        ? usedQualityFallback
+          ? "ai_grounded_quality_fallback"
+          : retryCount > 0
+            ? "ai_grounded_quality_gated_retry"
+            : quality.repaired
+              ? "ai_grounded_quality_gated"
+              : "ai_grounded_generated"
+        : usedQualityFallback
+          ? "ai_quality_fallback"
+          : retryCount > 0
+            ? "ai_quality_gated_retry"
+            : quality.repaired
+              ? "ai_quality_gated"
+              : "ai_generated";
     const shouldReportAiCompletion = !usedQualityFallback;
 
     return {
@@ -843,9 +954,11 @@ export async function createInterpretationStream(input: CreateInterpretationStre
       citations: payload.citations,
       model: usedQualityFallback ? "local-interpretation-fallback" : DEFAULT_MODEL,
       pipeline,
+      generationMode,
       debug: {
         ...tarotKbDebug,
         ...timings,
+        generationMode,
         qualityIssueIds: quality.issues.map((issue) => issue.id),
       },
     };
@@ -862,10 +975,13 @@ export async function createInterpretationStream(input: CreateInterpretationStre
       stream: createTextStream(text),
       citations: payload.citations,
       model: "local-interpretation-fallback",
-      pipeline: "ai_failed_fallback",
+      pipeline:
+        generationMode === "grounded_ai" ? "ai_grounded_failed_fallback" : "ai_failed_fallback",
+      generationMode,
       debug: {
         ...tarotKbDebug,
         ...timings,
+        generationMode,
         fallbackReason: "stream_start_exception",
         error: error instanceof Error ? error.message : "Unknown interpretation error",
       },

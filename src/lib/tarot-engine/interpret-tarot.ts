@@ -1,6 +1,10 @@
 import { createInterpretationStream } from "@/lib/ai/provider";
 import { buildInterpretationPayload } from "@/lib/interpretation/context";
 
+import {
+  buildDailySingleGuidanceText,
+  createDailySingleGuidanceStream,
+} from "./daily-single-guidance";
 import { buildKbDrivenFallback } from "./kb-fallback";
 import { writeTarotQualityLog } from "./quality-log";
 import { qualityCheckByRules } from "./quality-gate";
@@ -12,6 +16,7 @@ import type { InterpretTarotInput, InterpretTarotResult } from "./types";
 function buildHeaders(result: {
   model: string;
   pipeline?: string;
+  generationMode?: string;
   debug?: unknown;
   fallbackQuality?: { passed: boolean; score: number; issues: string[] };
 }): Record<string, string> {
@@ -21,6 +26,9 @@ function buildHeaders(result: {
     "Cache-Control": "no-store",
     "x-model": result.model,
     "x-interpretation-pipeline": result.pipeline ?? "unknown",
+    "x-interpretation-generation-mode":
+      result.generationMode ??
+      (typeof debug?.generationMode === "string" ? debug.generationMode : "legacy"),
     "x-interpretation-ms":
       typeof debug?.total_ms === "number" ? String(debug.total_ms) : "unknown",
     "x-interpretation-fallback-reason":
@@ -68,6 +76,44 @@ function previewText(text: string, max = 80) {
 
 export async function interpretTarot(input: InterpretTarotInput): Promise<InterpretTarotResult> {
   const startedAt = Date.now();
+
+  if (input.spreadSlug === "single-guidance" && input.cards.length === 1) {
+    const tarotEngineContext = await retrieveTarotEngineContext({
+      question: input.question,
+      spreadSlug: input.spreadSlug,
+      cards: input.cards,
+      readingIntent: input.readingIntent,
+    });
+    const text = buildDailySingleGuidanceText({
+      card: input.cards[0],
+      dailyAstrology: input.dailyAstrology,
+      tarotEngineContext,
+    });
+    const result = {
+      stream: createDailySingleGuidanceStream(text),
+      citations: [],
+      model: "local-daily-guidance",
+      pipeline: "local_daily_guidance_retrieved",
+      generationMode: "local_template_with_retrieval",
+      debug: {
+        total_ms: Date.now() - startedAt,
+        fallbackReason: "none",
+        generationMode: "local_template_with_retrieval",
+        tarotKbVersion: tarotEngineContext.kbVersion,
+        tarotKbDomain: tarotEngineContext.domain,
+        tarotKbCardContextHits: tarotEngineContext.cardContexts.length,
+        tarotKbPairContextHits: tarotEngineContext.pairContexts.length,
+        tarotKbQuestionMatchHits: tarotEngineContext.questionMatches.length,
+        tarotKbSafetyMatchHits: tarotEngineContext.safetyMatches.length,
+      },
+    };
+
+    return {
+      ...result,
+      headers: buildHeaders(result),
+    };
+  }
+
   const tarotEngineContext = await retrieveTarotEngineContext({
     question: input.question,
     spreadSlug: input.spreadSlug,
@@ -81,6 +127,7 @@ export async function interpretTarot(input: InterpretTarotInput): Promise<Interp
     drawLog: input.drawLog ?? undefined,
     readingIntent: input.readingIntent,
     userFeedback: input.userFeedback,
+    dailyAstrology: input.dailyAstrology,
     locale: input.locale ?? "zh-CN",
     tarotEngineContext,
   });
@@ -90,6 +137,7 @@ export async function interpretTarot(input: InterpretTarotInput): Promise<Interp
     responseBlueprint: payload.responseBlueprint,
     selectedCards: payload.selectedCards,
     readingIntent: payload.readingIntent,
+    dailyAstrology: payload.dailyAstrology,
     tarotEngineContext,
   });
   const fallbackQuality = qualityCheckByRules({

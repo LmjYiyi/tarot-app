@@ -1,0 +1,89 @@
+{
+  "sourceId": "S19",
+  "sourceUrl": "https://pypi.org/project/tarot-card-meanings/",
+  "checkedAt": "2026-05-03T14:14:40.914Z",
+  "package": {
+    "name": "tarot-card-meanings",
+    "version": "1.0.1",
+    "summary": "Complete 78 tarot card meanings database with upright, reversed, love, career, and yes/no interpretations. Part of the Deckaura Ecosystem.",
+    "license": "MIT",
+    "projectUrls": {
+      "Documentation": "https://deckaura.com/pages/tarot-card-database",
+      "Homepage": "https://deckaura.com",
+      "NPM Package": "https://www.npmjs.com/package/tarot-card-meanings",
+      "Repository": "https://github.com/gokimedia/tarot-card-meanings",
+      "Wikidata": "https://www.wikidata.org/wiki/Q138745960"
+    },
+    "classifiers": [
+      "Development Status :: 5 - Production/Stable",
+      "Intended Audience :: Developers",
+      "License :: OSI Approved :: MIT License",
+      "Programming Language :: Python :: 3",
+      "Topic :: Games/Entertainment"
+    ]
+  },
+  "releases": [
+    {
+      "version": "1.0.0",
+      "files": [
+        {
+          "filename": "tarot_card_meanings-1.0.0-py3-none-any.whl",
+          "packagetype": "bdist_wheel",
+          "pythonVersion": "py3",
+          "size": 10263,
+          "uploadTime": "2026-03-20T11:13:48.669224Z",
+          "digests": {
+            "blake2b_256": "620822171a1b9933bc5f4cebe6c6e3dff1d0a7693f5a0d26725f508b67cbb157",
+            "md5": "21b945f63462b6e79208973a6f05dd75",
+            "sha256": "c40e7b1d63f192641333435a91046f53b0663601977a17d58f01902f0d3c9a2d"
+          },
+          "url": "https://files.pythonhosted.org/packages/62/08/22171a1b9933bc5f4cebe6c6e3dff1d0a7693f5a0d26725f508b67cbb157/tarot_card_meanings-1.0.0-py3-none-any.whl"
+        },
+        {
+          "filename": "tarot_card_meanings-1.0.0.tar.gz",
+          "packagetype": "sdist",
+          "pythonVersion": "source",
+          "size": 11278,
+          "uploadTime": "2026-03-20T11:13:49.813973Z",
+          "digests": {
+            "blake2b_256": "86ac44d95d09d2e197dda49ee4e6a129dc8ff4cd2d8876af84424807b3873ad9",
+            "md5": "8c4cdfb5955a7d8be913d3599a524c29",
+            "sha256": "0febc65bb2a43b6b9a813a8d8888f045c573bcacc7a925b261a5b07c04421010"
+          },
+          "url": "https://files.pythonhosted.org/packages/86/ac/44d95d09d2e197dda49ee4e6a129dc8ff4cd2d8876af84424807b3873ad9/tarot_card_meanings-1.0.0.tar.gz"
+        }
+      ]
+    },
+    {
+      "version": "1.0.1",
+      "files": [
+        {
+          "filename": "tarot_card_meanings-1.0.1-py3-none-any.whl",
+          "packagetype": "bdist_wheel",
+          "pythonVersion": "py3",
+          "size": 4963,
+          "uploadTime": "2026-03-28T21:29:47.030655Z",
+          "digests": {
+            "blake2b_256": "95b9378ec4b42ce73b674f9b52a2c8f42bb5b3faf94bd41f302c4fc0b34f402a",
+            "md5": "89404694d1412b5f2c0d954c56818dbe",
+            "sha256": "ae98890df4d0f7908d2b7297dfcc6d8b94745d9ae3382d79f25c4839bcd24b6f"
+          },
+          "url": "https://files.pythonhosted.org/packages/95/b9/378ec4b42ce73b674f9b52a2c8f42bb5b3faf94bd41f302c4fc0b34f402a/tarot_card_meanings-1.0.1-py3-none-any.whl"
+        },
+        {
+          "filename": "tarot_card_meanings-1.0.1.tar.gz",
+          "packagetype": "sdist",
+          "pythonVersion": "source",
+          "size": 5101,
+          "uploadTime": "2026-03-28T21:29:48.291719Z",
+          "digests": {
+            "blake2b_256": "a66ce86a73a3453d8667ac4e88744654ca2fb85ea7ac477bdce12ea68f36f599",
+            "md5": "5d7e39b61a9757df37d037877b702dab",
+            "sha256": "e7aa18c66d3f5f290af94f281124d238b114510f83a54c7dc0ce7d75bc997a2a"
+          },
+          "url": "https://files.pythonhosted.org/packages/a6/6c/e86a73a3453d8667ac4e88744654ca2fb85ea7ac477bdce12ea68f36f599/tarot_card_meanings-1.0.1.tar.gz"
+        }
+      ]
+    }
+  ]
+}

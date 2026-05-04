@@ -1,0 +1,27 @@
+{
+  "source_id": "S05",
+  "source_name": "TarotSchema / tarotsmith/TarotSchema",
+  "site_url": "https://www.tarotschema.com/",
+  "decks_schema_url": "https://tarotschema.com/decks-schema.json",
+  "decks_schema_hf_raw_url": "https://huggingface.co/datasets/tarotsmith/TarotSchema/raw/main/decks-schema.json",
+  "decks_schema_github_raw_url": "https://raw.githubusercontent.com/TarotSchema/codex/refs/heads/main/decks-schema.json",
+  "spreads_schema_url": "https://tarotschema.com/spreads-schema.json",
+  "spreads_schema_hf_raw_url": "https://huggingface.co/datasets/tarotsmith/TarotSchema/raw/main/spreads-schema.json",
+  "metadata_from_source": {
+    "author": "Jeremy Lampkin",
+    "schema_version": "1.0",
+    "license": {
+      "structure": "MIT",
+      "text_content": "CC-BY-4.0"
+    },
+    "updated": "2026-02-22",
+    "described_scope": "15 decks and 1,428 card entries in decks-schema.json; spreads-schema.json contains spread position definitions and instructions."
+  },
+  "pack_status": "embedded_and_normalized",
+  "reason_not_embedded": null,
+  "actual_counts": {
+    "decks_cards": 556,
+    "spreads": 21
+  },
+  "synthetic": false
+}

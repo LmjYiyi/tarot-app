@@ -39,6 +39,12 @@ export const interpretationSectionTitles = [
   "整体关系",
   "分位置解读",
   "逐张牌解读",
+  "牌面联动",
+  "边界提醒",
+  "整体主线",
+  "当前结论",
+  "下一步建议",
+  "最后给你的提醒",
   "整组牌关系",
   "牌与牌之间",
   "近期趋势",
@@ -63,6 +69,10 @@ export const interpretationSectionTitles = [
   "一句话总结",
   "一句提醒",
   "核心主题",
+  "今日感情",
+  "今日事业",
+  "今日财运",
+  "温馨小tips",
 ] as const;
 
 export type InterpretationDisplayItem =

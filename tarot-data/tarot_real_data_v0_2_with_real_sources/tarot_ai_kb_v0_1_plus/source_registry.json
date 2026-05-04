@@ -1,0 +1,101 @@
+[
+  {
+    "source_id": "S01",
+    "name": "A. E. Waite, The Pictorial Key to the Tarot",
+    "type": "public_domain_text",
+    "authority": "high",
+    "license": "Public domain / historical text",
+    "direct_use": "yes_for_careful_quotation_and_paraphrase",
+    "best_use": "RWS 经典牌义、象征背景、牌面叙述核对",
+    "risk": "语言古旧，直接输出需要现代化改写",
+    "url": "https://en.wikisource.org/wiki/The_Pictorial_Key_to_the_Tarot"
+  },
+  {
+    "source_id": "S02",
+    "name": "Sacred Texts: The Pictorial Key to the Tarot",
+    "type": "public_domain_text_archive",
+    "authority": "high",
+    "license": "Public domain text archive",
+    "direct_use": "yes",
+    "best_use": "交叉核对 Waite 原文结构",
+    "risk": "站点排版较旧，抓取需清洗",
+    "url": "https://sacred-texts.com/tarot/pkt/index.htm"
+  },
+  {
+    "source_id": "S03",
+    "name": "Wikimedia Commons: Rider-Waite tarot deck category",
+    "type": "public_domain_images",
+    "authority": "high",
+    "license": "Original RWS public domain in US/UK; some colorized versions may differ",
+    "direct_use": "yes_with_version_check",
+    "best_use": "RWS 牌图索引、视觉标注、卡面图像来源",
+    "risk": "避免混用受版权保护的再上色版本",
+    "url": "https://commons.wikimedia.org/wiki/Category:Rider-Waite_tarot_deck"
+  },
+  {
+    "source_id": "S04",
+    "name": "American Tarot Association Code of Ethics",
+    "type": "ethics_guideline",
+    "authority": "high",
+    "license": "publicly available PDF",
+    "direct_use": "paraphrase_or_reference",
+    "best_use": "医疗、法律、财务、心理咨询边界；占卜师职业伦理",
+    "risk": "需转译成产品安全规则，不宜直接大段复制",
+    "url": "https://www.ata-tarot.com/images/members/ethicaltarot4.pdf"
+  },
+  {
+    "source_id": "S05",
+    "name": "NIST AI Risk Management Framework",
+    "type": "ai_risk_framework",
+    "authority": "high",
+    "license": "public US government publication",
+    "direct_use": "yes_for_framework_reference",
+    "best_use": "AI 产品风险识别、透明性、可控性、评估流程",
+    "risk": "不是塔罗专用，需要映射到应用规则",
+    "url": "https://www.nist.gov/itl/ai-risk-management-framework"
+  },
+  {
+    "source_id": "S06",
+    "name": "TarotSchema by Tarotsmith",
+    "type": "machine_readable_schema",
+    "authority": "medium_high",
+    "license": "open schema / verify latest repo license before commercial use",
+    "direct_use": "reference_schema",
+    "best_use": "牌卡、牌阵、语义结构设计参考",
+    "risk": "使用前需复核具体文件许可证",
+    "url": "https://www.tarotschema.com/"
+  },
+  {
+    "source_id": "S07",
+    "name": "Hugging Face: Blacik/tarot-card-meanings-78",
+    "type": "open_dataset",
+    "authority": "medium",
+    "license": "check dataset card; commonly listed as CC BY-SA style sources in research notes",
+    "direct_use": "only_after_license_review",
+    "best_use": "78 张牌义字段结构参考",
+    "risk": "质量与许可证需人工核验，不作为本包直接复制来源",
+    "url": "https://huggingface.co/datasets/Blacik/tarot-card-meanings-78"
+  },
+  {
+    "source_id": "S08",
+    "name": "Biddy Tarot card meanings",
+    "type": "commercial_reference",
+    "authority": "high",
+    "license": "copyrighted",
+    "direct_use": "no_copy",
+    "best_use": "现代用户语言与主题维度参考",
+    "risk": "不可复制原文；只能抽象方法并原创改写",
+    "url": "https://biddytarot.com/tarot-card-meanings/"
+  },
+  {
+    "source_id": "S09",
+    "name": "Labyrinthos Tarot card meanings",
+    "type": "commercial_reference",
+    "authority": "medium",
+    "license": "copyrighted",
+    "direct_use": "no_copy",
+    "best_use": "关键词、视觉提示、学习路径参考",
+    "risk": "不可复制原文；只能参考后重写",
+    "url": "https://labyrinthos.co/blogs/tarot-card-meanings-list"
+  }
+]

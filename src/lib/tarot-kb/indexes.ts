@@ -65,10 +65,11 @@ function buildCombinationMap(items: CardCombination[]) {
   return new Map(entries);
 }
 
-export function buildTarotKbIndexes(raw: RawTarotKb): TarotKb {
+export function buildTarotKbIndexes(raw: RawTarotKb, sourceRoot: string): TarotKb {
   return {
     ...raw,
     loadedAt: new Date().toISOString(),
+    sourceRoot,
     counts: countRawKb(raw),
     cardsById: new Map(raw.cards.map((card) => [card.card_id, card])),
     questionTaxonomyById: new Map(raw.questionTaxonomy.map((item) => [item.id, item])),

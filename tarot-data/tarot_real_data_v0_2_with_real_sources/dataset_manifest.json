@@ -1,0 +1,51 @@
+{
+  "package": "tarot_real_data_v0_1_source_only",
+  "created_at": "2026-05-03T14:19:47.025797+00:00",
+  "policy": "real-data-only; generated content not used as dataset rows",
+  "counts": {
+    "cards": 78,
+    "waite_major_arcana_meanings": 22,
+    "waite_lesser_arcana_additional_meanings": 56,
+    "waite_celtic_cross_spread": 1,
+    "waite_celtic_cross_positions": 10
+  },
+  "excluded_as_not_real": [
+    "question_taxonomy",
+    "golden_cases",
+    "style_samples",
+    "followup_questions",
+    "modern_card_context_meanings",
+    "card_visual_symbols",
+    "card_combinations",
+    "safety_rules"
+  ],
+  "package_name": "tarot_real_data_v0_2_with_real_sources",
+  "datasets": {
+    "huggingface_blacik_card_meanings_78": {
+      "rows": 78,
+      "files": [
+        "huggingface_blacik/raw/blacik_tarot_card_meanings_78.viewer_extracted.jsonl",
+        "huggingface_blacik/raw/blacik_tarot_card_meanings_78.viewer_extracted.csv",
+        "huggingface_blacik/processed/blacik_tarot_card_meanings_78.normalized.jsonl",
+        "huggingface_blacik/processed/blacik_tarot_card_meanings_78.normalized.csv"
+      ],
+      "source_id": "S06",
+      "license": "CC-BY-SA-4.0",
+      "synthetic": false
+    },
+    "tarotschema": {
+      "status": "source_manifest_and_fetch_script_included; full raw not embedded",
+      "expected_scope_from_source": "15 decks, 1,428 card entries plus spreads schema",
+      "files": [
+        "tarotschema/raw_pointers/tarotschema_source_metadata.json",
+        "tarotschema/raw_pointers/decks-schema.json.url.txt",
+        "tarotschema/raw_pointers/spreads-schema.json.url.txt",
+        "scripts/fetch_tarotschema.py"
+      ],
+      "source_id": "S05",
+      "license_structure": "MIT",
+      "license_text_content": "CC-BY-4.0",
+      "synthetic": false
+    }
+  }
+}

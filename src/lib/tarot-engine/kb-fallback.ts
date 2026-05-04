@@ -1,5 +1,6 @@
 import type { SpreadReadingTemplate } from "@/lib/interpretation/templates/types";
 import type { ReadingIntent, SpreadDefinition, TarotCard } from "@/lib/tarot/types";
+import type { DailyAstrologyGuidance } from "@/lib/astrology/daily-guidance";
 
 import type {
   RetrievedCardContext,
@@ -21,6 +22,7 @@ type KbDrivenFallbackInput = {
   responseBlueprint: SpreadReadingTemplate;
   selectedCards: SelectedCardForFallback[];
   readingIntent?: ReadingIntent;
+  dailyAstrology?: DailyAstrologyGuidance;
   tarotEngineContext: TarotEngineContext;
 };
 
@@ -170,7 +172,7 @@ function buildSafetyOnlyFallback(input: KbDrivenFallbackInput) {
 }
 
 function buildOpening(input: KbDrivenFallbackInput) {
-  const { tarotEngineContext, spreadName, question } = input;
+  const { tarotEngineContext, spreadName, question, dailyAstrology } = input;
   const domain = domainLabels[tarotEngineContext.domain];
   const cards = tarotEngineContext.cardContexts.map((item) => item.appCard.nameZh).join("、");
   const matchedQuestion = tarotEngineContext.questionMatches[0]?.item;
@@ -179,7 +181,11 @@ function buildOpening(input: KbDrivenFallbackInput) {
       ? `我会把它先放回“${matchedQuestion.rewritten_question}”这个更稳的角度。`
       : "";
 
-  return `这次问题${question.trim() ? `“${question.trim()}”` : ""}更接近${domain}方向，我会按${spreadName}的牌位来读。牌面是${cards || "当前抽牌"}。${rewritten}这不是绝对预测，而是把当前状态、阻碍和可调整的方向摊开看。`;
+  const astrologyTip = dailyAstrology
+    ? `今天落在${dailyAstrology.signNameZh}季节，${dailyAstrology.elementNameZh}的底色会提醒你：${dailyAstrology.dailyFocus}温馨小tips是，${dailyAstrology.watchPoint}`
+    : "";
+
+  return `这次问题${question.trim() ? `“${question.trim()}”` : ""}更接近${domain}方向，我会按${spreadName}的牌位来读。牌面是${cards || "当前抽牌"}。${astrologyTip}${rewritten}这不是绝对预测，而是把当前状态、阻碍和可调整的方向摊开看。`;
 }
 
 function buildStructure(input: KbDrivenFallbackInput) {
@@ -239,8 +245,83 @@ function buildRiskOrHidden(input: KbDrivenFallbackInput) {
 function buildAdvice(input: KbDrivenFallbackInput) {
   const advice = findContextByPosition(input.tarotEngineContext, "advice");
   const fallback = input.tarotEngineContext.cardContexts.at(-1) ?? firstContext(input.tarotEngineContext);
+  const astrologyAction = input.dailyAstrology
+    ? ` 结合今天的星座小提醒，可以把动作收得更轻一点：${input.dailyAstrology.modalityAdvice}${input.dailyAstrology.microPrompt}`
+    : "";
 
-  return formatCardAdvice(advice ?? fallback);
+  return `${formatCardAdvice(advice ?? fallback)}${astrologyAction}`;
+}
+
+function getDailyCard(input: KbDrivenFallbackInput) {
+  return firstContext(input.tarotEngineContext);
+}
+
+function getOrientationSpecificMeaning(
+  item: RetrievedCardContext | null,
+  field: "love" | "career" | "finance",
+) {
+  if (!item) return "";
+
+  const card = item.appCard;
+  const reversed = item.orientation === "reversed";
+
+  if (field === "love") {
+    return cleanText(
+      reversed
+        ? card.loveMeaningReversed ?? card.loveMeaning ?? card.meaningReversed
+        : card.loveMeaningUpright ?? card.loveMeaning ?? card.meaningUpright,
+    );
+  }
+
+  if (field === "career") {
+    return cleanText(
+      reversed
+        ? card.careerMeaningReversed ?? card.careerMeaning ?? card.meaningReversed
+        : card.careerMeaningUpright ?? card.careerMeaning ?? card.meaningUpright,
+    );
+  }
+
+  return cleanText(
+    reversed
+      ? card.financeMeaningReversed ?? card.meaningReversed
+      : card.financeMeaningUpright ?? card.meaningUpright,
+  );
+}
+
+function buildDailyLove(input: KbDrivenFallbackInput) {
+  const item = getDailyCard(input);
+  if (!item) return formatCardSentence(null);
+
+  const meaning = getOrientationSpecificMeaning(item, "love") || getCardReading(item);
+  return `${getSelectedLabel(item)}放到感情里，更像是在提醒你：${meaning}今天不需要把关系读成最终答案，只要观察互动里有没有更自然的回应、更清楚的边界，或更愿意靠近的一点点信号。`;
+}
+
+function buildDailyCareer(input: KbDrivenFallbackInput) {
+  const item = getDailyCard(input);
+  if (!item) return formatCardSentence(null);
+
+  const meaning = getOrientationSpecificMeaning(item, "career") || getCardReading(item);
+  return `${getSelectedLabel(item)}放到事业和日常事务里，重点是：${meaning}今天适合把注意力放在一个能推进的小环节上，不必急着证明结果，先看沟通、协作或执行节奏是否变得更顺。`;
+}
+
+function buildDailyFinance(input: KbDrivenFallbackInput) {
+  const item = getDailyCard(input);
+  if (!item) return formatCardSentence(null);
+
+  const meaning = getOrientationSpecificMeaning(item, "finance") || getCardReading(item);
+  return `${getSelectedLabel(item)}放到财务和资源感里，可以读成：${meaning}这不是投资或消费建议，更像是提醒你今天看清资源如何流动：哪些支出值得，哪些承诺可以先慢一点，哪些支持可以被好好接住。`;
+}
+
+function buildDailyTip(input: KbDrivenFallbackInput) {
+  const item = getDailyCard(input);
+  const cardName = item?.appCard.nameZh ?? "这张牌";
+  const cardAdvice = item ? getCardAdvice(item) : "先做一个能让今天更清楚的小动作。";
+
+  if (!input.dailyAstrology) {
+    return `${cardName}给你的温馨小tips是：${cardAdvice}把它收成今天能完成的一件小事就好，不必把一张牌读成一整天的命运。`;
+  }
+
+  return `今天落在${input.dailyAstrology.signNameZh}季节，${input.dailyAstrology.elementNameZh}的底色提醒你：${input.dailyAstrology.dailyFocus}${input.dailyAstrology.watchPoint}结合${cardName}，可以试试这个小动作：${cardAdvice}${input.dailyAstrology.modalityAdvice}${input.dailyAstrology.microPrompt}`;
 }
 
 function buildObservation(input: KbDrivenFallbackInput) {
@@ -257,6 +338,10 @@ function buildPathSection(input: KbDrivenFallbackInput, positionId: "option_a" |
 }
 
 function buildSectionBody(input: KbDrivenFallbackInput, section: string, index: number) {
+  if (input.dailyAstrology && /今日感情/.test(section)) return buildDailyLove(input);
+  if (input.dailyAstrology && /今日事业/.test(section)) return buildDailyCareer(input);
+  if (input.dailyAstrology && /今日财运/.test(section)) return buildDailyFinance(input);
+  if (input.dailyAstrology && /温馨小tips/.test(section)) return buildDailyTip(input);
   if (index === 0 || /牌面先说/.test(section)) return buildOpening(input);
   if (/路径 A/.test(section)) return buildPathSection(input, "option_a");
   if (/路径 B/.test(section)) return buildPathSection(input, "option_b");

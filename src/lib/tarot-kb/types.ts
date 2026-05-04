@@ -166,6 +166,7 @@ export type TarotKbCounts = {
 
 export type TarotKb = RawTarotKb & {
   loadedAt: string;
+  sourceRoot: string;
   counts: TarotKbCounts;
   cardsById: Map<string, CardBase>;
   questionTaxonomyById: Map<string, QuestionTaxonomyItem>;

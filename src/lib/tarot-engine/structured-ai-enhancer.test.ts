@@ -69,7 +69,7 @@ function baseResult(): TarotInterpretationV2Result {
         positionName: "过去/背景",
         meaning: "过去/背景的愚者显示：先看见关系里的新鲜感和不确定性。",
         advice: ["先观察互动是否稳定。"],
-        reflectionQuestions: ["这张愚者让你最有感觉的是哪一部分？"],
+        reflectionQuestions: [],
       },
       {
         cardId: "major-1-magician",
@@ -79,7 +79,7 @@ function baseResult(): TarotInterpretationV2Result {
         positionName: "现在/现状",
         meaning: "现在/现状的魔术师显示：沟通和主动表达是当前重点。",
         advice: ["把想确认的话说清楚。"],
-        reflectionQuestions: ["你最想确认的互动信号是什么？"],
+        reflectionQuestions: [],
       },
     ],
     combinations: [
@@ -108,7 +108,7 @@ function baseResult(): TarotInterpretationV2Result {
       summary: "不要急着替对方下结论，先看对方是否有稳定回应。",
       closingNote: "最后给你的提醒：先看真实互动，再判断下一步。",
       advice: ["先观察一个可验证信号。"],
-      feedbackQuestions: ["你希望这段关系带给你什么感受？"],
+      feedbackQuestions: [],
     },
     sections: [],
     safety: {
@@ -151,7 +151,6 @@ describe("structured AI enhancer", () => {
           positionId: "external_influence",
           polishedMeaning: "过去/背景的愚者更像是在说，这段关系曾经有轻盈和试探，但还没有形成稳定节奏。",
           advice: ["先看轻松互动能否重复出现。"],
-          reflectionQuestions: ["这段关系里，你最舍不得的是轻松感，还是可能性？"],
         },
       ],
       combinations: [
@@ -165,7 +164,6 @@ describe("structured AI enhancer", () => {
         overallTheme: "整体主题是：可能性需要靠稳定表达来验证。",
         summary: "牌面更支持你观察真实互动，而不是在猜测里消耗自己。",
         advice: ["先确认一次轻松但清楚的沟通。"],
-        feedbackQuestions: ["如果不猜对方，你自己最想要的回应是什么？"],
       },
     });
 
@@ -195,7 +193,6 @@ describe("structured AI enhancer", () => {
           positionId: "external_influence",
           polishedMeaning: "这条 patch 不应该进入结果，因为 cardId 对不上。",
           advice: ["不应该出现。"],
-          reflectionQuestions: ["不应该出现？"],
         },
       ],
       combinations: [],

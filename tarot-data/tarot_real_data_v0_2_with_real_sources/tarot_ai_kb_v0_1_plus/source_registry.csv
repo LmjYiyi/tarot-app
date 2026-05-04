@@ -1,0 +1,10 @@
+source_id,name,type,authority,license,direct_use,best_use,risk,url
+S01,"A. E. Waite, The Pictorial Key to the Tarot",public_domain_text,high,Public domain / historical text,yes_for_careful_quotation_and_paraphrase,RWS 经典牌义、象征背景、牌面叙述核对,语言古旧，直接输出需要现代化改写,https://en.wikisource.org/wiki/The_Pictorial_Key_to_the_Tarot
+S02,Sacred Texts: The Pictorial Key to the Tarot,public_domain_text_archive,high,Public domain text archive,yes,交叉核对 Waite 原文结构,站点排版较旧，抓取需清洗,https://sacred-texts.com/tarot/pkt/index.htm
+S03,Wikimedia Commons: Rider-Waite tarot deck category,public_domain_images,high,Original RWS public domain in US/UK; some colorized versions may differ,yes_with_version_check,RWS 牌图索引、视觉标注、卡面图像来源,避免混用受版权保护的再上色版本,https://commons.wikimedia.org/wiki/Category:Rider-Waite_tarot_deck
+S04,American Tarot Association Code of Ethics,ethics_guideline,high,publicly available PDF,paraphrase_or_reference,医疗、法律、财务、心理咨询边界；占卜师职业伦理,需转译成产品安全规则，不宜直接大段复制,https://www.ata-tarot.com/images/members/ethicaltarot4.pdf
+S05,NIST AI Risk Management Framework,ai_risk_framework,high,public US government publication,yes_for_framework_reference,AI 产品风险识别、透明性、可控性、评估流程,不是塔罗专用，需要映射到应用规则,https://www.nist.gov/itl/ai-risk-management-framework
+S06,TarotSchema by Tarotsmith,machine_readable_schema,medium_high,open schema / verify latest repo license before commercial use,reference_schema,牌卡、牌阵、语义结构设计参考,使用前需复核具体文件许可证,https://www.tarotschema.com/
+S07,Hugging Face: Blacik/tarot-card-meanings-78,open_dataset,medium,check dataset card; commonly listed as CC BY-SA style sources in research notes,only_after_license_review,78 张牌义字段结构参考,质量与许可证需人工核验，不作为本包直接复制来源,https://huggingface.co/datasets/Blacik/tarot-card-meanings-78
+S08,Biddy Tarot card meanings,commercial_reference,high,copyrighted,no_copy,现代用户语言与主题维度参考,不可复制原文；只能抽象方法并原创改写,https://biddytarot.com/tarot-card-meanings/
+S09,Labyrinthos Tarot card meanings,commercial_reference,medium,copyrighted,no_copy,关键词、视觉提示、学习路径参考,不可复制原文；只能参考后重写,https://labyrinthos.co/blogs/tarot-card-meanings-list

@@ -8,7 +8,6 @@ export const structuredAiPatchSchema = z.object({
         positionId: z.string(),
         polishedMeaning: z.string().min(20).optional(),
         advice: z.array(z.string()).default([]),
-        reflectionQuestions: z.array(z.string()).default([]),
       }),
     )
     .default([]),
@@ -26,9 +25,8 @@ export const structuredAiPatchSchema = z.object({
       overallTheme: z.string().min(6).optional(),
       summary: z.string().min(30).optional(),
       advice: z.array(z.string()).default([]),
-      feedbackQuestions: z.array(z.string()).default([]),
     })
-    .default({ advice: [], feedbackQuestions: [] }),
+    .default({ advice: [] }),
 });
 
 export type StructuredAiPatch = z.infer<typeof structuredAiPatchSchema>;

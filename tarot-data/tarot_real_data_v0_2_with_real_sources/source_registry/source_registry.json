@@ -1,0 +1,56 @@
+[
+  {
+    "source_id": "S01",
+    "name": "metabismuth/tarot-json tarot.json",
+    "type": "open-source JSON dataset",
+    "url": "https://github.com/metabismuth/tarot-json",
+    "included_files": "cards/rws_78_cards.metabismuth_tarot_json.normalized.json,cards/rws_78_cards.metabismuth_tarot_json.normalized.csv",
+    "license": "MIT project; README states RWS deck public domain in US",
+    "evidence": "GitHub README says tarot.json is dataset; project is MIT-licensed; README notes RWS public domain in US. See cited lines in final answer."
+  },
+  {
+    "source_id": "S02",
+    "name": "A. E. Waite, The Pictorial Key to the Tarot, Part III §3",
+    "type": "public-domain text",
+    "url": "https://sacred-texts.com/tarot/pkt/pkt0303.htm",
+    "included_files": "waite_public_domain/major_arcana_divinatory_meanings_waite_1911.jsonl",
+    "license": "Public domain in US, per Sacred Texts and Wikisource notices",
+    "evidence": "Section §3 gives Greater Arcana divinatory meanings."
+  },
+  {
+    "source_id": "S03",
+    "name": "A. E. Waite, The Pictorial Key to the Tarot, Part III §4",
+    "type": "public-domain text",
+    "url": "https://sacred-texts.com/tarot/pkt/pkt0304.htm",
+    "included_files": "waite_public_domain/lesser_arcana_additional_meanings_waite_1911.jsonl",
+    "license": "Public domain in US, per Sacred Texts and Wikisource notices",
+    "evidence": "Section §4 gives additional meanings of the Lesser Arcana."
+  },
+  {
+    "source_id": "S04",
+    "name": "A. E. Waite, The Pictorial Key to the Tarot, Part III §7",
+    "type": "public-domain text",
+    "url": "https://sacred-texts.com/tarot/pkt/pkt0307.htm",
+    "included_files": "spreads/waite_celtic_cross_1911.json",
+    "license": "Public domain in US, per Sacred Texts and Wikisource notices",
+    "evidence": "Section §7 gives Celtic Cross positions and meanings."
+  },
+  {
+    "source_id": "S05",
+    "name": "TarotSchema decks-schema.json",
+    "type": "open schema / card-level dataset",
+    "url": "https://tarotschema.com/decks-schema.json",
+    "included_files": "tarotschema/raw/decks-schema.json; tarotschema/raw/spreads-schema.json; tarotschema/processed/tarotschema_decks_cards.normalized.jsonl; tarotschema/processed/tarotschema_spreads.normalized.jsonl",
+    "license": "Structure MIT; text content CC-BY-4.0 per metadata",
+    "evidence": "TarotSchema landing page and raw JSON metadata state 15 decks, 1,428 card entries, schema_version 1.0, and license: structure MIT, text_content CC-BY-4.0."
+  },
+  {
+    "source_id": "S06",
+    "name": "Blacik/tarot-card-meanings-78",
+    "type": "Hugging Face dataset",
+    "url": "https://huggingface.co/datasets/Blacik/tarot-card-meanings-78",
+    "included_files": "huggingface_blacik/raw/blacik_tarot_card_meanings_78.viewer_extracted.jsonl,csv; huggingface_blacik/processed/blacik_tarot_card_meanings_78.normalized.jsonl,csv",
+    "license": "CC-BY-SA-4.0 per dataset card",
+    "evidence": "Hugging Face dataset viewer/card states 78 rows; features include upright_meaning, reversed_meaning, love_meaning, career_meaning; license cc-by-sa-4.0."
+  }
+]

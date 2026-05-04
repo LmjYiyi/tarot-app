@@ -171,24 +171,6 @@ function buildCardAdvice(cardContext: RetrievedCardContext) {
   ]).slice(0, 3);
 }
 
-function buildReflectionQuestions(cardContext: RetrievedCardContext) {
-  const positionName =
-    cardContext.appPosition?.name ??
-    cardContext.contextPositionMeaning?.position_name_cn ??
-    cardContext.positionRule?.name_cn ??
-    "这个位置";
-  const keyword =
-    cardContext.appCard.keywordsUpright[0] ??
-    cardContext.appCard.keywordsReversed[0] ??
-    cardContext.appCard.nameZh;
-
-  return [
-    `这张${cardContext.appCard.nameZh}让你最有感觉的是哪一部分？`,
-    `放在${positionName}里，你现在最想先确认的现实信号是什么？`,
-    `如果围绕“${keyword}”做一个小调整，今天可以从哪里开始？`,
-  ];
-}
-
 function combinationText(pair: RetrievedPairContext, domain: TarotEngineContext["domain"]) {
   const source = pair.curated ?? pair.highFrequency ?? pair.base;
 
@@ -307,12 +289,6 @@ function collectAdvice(cards: TarotInterpretationV2Result["cards"], safetyNote?:
     ...cards.flatMap((card) => card.advice ?? []),
     "把这次牌面当成观察框架：先确认一个可验证信号，再决定下一步。",
   ]).slice(0, 6);
-}
-
-function collectFeedbackQuestions(cards: TarotInterpretationV2Result["cards"]) {
-  return unique(
-    cards.flatMap((card) => card.reflectionQuestions ?? []),
-  ).slice(0, 5);
 }
 
 function buildOpening(input: {
@@ -472,15 +448,6 @@ export function buildStructuredSections(input: {
       })),
     },
     {
-      id: "reflection_questions",
-      title: "可以继续问自己的问题",
-      source: "reading.feedbackQuestions",
-      items: input.reading.feedbackQuestions.map((body, index) => ({
-        id: `reflection-${index + 1}`,
-        body,
-      })),
-    },
-    {
       id: "closing_note",
       title: "最后给你的提醒",
       source: "reading.closingNote",
@@ -513,7 +480,7 @@ export function buildKbStructuredResult(
       cardContext.kbPositionId,
     meaning: buildCardMeaning(cardContext),
     advice: buildCardAdvice(cardContext),
-    reflectionQuestions: buildReflectionQuestions(cardContext),
+    reflectionQuestions: [],
   }));
   const combinations = isCriticalSafety ? [] : buildCombinations(context);
   const safety = {
@@ -534,7 +501,7 @@ export function buildKbStructuredResult(
         summary: buildSummary({ context, cards, combinations, safetyNote }),
         closingNote: buildClosingNote({ cards, safetyNote }),
         advice: collectAdvice(cards, safetyNote),
-        feedbackQuestions: collectFeedbackQuestions(cards),
+        feedbackQuestions: [],
       };
 
   return {

@@ -1,0 +1,167 @@
+[
+  {
+    "path": "DATASET_PLAN.md",
+    "sha256": "d04ed0b2a0b127465e05029529549ff4d7d54f862e23593768754887bf9da4b1",
+    "bytes": 1135
+  },
+  {
+    "path": "LICENSE_NOTES.md",
+    "sha256": "6d2fa7d2ebdb18448f9e9ec3d90f1b30b8c03a7c6d4fcc3ef98d57ac1444d19b",
+    "bytes": 478
+  },
+  {
+    "path": "README.md",
+    "sha256": "45fb25569a6e9b6f359e684bba6957911f1a698d153d68f050283462509d72ed",
+    "bytes": 1922
+  },
+  {
+    "path": "annotation/golden_case_template.json",
+    "sha256": "0d0c91cb4b4b511ab9cb2fafd2ff43096d0ebde58a78b0069bd315471d7409e5",
+    "bytes": 675
+  },
+  {
+    "path": "annotation/labeling_guidelines.md",
+    "sha256": "63280637a4af0fba0cad25dee6994b0c9b3d4cd900c7e3f72e6edde354b34850",
+    "bytes": 640
+  },
+  {
+    "path": "card_combinations/card_combinations.jsonl",
+    "sha256": "db336d198e03f880777c6f64ab043b8f9b08805a34ca1ca5bf44abf6f40bd4fc",
+    "bytes": 122153
+  },
+  {
+    "path": "card_context_meanings/card_context.jsonl",
+    "sha256": "4906922e42b82acb2e69f555b89f8e553255ca30b07b55daebe881c96a6d4fdd",
+    "bytes": 974808
+  },
+  {
+    "path": "cards/cards.json",
+    "sha256": "85c254182e2ce4c7cb7a1aa20fb84d377d3890f8d045470e1b89c4bfcd4fc2bb",
+    "bytes": 42791
+  },
+  {
+    "path": "dataset_manifest.json",
+    "sha256": "984bf54b36e0dee34ec8a8e457872ded79cfbc26b94d306992b678116398edbf",
+    "bytes": 925
+  },
+  {
+    "path": "docs/deep-research-report.md",
+    "sha256": "7fff7e7efc419b612e420cf1d9fb13aff6166259395b2f50744ae2aab8c09289",
+    "bytes": 30843
+  },
+  {
+    "path": "followup_questions/followup_questions.jsonl",
+    "sha256": "887a7f6bc077f6f1280d33b3eed7d5bcbb477a50af3cc1d5ebe4aa8e7f175e75",
+    "bytes": 138208
+  },
+  {
+    "path": "golden_cases/golden_cases.jsonl",
+    "sha256": "0131df0ba4dca561b166914883e0e424c67b33bcb22a9eacefc749d82bd1f282",
+    "bytes": 90222
+  },
+  {
+    "path": "positions/position_grammar.jsonl",
+    "sha256": "db0bb5be1fe52cd9a20a4dec23ebeaf6e20078c41c048460b314647774f50583",
+    "bytes": 17162
+  },
+  {
+    "path": "quality_rubrics/quality_rubrics.jsonl",
+    "sha256": "6d6f3158836ba88123cd1b107a1d77cc9d9c1b5665092a3f49719deca998ebb2",
+    "bytes": 3378
+  },
+  {
+    "path": "question_taxonomy/questions.jsonl",
+    "sha256": "3e5e981cc7854b0ba32e3635969b8d0c6b01192ced181df2e86e489de5c9500d",
+    "bytes": 157013
+  },
+  {
+    "path": "safety_rules/safety_rules.jsonl",
+    "sha256": "ee034db5224a970f846f14f9c5c535c369da52720f47ee843fb7dfef42eb9953",
+    "bytes": 16587
+  },
+  {
+    "path": "schemas/card_combinations.schema.json",
+    "sha256": "508f5baeedb6c5174c4d26f02b39bb52a8ed4753c8ec574d6bf1cbc24f6b7c2f",
+    "bytes": 243
+  },
+  {
+    "path": "schemas/card_context.schema.json",
+    "sha256": "e441610d98049cd1e7768f184b62ba5f49042493e2543ccdf65d1e5b7cc3c6c3",
+    "bytes": 238
+  },
+  {
+    "path": "schemas/card_visual_symbols.schema.json",
+    "sha256": "ff747b4a5164fd131655c4efafd5d1f852f6035292c7f650ab53c0580c621b29",
+    "bytes": 245
+  },
+  {
+    "path": "schemas/followup_questions.schema.json",
+    "sha256": "557ec80223db969508445902128b6213664f49e0b157b2e8a004c556f2e8b0e4",
+    "bytes": 244
+  },
+  {
+    "path": "schemas/golden_cases.schema.json",
+    "sha256": "f2ffae2728477feca2ebf6f79da71d8aa247c51655c057b66cd49348f9767adb",
+    "bytes": 238
+  },
+  {
+    "path": "schemas/position_grammar.schema.json",
+    "sha256": "78d47ad5c7903004cef632335a320f3abfeb49b5219f5ffa1d88311441778940",
+    "bytes": 242
+  },
+  {
+    "path": "schemas/quality_rubrics.schema.json",
+    "sha256": "79a649c49ed80502916797f9b06bc4d389d11e9dfd3a87d5eef5d42c3b393ae3",
+    "bytes": 241
+  },
+  {
+    "path": "schemas/questions.schema.json",
+    "sha256": "eb251cf04f2fe7d06cf2c70fe0482098b16131ea781c390af14e1943fbf055f3",
+    "bytes": 235
+  },
+  {
+    "path": "schemas/safety_rules.schema.json",
+    "sha256": "a9848c6b35c477f6772ff02decc668024d925b766ef546d82d9b01fb6a744592",
+    "bytes": 238
+  },
+  {
+    "path": "schemas/spreads.schema.json",
+    "sha256": "917338cc1476de2bfa4fc5052223e320708942a173641c4ea633b93b501f9d6b",
+    "bytes": 233
+  },
+  {
+    "path": "schemas/style_samples.schema.json",
+    "sha256": "c4fab34b1845640fb3d3e680b09ba2c349b26843e3a0824ea4539b2cf6a22143",
+    "bytes": 239
+  },
+  {
+    "path": "scripts/validate_dataset.py",
+    "sha256": "525a71858f8a06cc5e7fa691af12f4e6726baa3ee57e0915b52e519cdaa960a9",
+    "bytes": 528
+  },
+  {
+    "path": "source_registry.csv",
+    "sha256": "55e6e1ba1bb27ebb5e7bbce4e64c77fa917fa09754df3e2c70261f2790933f2c",
+    "bytes": 2581
+  },
+  {
+    "path": "source_registry.json",
+    "sha256": "f1655ab7f95021a6957a24fd6a764c4b9fb4bfa8056cc08a111cda35842cb516",
+    "bytes": 3989
+  },
+  {
+    "path": "spreads/spreads.jsonl",
+    "sha256": "c94733fd20868e62755642b8b4886f8679d6215e4f49912090677afdf8dde001",
+    "bytes": 18590
+  },
+  {
+    "path": "style_samples/style_samples.jsonl",
+    "sha256": "10b276a77d8b7430d769595e2680f1a67043d15c2ecd2121325b09c321d138cd",
+    "bytes": 90147
+  },
+  {
+    "path": "visual_symbols/card_visual_symbols.jsonl",
+    "sha256": "befd040363e2a80d39c243dd9da4e6def44ac5b5b24dcffe97ff9c6c7ebce6ff",
+    "bytes": 110180
+  }
+]

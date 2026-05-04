@@ -1,0 +1,26 @@
+{
+  "source_id": "S06",
+  "source_name": "Blacik/tarot-card-meanings-78",
+  "source_url": "https://huggingface.co/datasets/Blacik/tarot-card-meanings-78",
+  "viewer_url": "https://huggingface.co/datasets/Blacik/tarot-card-meanings-78/viewer",
+  "declared_license": "CC-BY-SA-4.0",
+  "declared_rows": 78,
+  "declared_features": [
+    "card_number",
+    "card_name",
+    "arcana",
+    "suit",
+    "element",
+    "upright_meaning",
+    "reversed_meaning",
+    "love_meaning",
+    "career_meaning",
+    "yes_or_no",
+    "zodiac_sign",
+    "guide_url"
+  ],
+  "source_card_note": "Dataset card says meanings compiled from Deckaura Tarot Guide and asks users to cite Deckaura Tarot Card Meanings.",
+  "extraction_note": "Rows copied from Hugging Face dataset viewer during ChatGPT session on 2026-05-03; no synthetic rows added.",
+  "requires_attribution": true,
+  "share_alike_notice": "Because this source is CC-BY-SA-4.0, derivative redistributed versions should preserve attribution and compatible share-alike terms."
+}

@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Arcana Flow Daily Tarot Signature Dataset",
+  "description": "用于单张今日牌的本地日签数据结构。字段保持短句化，避免依赖 AI 生成或外部每日运势文案。",
+  "type": "object",
+  "required": ["tarotCards", "zodiacSeasonMapping", "suitSemanticLogic"],
+  "properties": {
+    "tarotCards": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/tarotCardDailyProfile" }
+    },
+    "zodiacSeasonMapping": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/zodiacSeasonProfile" }
+    },
+    "suitSemanticLogic": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/suitSemanticProfile" }
+    }
+  },
+  "definitions": {
+    "tarotCardDailyProfile": {
+      "type": "object",
+      "required": ["cardSlug", "upright", "reversed", "luckyPool"],
+      "properties": {
+        "cardSlug": { "type": "string" },
+        "planetaryZodiacRuler": { "type": "string" },
+        "upright": { "$ref": "#/definitions/divinationAttributes" },
+        "reversed": { "$ref": "#/definitions/divinationAttributes" },
+        "luckyPool": { "$ref": "#/definitions/luckyItems" }
+      }
+    },
+    "divinationAttributes": {
+      "type": "object",
+      "required": [
+        "emotionShort",
+        "careerShort",
+        "wealthShort",
+        "dailyReminder",
+        "microAction",
+        "suitableToDo",
+        "unsuitableToDo"
+      ],
+      "properties": {
+        "emotionShort": { "type": "string" },
+        "careerShort": { "type": "string" },
+        "wealthShort": { "type": "string" },
+        "dailyReminder": { "type": "string" },
+        "microAction": { "type": "string" },
+        "suitableToDo": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "unsuitableToDo": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "luckyItems": {
+      "type": "object",
+      "required": ["candidateColors", "candidateCrystals"],
+      "properties": {
+        "candidateColors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3
+        },
+        "candidateCrystals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3
+        }
+      }
+    },
+    "zodiacSeasonProfile": {
+      "type": "object",
+      "required": ["signId", "dailyTone", "attentionPoint", "minorProblem", "seasonalLuckyPool"],
+      "properties": {
+        "signId": { "type": "string" },
+        "dailyTone": { "type": "string" },
+        "attentionPoint": { "type": "string" },
+        "minorProblem": { "type": "string" },
+        "seasonalLuckyPool": { "$ref": "#/definitions/luckyItems" }
+      }
+    },
+    "suitSemanticProfile": {
+      "type": "object",
+      "required": ["suit", "element", "coreThemes", "priorityField", "microActionTone"],
+      "properties": {
+        "suit": { "type": "string", "enum": ["wands", "cups", "swords", "pentacles", "major"] },
+        "element": { "type": "string", "enum": ["fire", "water", "air", "earth", "major"] },
+        "coreThemes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "priorityField": {
+          "type": "string",
+          "enum": ["careerShort", "emotionShort", "wealthShort", "dailyReminder"]
+        },
+        "microActionTone": { "type": "string" }
+      }
+    }
+  }
+}

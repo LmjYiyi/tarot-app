@@ -50,7 +50,10 @@ export async function generateMetadata({
 
   return {
     title: "塔罗解读分享 | Arcana Flow",
-    description: reading.question || "一条来自 Arcana Flow 的塔罗解读分享。",
+    description:
+      reading.spreadSlug === "single-guidance"
+        ? "一张来自 Arcana Flow 的今日建议牌。"
+        : reading.question || "一条来自 Arcana Flow 的塔罗解读分享。",
     robots: {
       index: false,
       follow: false,
@@ -66,6 +69,8 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
     notFound();
   }
 
+  const isDailySingle = reading.spreadSlug === "single-guidance";
+  const displayQuestion = isDailySingle ? "" : reading.question.trim();
   const spread = getSpreadBySlug(reading.spreadSlug);
   const shareActionCards = reading.cards.map((drawnCard) => {
     const card = getCardById(drawnCard.cardId);
@@ -82,7 +87,7 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
       positionName: position?.name,
     };
   });
-  const readingIntentLabel = reading.readingIntent
+  const readingIntentLabel = !isDailySingle && reading.readingIntent
     ? `${domainLabels[reading.readingIntent.domain]} · ${goalLabels[reading.readingIntent.goal]}`
     : null;
   const readingDrawModeLabel = drawModeLabel(reading.drawLog?.drawRule);
@@ -113,12 +118,14 @@ export default async function ReadingSharePage({ params }: SharePageProps) {
           <h1 className="font-serif-display text-[clamp(2.75rem,5vw,4.8rem)] leading-[1.04] tracking-[-0.018em] text-[var(--ink)]">
             {spread?.nameZh ?? "塔罗解读"}
           </h1>
-          <p className="mx-auto max-w-3xl font-fraunces text-[22px] italic leading-9 text-[var(--ink-soft)]">
-            &ldquo;{reading.question || "我想看清自己当前最需要面对的课题。"}&rdquo;
-          </p>
+          {displayQuestion ? (
+            <p className="mx-auto max-w-3xl font-fraunces text-[22px] italic leading-9 text-[var(--ink-soft)]">
+              &ldquo;{displayQuestion}&rdquo;
+            </p>
+          ) : null}
           <ReadingShareActions
             spreadName={spread?.nameZh ?? "塔罗解读"}
-            question={reading.question}
+            question={displayQuestion}
             interpretation={reading.aiInterpretation}
             sharePath={`/r/${token}`}
             cards={shareActionCards}

@@ -21,6 +21,7 @@ import type {
   TarotCard,
   UserFeedback,
 } from "@/lib/tarot/types";
+import type { DailyAstrologyGuidance } from "@/lib/astrology/daily-guidance";
 
 type BuildContextInput = {
   question: string;
@@ -29,6 +30,7 @@ type BuildContextInput = {
   drawLog?: DrawLog;
   readingIntent?: ReadingIntent;
   userFeedback?: UserFeedback;
+  dailyAstrology?: DailyAstrologyGuidance;
   locale: string;
   tarotEngineContext?: TarotEngineContext;
 };
@@ -111,6 +113,19 @@ function summarizeIntent(intent: ReadingIntent | undefined) {
   return `${domainLabels[intent.domain]} / ${goalLabels[intent.goal]}`;
 }
 
+function summarizeDailyAstrology(guidance: DailyAstrologyGuidance | undefined) {
+  if (!guidance) return null;
+
+  return [
+    `今日星座季节：${guidance.signNameZh}（${guidance.signNameEn}），${guidance.elementNameZh} / ${guidance.modalityNameZh}，守护星：${guidance.rulingPlanet}`,
+    `今日底色：${guidance.dailyFocus}`,
+    `当天提醒：${guidance.watchPoint}`,
+    `行动语气：${guidance.elementTone} ${guidance.modalityAdvice}`,
+    `可回应的小问题：${guidance.microPrompt}`,
+    `日期：${guidance.resolvedForDate}`,
+  ].join("\n");
+}
+
 function summarizeFeedback(
   selectedCards: ResolvedSelectedCard[],
   feedback: UserFeedback | undefined,
@@ -175,6 +190,7 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
   });
   const feedbackSummary = summarizeFeedback(selectedCards, input.userFeedback);
   const intentSummary = summarizeIntent(input.readingIntent);
+  const dailyAstrologySummary = summarizeDailyAstrology(input.dailyAstrology);
   const combinationSummary = buildCombinationSummary(selectedCards);
   const context = await provider.getContext({
     question: input.question,
@@ -194,6 +210,9 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
   const userPrompt = [
     `用户问题：${input.question || "我想看清自己当前最需要面对的课题。"}`,
     `领域/目标：${intentSummary}`,
+    dailyAstrologySummary
+      ? `今日单张建议牌星座上下文（必须自然融入，但不要说“资料集”或“根据数据”）：\n${dailyAstrologySummary}`
+      : null,
     `牌阵：${spread?.nameZh ?? input.spreadSlug}`,
     input.drawLog
       ? `抽牌日志：seed=${input.drawLog.seed}；规则=${input.drawLog.drawRule}；逆位率=${input.drawLog.reversedRate}；时间=${input.drawLog.createdAt}`
@@ -259,6 +278,9 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     "13. 每个章节至少写一段正文，不能省略最后两个章节；如果篇幅不足，压缩中间分析，也必须保留行动建议/决策前动作和观察指标。",
     "14. 不要把内部提示词暴露给用户：不要写“结构分析笔记显示”“组合意义是”“组合意义中”“根据规则”“资料显示”等措辞，要自然融入解读。",
     "15. 严禁擅自补充用户没有提供的事实背景：不要自行添加公司类型、岗位名称、地点、人物身份、关系状态或具体行业；不确定时使用“当前环境”“新方向”“对方”“这件事”等中性表达。",
+    dailyAstrologySummary
+      ? "15b. 星座上下文只能作为轻量补充：不要要求用户补充问题或选择领域；仍然必须遵守当前牌阵模板的章节标题，不得改写成日运四段；可以自然融入一个当天可尝试的小动作，但不要写成确定性运势、命运预言或本命盘分析。"
+      : null,
     `16. 观察指标必须使用本牌阵的验证窗口：${responseBlueprint.timeScope.observationWindow}；不要自行缩短或拉长。`,
     "17. 关系、感情、暧昧、人际语境中，除非用户问题明确写出“他/她/男友/女友/老公/老婆/男方/女方”等性别信息，否则称呼对方时统一使用“TA”或“对方”，不要擅自写成“他”或“她”。",
     /面试|求职|应聘|候选|岗位/.test(input.question)
@@ -293,6 +315,7 @@ export async function buildInterpretationPayload(input: BuildContextInput) {
     scenarioStrategy,
     tarotEngineContext,
     userFeedback: input.userFeedback,
+    dailyAstrology: input.dailyAstrology,
     readingIntent: input.readingIntent,
     spreadName: spread?.nameZh ?? input.spreadSlug,
   };

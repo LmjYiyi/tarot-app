@@ -1,0 +1,22 @@
+{
+  "package_name": "tarot_ai_kb_v0_1_plus",
+  "created_at": "2026-05-03T13:58:37.894380+00:00",
+  "language": "zh-CN with English card names",
+  "purpose": "Tarot AI app structured KB seed package for RAG/eval/router/safety/style/golden cases",
+  "counts": {
+    "cards": 78,
+    "card_visual_symbols": 78,
+    "position_grammar": 25,
+    "spreads": 15,
+    "question_taxonomy": 200,
+    "safety_rules": 20,
+    "card_context_meanings": 936,
+    "card_combinations": 150,
+    "golden_cases": 60,
+    "style_samples": 160,
+    "followup_questions": 300,
+    "quality_rubrics": 12
+  },
+  "copyright_policy": "No commercial tarot-site text is copied. Waite/RWS/public/open sources are referenced in source_registry. Generated content must be reviewed before production use.",
+  "recommended_next_step": "人工复核 visual_symbols 与 card_context_meanings；补充真实用户反馈样本；把 golden_cases 扩到 200+。"
+}

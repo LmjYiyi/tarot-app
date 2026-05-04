@@ -6,6 +6,7 @@ import type {
   TarotCard,
   UserFeedback,
 } from "@/lib/tarot/types";
+import type { DailyAstrologyGuidance } from "@/lib/astrology/daily-guidance";
 import type {
   CardCombination,
   CardContextMeaning,
@@ -34,6 +35,7 @@ export type InterpretTarotInput = {
   drawLog?: DrawLog | null;
   readingIntent?: ReadingIntent;
   userFeedback?: UserFeedback;
+  dailyAstrology?: DailyAstrologyGuidance;
   locale?: string;
 };
 
@@ -42,6 +44,7 @@ export type InterpretTarotResult = {
   citations: Array<{ id: string; title: string }>;
   model: string;
   pipeline: string;
+  generationMode?: string;
   headers: Record<string, string>;
   fallbackQuality?: {
     passed: boolean;

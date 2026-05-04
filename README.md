@@ -98,6 +98,7 @@ src/
 - 静态牌义内容作为知识源
 - provider 统一产出上下文
 - 模型调用层注入缓存型 system/context blocks
+- `/api/interpret` 可用 `TAROT_INTERPRET_GENERATION_MODE=grounded_ai` 进入实验模式：保留旧接口的咨询式生成作为主体，并把 tarot engine / v2 检索结果作为补充资料交给模型，用来增强牌位细节、组合联动和安全边界；AI 失败、质量不过或高风险命中时统一退回 KB fallback
 - 后续如切到 `RAG`，只需要替换 `lib/knowledge/*`
 
 ## Future RAG hook

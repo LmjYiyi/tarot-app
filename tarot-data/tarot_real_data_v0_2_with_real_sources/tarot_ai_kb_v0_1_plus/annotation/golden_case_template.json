@@ -1,0 +1,29 @@
+{
+  "case_id": "GOLD_xxxx",
+  "domain": "career/love/relationship/self_state/decision/study",
+  "intent": "choose_path",
+  "risk_level": "low/medium/high",
+  "question": "用户原问题",
+  "rewritten_question": "安全改写后的问题",
+  "spread_id": "five_career",
+  "cards": [
+    {
+      "card_id": "major_18",
+      "name_cn": "月亮",
+      "orientation": "upright",
+      "position_id": "current_state"
+    }
+  ],
+  "user_feedback": {
+    "first_resonance": "",
+    "most_uncomfortable": "",
+    "overall_feeling": ""
+  },
+  "good_answer": "",
+  "bad_answer": "",
+  "why_good": "",
+  "why_bad": "",
+  "quality_tags": [],
+  "safety_notes": "",
+  "follow_up": []
+}

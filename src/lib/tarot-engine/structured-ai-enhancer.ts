@@ -83,7 +83,6 @@ function buildPrompt(input: EnhanceStructuredResultInput) {
     positionName: card.positionName,
     meaning: card.meaning,
     advice: card.advice ?? [],
-    reflectionQuestions: card.reflectionQuestions ?? [],
   }));
   const promptCombinations = input.base.combinations.map((combination) => ({
     cardIds: combination.cardIds,
@@ -102,7 +101,6 @@ function buildPrompt(input: EnhanceStructuredResultInput) {
       overallTheme: input.base.reading.overallTheme,
       summary: input.base.reading.summary,
       advice: input.base.reading.advice,
-      feedbackQuestions: input.base.reading.feedbackQuestions,
     },
     safety: input.base.safety,
     goldenCases: input.tarotEngineContext.goldenCases.map(({ case: item }) => ({
@@ -131,7 +129,6 @@ function buildPrompt(input: EnhanceStructuredResultInput) {
           positionId: "必须原样返回已有 positionId",
           polishedMeaning: "可选。润色后的逐牌解释，20 字以上",
           advice: ["行动建议，可为空数组"],
-          reflectionQuestions: ["感受型反馈问题，可为空数组"],
         },
       ],
       combinations: [
@@ -145,7 +142,6 @@ function buildPrompt(input: EnhanceStructuredResultInput) {
         overallTheme: "可选。润色后的整体主题",
         summary: "可选。润色后的总结",
         advice: ["可选。行动建议"],
-        feedbackQuestions: ["可选。感受型反馈问题"],
       },
     }),
     "",
@@ -173,9 +169,7 @@ export function mergeStructuredAiPatch(
       ...card,
       meaning: cardPatch.polishedMeaning ?? card.meaning,
       advice: cardPatch.advice.length ? cardPatch.advice.map(compactText).filter(Boolean) : card.advice,
-      reflectionQuestions: cardPatch.reflectionQuestions.length
-        ? cardPatch.reflectionQuestions.map(compactText).filter(Boolean)
-        : card.reflectionQuestions,
+      reflectionQuestions: [],
     };
   });
   const combinations = base.combinations.map((combination) => {
@@ -187,7 +181,6 @@ export function mergeStructuredAiPatch(
   });
 
   const polishedAdvice = patch.reading.advice.map(compactText).filter(Boolean);
-  const polishedFeedbackQuestions = patch.reading.feedbackQuestions.map(compactText).filter(Boolean);
   const reading = {
     opening: compactText(patch.reading.opening) || base.reading.opening,
     overallTheme: compactText(patch.reading.overallTheme) || base.reading.overallTheme,
@@ -196,9 +189,7 @@ export function mergeStructuredAiPatch(
       ? `最后给你的提醒：${polishedAdvice[0]}`
       : base.reading.closingNote,
     advice: polishedAdvice.length ? polishedAdvice : base.reading.advice,
-    feedbackQuestions: polishedFeedbackQuestions.length
-      ? polishedFeedbackQuestions
-      : base.reading.feedbackQuestions,
+    feedbackQuestions: [],
   };
   const enhanced = {
     ...base,

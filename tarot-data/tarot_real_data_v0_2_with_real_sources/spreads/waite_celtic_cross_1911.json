@@ -1,0 +1,71 @@
+{
+  "spread_id": "waite_celtic_cross_1911",
+  "name": "An Ancient Celtic Method of Divination / Celtic Cross",
+  "card_count": 10,
+  "source_id": "S04",
+  "source_title": "A. E. Waite, The Pictorial Key to the Tarot, Part III §7",
+  "source_url": "https://sacred-texts.com/tarot/pkt/pkt0307.htm",
+  "license": "Public domain in US (Sacred Texts/Wikisource public-domain notice)",
+  "positions": [
+    {
+      "index": 1,
+      "label": "That covers him",
+      "meaning": "general influence affecting the person or matter of inquiry; the atmosphere in which other currents work",
+      "source_locator": "turn974209view3 L24"
+    },
+    {
+      "index": 2,
+      "label": "What crosses him",
+      "meaning": "nature of the obstacles in the matter; if favourable, opposing forces may not be serious or may be good in itself but not productive of good in this connection",
+      "source_locator": "turn974209view3 L25"
+    },
+    {
+      "index": 3,
+      "label": "What crowns him",
+      "meaning": "the Querent's aim or ideal in the matter; the best that can be achieved under the circumstances, but not yet actual",
+      "source_locator": "turn974209view3 L26"
+    },
+    {
+      "index": 4,
+      "label": "What is beneath him",
+      "meaning": "foundation or basis of the matter; that which has already passed into actuality and which the Significator has made his own",
+      "source_locator": "turn974209view3 L28"
+    },
+    {
+      "index": 5,
+      "label": "What is behind him",
+      "meaning": "the influence that is just passed, or is now passing away",
+      "source_locator": "turn974209view3 L29"
+    },
+    {
+      "index": 6,
+      "label": "What is before him",
+      "meaning": "the influence that is coming into action and will operate in the near future",
+      "source_locator": "turn974209view3 L32"
+    },
+    {
+      "index": 7,
+      "label": "Himself",
+      "meaning": "the Significator itself, whether person or thing, and its position or attitude in the circumstances",
+      "source_locator": "turn974209view3 L37"
+    },
+    {
+      "index": 8,
+      "label": "His house",
+      "meaning": "environment and tendencies at work therein which affect the matter, such as position in life and immediate friends",
+      "source_locator": "turn974209view3 L39"
+    },
+    {
+      "index": 9,
+      "label": "His hopes or fears",
+      "meaning": "hopes or fears in the matter",
+      "source_locator": "turn974209view3 L41"
+    },
+    {
+      "index": 10,
+      "label": "What will come",
+      "meaning": "final result or culmination brought about by the influences shown by the other cards",
+      "source_locator": "turn974209view3 L42-L43"
+    }
+  ]
+}

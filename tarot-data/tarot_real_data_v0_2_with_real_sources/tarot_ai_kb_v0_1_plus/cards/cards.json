@@ -1,0 +1,2086 @@
+[
+  {
+    "card_id": "major_00",
+    "order": 0,
+    "name_cn": "愚者",
+    "name_en": "The Fool",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 0,
+    "element": null,
+    "upright_keywords": [
+      "新开始",
+      "自由",
+      "冒险"
+    ],
+    "reversed_keywords": [
+      "鲁莽",
+      "逃避现实",
+      "准备不足"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_01",
+    "order": 1,
+    "name_cn": "魔术师",
+    "name_en": "The Magician",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 1,
+    "element": null,
+    "upright_keywords": [
+      "行动力",
+      "显化",
+      "资源整合"
+    ],
+    "reversed_keywords": [
+      "操控",
+      "空想",
+      "资源错配"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_02",
+    "order": 2,
+    "name_cn": "女祭司",
+    "name_en": "The High Priestess",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 2,
+    "element": null,
+    "upright_keywords": [
+      "直觉",
+      "沉静",
+      "隐藏信息"
+    ],
+    "reversed_keywords": [
+      "压抑直觉",
+      "秘密过多",
+      "逃避表达"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_03",
+    "order": 3,
+    "name_cn": "皇后",
+    "name_en": "The Empress",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 3,
+    "element": null,
+    "upright_keywords": [
+      "滋养",
+      "丰盛",
+      "创造"
+    ],
+    "reversed_keywords": [
+      "过度照顾",
+      "依赖舒适",
+      "边界松散"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_04",
+    "order": 4,
+    "name_cn": "皇帝",
+    "name_en": "The Emperor",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 4,
+    "element": null,
+    "upright_keywords": [
+      "秩序",
+      "责任",
+      "边界"
+    ],
+    "reversed_keywords": [
+      "控制欲",
+      "僵化",
+      "权威压力"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_05",
+    "order": 5,
+    "name_cn": "教皇",
+    "name_en": "The Hierophant",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 5,
+    "element": null,
+    "upright_keywords": [
+      "传统",
+      "学习",
+      "制度"
+    ],
+    "reversed_keywords": [
+      "教条",
+      "从众",
+      "权威依赖"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_06",
+    "order": 6,
+    "name_cn": "恋人",
+    "name_en": "The Lovers",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 6,
+    "element": null,
+    "upright_keywords": [
+      "选择",
+      "亲密",
+      "价值一致"
+    ],
+    "reversed_keywords": [
+      "犹豫",
+      "关系失衡",
+      "诱惑"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_07",
+    "order": 7,
+    "name_cn": "战车",
+    "name_en": "The Chariot",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 7,
+    "element": null,
+    "upright_keywords": [
+      "推进",
+      "自控",
+      "胜利"
+    ],
+    "reversed_keywords": [
+      "失控",
+      "方向冲突",
+      "硬撑"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_08",
+    "order": 8,
+    "name_cn": "力量",
+    "name_en": "Strength",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 8,
+    "element": null,
+    "upright_keywords": [
+      "温柔掌控",
+      "勇气",
+      "耐心"
+    ],
+    "reversed_keywords": [
+      "压抑怒气",
+      "缺乏信心",
+      "强撑"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_09",
+    "order": 9,
+    "name_cn": "隐士",
+    "name_en": "The Hermit",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 9,
+    "element": null,
+    "upright_keywords": [
+      "内省",
+      "寻找答案",
+      "独处"
+    ],
+    "reversed_keywords": [
+      "孤立",
+      "过度退缩",
+      "拒绝连接"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_10",
+    "order": 10,
+    "name_cn": "命运之轮",
+    "name_en": "Wheel of Fortune",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 10,
+    "element": null,
+    "upright_keywords": [
+      "周期",
+      "转折",
+      "机会"
+    ],
+    "reversed_keywords": [
+      "反复无常",
+      "被动等待",
+      "卡在循环"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_11",
+    "order": 11,
+    "name_cn": "正义",
+    "name_en": "Justice",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 11,
+    "element": null,
+    "upright_keywords": [
+      "公平",
+      "判断",
+      "因果"
+    ],
+    "reversed_keywords": [
+      "偏见",
+      "逃避责任",
+      "不平衡"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_12",
+    "order": 12,
+    "name_cn": "倒吊人",
+    "name_en": "The Hanged Man",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 12,
+    "element": null,
+    "upright_keywords": [
+      "暂停",
+      "换视角",
+      "牺牲"
+    ],
+    "reversed_keywords": [
+      "停滞",
+      "被困",
+      "无意义消耗"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_13",
+    "order": 13,
+    "name_cn": "死神",
+    "name_en": "Death",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 13,
+    "element": null,
+    "upright_keywords": [
+      "结束",
+      "转化",
+      "清理旧物"
+    ],
+    "reversed_keywords": [
+      "抗拒改变",
+      "拖延告别",
+      "停在旧模式"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_14",
+    "order": 14,
+    "name_cn": "节制",
+    "name_en": "Temperance",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 14,
+    "element": null,
+    "upright_keywords": [
+      "调和",
+      "节奏",
+      "疗愈"
+    ],
+    "reversed_keywords": [
+      "失衡",
+      "过度消耗",
+      "节奏混乱"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_15",
+    "order": 15,
+    "name_cn": "恶魔",
+    "name_en": "The Devil",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 15,
+    "element": null,
+    "upright_keywords": [
+      "束缚",
+      "诱惑",
+      "阴影"
+    ],
+    "reversed_keywords": [
+      "松绑",
+      "识破依赖",
+      "重新掌控"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_16",
+    "order": 16,
+    "name_cn": "高塔",
+    "name_en": "The Tower",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 16,
+    "element": null,
+    "upright_keywords": [
+      "突变",
+      "真相暴露",
+      "结构崩塌"
+    ],
+    "reversed_keywords": [
+      "延迟爆发",
+      "害怕改变",
+      "修补危楼"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_17",
+    "order": 17,
+    "name_cn": "星星",
+    "name_en": "The Star",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 17,
+    "element": null,
+    "upright_keywords": [
+      "希望",
+      "疗愈",
+      "信任未来"
+    ],
+    "reversed_keywords": [
+      "失望",
+      "信念不足",
+      "能量流失"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_18",
+    "order": 18,
+    "name_cn": "月亮",
+    "name_en": "The Moon",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 18,
+    "element": null,
+    "upright_keywords": [
+      "迷雾",
+      "潜意识",
+      "不确定"
+    ],
+    "reversed_keywords": [
+      "看清幻象",
+      "焦虑缓和",
+      "信息浮现"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_19",
+    "order": 19,
+    "name_cn": "太阳",
+    "name_en": "The Sun",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 19,
+    "element": null,
+    "upright_keywords": [
+      "清晰",
+      "快乐",
+      "生命力"
+    ],
+    "reversed_keywords": [
+      "快乐打折",
+      "自信不足",
+      "曝光焦虑"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_20",
+    "order": 20,
+    "name_cn": "审判",
+    "name_en": "Judgement",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 20,
+    "element": null,
+    "upright_keywords": [
+      "召唤",
+      "复盘",
+      "觉醒"
+    ],
+    "reversed_keywords": [
+      "逃避回应",
+      "旧事未清",
+      "自我审判"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "major_21",
+    "order": 21,
+    "name_cn": "世界",
+    "name_en": "The World",
+    "arcana": "Major",
+    "suit": null,
+    "rank": 21,
+    "element": null,
+    "upright_keywords": [
+      "完成",
+      "整合",
+      "阶段圆满"
+    ],
+    "reversed_keywords": [
+      "未完成感",
+      "临门一脚",
+      "难以收束"
+    ],
+    "core_theme": "大阿卡那主题：人生阶段、心理原型与关键转折。",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "seed_reviewed"
+  },
+  {
+    "card_id": "wands_01",
+    "order": 22,
+    "name_cn": "权杖一",
+    "name_en": "Ace of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 1,
+    "element": "火",
+    "upright_keywords": [
+      "开端",
+      "种子",
+      "机会",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "机会未落地",
+      "迟疑",
+      "潜力堵塞"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_02",
+    "order": 23,
+    "name_cn": "权杖二",
+    "name_en": "Two of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 2,
+    "element": "火",
+    "upright_keywords": [
+      "平衡",
+      "选择",
+      "互动",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "摇摆",
+      "失衡",
+      "难以决定"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_03",
+    "order": 24,
+    "name_cn": "权杖三",
+    "name_en": "Three of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 3,
+    "element": "火",
+    "upright_keywords": [
+      "扩展",
+      "合作",
+      "初步成果",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "配合不顺",
+      "期待落空",
+      "进展延迟"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_04",
+    "order": 25,
+    "name_cn": "权杖四",
+    "name_en": "Four of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 4,
+    "element": "火",
+    "upright_keywords": [
+      "稳定",
+      "休整",
+      "结构",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "僵住",
+      "过度防守",
+      "难放松"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_05",
+    "order": 26,
+    "name_cn": "权杖五",
+    "name_en": "Five of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 5,
+    "element": "火",
+    "upright_keywords": [
+      "摩擦",
+      "损失",
+      "挑战",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "修复",
+      "止损",
+      "放下对抗"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_06",
+    "order": 27,
+    "name_cn": "权杖六",
+    "name_en": "Six of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 6,
+    "element": "火",
+    "upright_keywords": [
+      "过渡",
+      "支持",
+      "改善",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "难以离开",
+      "旧事牵绊",
+      "进退两难"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_07",
+    "order": 28,
+    "name_cn": "权杖七",
+    "name_en": "Seven of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 7,
+    "element": "火",
+    "upright_keywords": [
+      "防守",
+      "坚持",
+      "试炼",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "疲惫",
+      "退让",
+      "防御过度"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_08",
+    "order": 29,
+    "name_cn": "权杖八",
+    "name_en": "Eight of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 8,
+    "element": "火",
+    "upright_keywords": [
+      "速度",
+      "练习",
+      "推进",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "急躁",
+      "重复消耗",
+      "节奏错乱"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_09",
+    "order": 30,
+    "name_cn": "权杖九",
+    "name_en": "Nine of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 9,
+    "element": "火",
+    "upright_keywords": [
+      "积累",
+      "临界点",
+      "自我保护",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "倦怠",
+      "孤军奋战",
+      "过度警戒"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_10",
+    "order": 31,
+    "name_cn": "权杖十",
+    "name_en": "Ten of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": 10,
+    "element": "火",
+    "upright_keywords": [
+      "完成",
+      "压力峰值",
+      "承担",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "卸责",
+      "释放负担",
+      "结构重分配"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_page",
+    "order": 32,
+    "name_cn": "权杖侍从",
+    "name_en": "Page of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": "Page",
+    "element": "火",
+    "upright_keywords": [
+      "学习",
+      "消息",
+      "好奇",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "不成熟",
+      "消息延迟",
+      "三分钟热度"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_knight",
+    "order": 33,
+    "name_cn": "权杖骑士",
+    "name_en": "Knight of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": "Knight",
+    "element": "火",
+    "upright_keywords": [
+      "推进",
+      "追求",
+      "动能",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "冲动",
+      "方向不稳",
+      "过快过猛"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_queen",
+    "order": 34,
+    "name_cn": "权杖皇后",
+    "name_en": "Queen of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": "Queen",
+    "element": "火",
+    "upright_keywords": [
+      "成熟感受",
+      "内在掌控",
+      "滋养",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "情绪内耗",
+      "过度保护",
+      "表达失衡"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "wands_king",
+    "order": 35,
+    "name_cn": "权杖国王",
+    "name_en": "King of Wands",
+    "arcana": "Minor",
+    "suit": "Wands",
+    "rank": "King",
+    "element": "火",
+    "upright_keywords": [
+      "掌控",
+      "成熟决策",
+      "外在领导",
+      "行动"
+    ],
+    "reversed_keywords": [
+      "控制欲",
+      "固执",
+      "高压"
+    ],
+    "core_theme": "行动、热情、创造力、事业推进",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_01",
+    "order": 36,
+    "name_cn": "圣杯一",
+    "name_en": "Ace of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 1,
+    "element": "水",
+    "upright_keywords": [
+      "开端",
+      "种子",
+      "机会",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "机会未落地",
+      "迟疑",
+      "潜力堵塞"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_02",
+    "order": 37,
+    "name_cn": "圣杯二",
+    "name_en": "Two of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 2,
+    "element": "水",
+    "upright_keywords": [
+      "平衡",
+      "选择",
+      "互动",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "摇摆",
+      "失衡",
+      "难以决定"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_03",
+    "order": 38,
+    "name_cn": "圣杯三",
+    "name_en": "Three of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 3,
+    "element": "水",
+    "upright_keywords": [
+      "扩展",
+      "合作",
+      "初步成果",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "配合不顺",
+      "期待落空",
+      "进展延迟"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_04",
+    "order": 39,
+    "name_cn": "圣杯四",
+    "name_en": "Four of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 4,
+    "element": "水",
+    "upright_keywords": [
+      "稳定",
+      "休整",
+      "结构",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "僵住",
+      "过度防守",
+      "难放松"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_05",
+    "order": 40,
+    "name_cn": "圣杯五",
+    "name_en": "Five of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 5,
+    "element": "水",
+    "upright_keywords": [
+      "摩擦",
+      "损失",
+      "挑战",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "修复",
+      "止损",
+      "放下对抗"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_06",
+    "order": 41,
+    "name_cn": "圣杯六",
+    "name_en": "Six of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 6,
+    "element": "水",
+    "upright_keywords": [
+      "过渡",
+      "支持",
+      "改善",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "难以离开",
+      "旧事牵绊",
+      "进退两难"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_07",
+    "order": 42,
+    "name_cn": "圣杯七",
+    "name_en": "Seven of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 7,
+    "element": "水",
+    "upright_keywords": [
+      "防守",
+      "坚持",
+      "试炼",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "疲惫",
+      "退让",
+      "防御过度"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_08",
+    "order": 43,
+    "name_cn": "圣杯八",
+    "name_en": "Eight of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 8,
+    "element": "水",
+    "upright_keywords": [
+      "速度",
+      "练习",
+      "推进",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "急躁",
+      "重复消耗",
+      "节奏错乱"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_09",
+    "order": 44,
+    "name_cn": "圣杯九",
+    "name_en": "Nine of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 9,
+    "element": "水",
+    "upright_keywords": [
+      "积累",
+      "临界点",
+      "自我保护",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "倦怠",
+      "孤军奋战",
+      "过度警戒"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_10",
+    "order": 45,
+    "name_cn": "圣杯十",
+    "name_en": "Ten of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": 10,
+    "element": "水",
+    "upright_keywords": [
+      "完成",
+      "压力峰值",
+      "承担",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "卸责",
+      "释放负担",
+      "结构重分配"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_page",
+    "order": 46,
+    "name_cn": "圣杯侍从",
+    "name_en": "Page of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": "Page",
+    "element": "水",
+    "upright_keywords": [
+      "学习",
+      "消息",
+      "好奇",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "不成熟",
+      "消息延迟",
+      "三分钟热度"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_knight",
+    "order": 47,
+    "name_cn": "圣杯骑士",
+    "name_en": "Knight of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": "Knight",
+    "element": "水",
+    "upright_keywords": [
+      "推进",
+      "追求",
+      "动能",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "冲动",
+      "方向不稳",
+      "过快过猛"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_queen",
+    "order": 48,
+    "name_cn": "圣杯皇后",
+    "name_en": "Queen of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": "Queen",
+    "element": "水",
+    "upright_keywords": [
+      "成熟感受",
+      "内在掌控",
+      "滋养",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "情绪内耗",
+      "过度保护",
+      "表达失衡"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "cups_king",
+    "order": 49,
+    "name_cn": "圣杯国王",
+    "name_en": "King of Cups",
+    "arcana": "Minor",
+    "suit": "Cups",
+    "rank": "King",
+    "element": "水",
+    "upright_keywords": [
+      "掌控",
+      "成熟决策",
+      "外在领导",
+      "情绪"
+    ],
+    "reversed_keywords": [
+      "控制欲",
+      "固执",
+      "高压"
+    ],
+    "core_theme": "情绪、关系、亲密、感受流动",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_01",
+    "order": 50,
+    "name_cn": "宝剑一",
+    "name_en": "Ace of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 1,
+    "element": "风",
+    "upright_keywords": [
+      "开端",
+      "种子",
+      "机会",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "机会未落地",
+      "迟疑",
+      "潜力堵塞"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_02",
+    "order": 51,
+    "name_cn": "宝剑二",
+    "name_en": "Two of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 2,
+    "element": "风",
+    "upright_keywords": [
+      "平衡",
+      "选择",
+      "互动",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "摇摆",
+      "失衡",
+      "难以决定"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_03",
+    "order": 52,
+    "name_cn": "宝剑三",
+    "name_en": "Three of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 3,
+    "element": "风",
+    "upright_keywords": [
+      "扩展",
+      "合作",
+      "初步成果",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "配合不顺",
+      "期待落空",
+      "进展延迟"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_04",
+    "order": 53,
+    "name_cn": "宝剑四",
+    "name_en": "Four of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 4,
+    "element": "风",
+    "upright_keywords": [
+      "稳定",
+      "休整",
+      "结构",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "僵住",
+      "过度防守",
+      "难放松"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_05",
+    "order": 54,
+    "name_cn": "宝剑五",
+    "name_en": "Five of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 5,
+    "element": "风",
+    "upright_keywords": [
+      "摩擦",
+      "损失",
+      "挑战",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "修复",
+      "止损",
+      "放下对抗"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_06",
+    "order": 55,
+    "name_cn": "宝剑六",
+    "name_en": "Six of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 6,
+    "element": "风",
+    "upright_keywords": [
+      "过渡",
+      "支持",
+      "改善",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "难以离开",
+      "旧事牵绊",
+      "进退两难"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_07",
+    "order": 56,
+    "name_cn": "宝剑七",
+    "name_en": "Seven of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 7,
+    "element": "风",
+    "upright_keywords": [
+      "防守",
+      "坚持",
+      "试炼",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "疲惫",
+      "退让",
+      "防御过度"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_08",
+    "order": 57,
+    "name_cn": "宝剑八",
+    "name_en": "Eight of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 8,
+    "element": "风",
+    "upright_keywords": [
+      "速度",
+      "练习",
+      "推进",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "急躁",
+      "重复消耗",
+      "节奏错乱"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_09",
+    "order": 58,
+    "name_cn": "宝剑九",
+    "name_en": "Nine of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 9,
+    "element": "风",
+    "upright_keywords": [
+      "积累",
+      "临界点",
+      "自我保护",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "倦怠",
+      "孤军奋战",
+      "过度警戒"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_10",
+    "order": 59,
+    "name_cn": "宝剑十",
+    "name_en": "Ten of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": 10,
+    "element": "风",
+    "upright_keywords": [
+      "完成",
+      "压力峰值",
+      "承担",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "卸责",
+      "释放负担",
+      "结构重分配"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_page",
+    "order": 60,
+    "name_cn": "宝剑侍从",
+    "name_en": "Page of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": "Page",
+    "element": "风",
+    "upright_keywords": [
+      "学习",
+      "消息",
+      "好奇",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "不成熟",
+      "消息延迟",
+      "三分钟热度"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_knight",
+    "order": 61,
+    "name_cn": "宝剑骑士",
+    "name_en": "Knight of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": "Knight",
+    "element": "风",
+    "upright_keywords": [
+      "推进",
+      "追求",
+      "动能",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "冲动",
+      "方向不稳",
+      "过快过猛"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_queen",
+    "order": 62,
+    "name_cn": "宝剑皇后",
+    "name_en": "Queen of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": "Queen",
+    "element": "风",
+    "upright_keywords": [
+      "成熟感受",
+      "内在掌控",
+      "滋养",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "情绪内耗",
+      "过度保护",
+      "表达失衡"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "swords_king",
+    "order": 63,
+    "name_cn": "宝剑国王",
+    "name_en": "King of Swords",
+    "arcana": "Minor",
+    "suit": "Swords",
+    "rank": "King",
+    "element": "风",
+    "upright_keywords": [
+      "掌控",
+      "成熟决策",
+      "外在领导",
+      "思考"
+    ],
+    "reversed_keywords": [
+      "控制欲",
+      "固执",
+      "高压"
+    ],
+    "core_theme": "思考、冲突、判断、语言与边界",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_01",
+    "order": 64,
+    "name_cn": "星币一",
+    "name_en": "Ace of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 1,
+    "element": "土",
+    "upright_keywords": [
+      "开端",
+      "种子",
+      "机会",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "机会未落地",
+      "迟疑",
+      "潜力堵塞"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_02",
+    "order": 65,
+    "name_cn": "星币二",
+    "name_en": "Two of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 2,
+    "element": "土",
+    "upright_keywords": [
+      "平衡",
+      "选择",
+      "互动",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "摇摆",
+      "失衡",
+      "难以决定"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_03",
+    "order": 66,
+    "name_cn": "星币三",
+    "name_en": "Three of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 3,
+    "element": "土",
+    "upright_keywords": [
+      "扩展",
+      "合作",
+      "初步成果",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "配合不顺",
+      "期待落空",
+      "进展延迟"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_04",
+    "order": 67,
+    "name_cn": "星币四",
+    "name_en": "Four of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 4,
+    "element": "土",
+    "upright_keywords": [
+      "稳定",
+      "休整",
+      "结构",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "僵住",
+      "过度防守",
+      "难放松"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_05",
+    "order": 68,
+    "name_cn": "星币五",
+    "name_en": "Five of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 5,
+    "element": "土",
+    "upright_keywords": [
+      "摩擦",
+      "损失",
+      "挑战",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "修复",
+      "止损",
+      "放下对抗"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_06",
+    "order": 69,
+    "name_cn": "星币六",
+    "name_en": "Six of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 6,
+    "element": "土",
+    "upright_keywords": [
+      "过渡",
+      "支持",
+      "改善",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "难以离开",
+      "旧事牵绊",
+      "进退两难"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_07",
+    "order": 70,
+    "name_cn": "星币七",
+    "name_en": "Seven of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 7,
+    "element": "土",
+    "upright_keywords": [
+      "防守",
+      "坚持",
+      "试炼",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "疲惫",
+      "退让",
+      "防御过度"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_08",
+    "order": 71,
+    "name_cn": "星币八",
+    "name_en": "Eight of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 8,
+    "element": "土",
+    "upright_keywords": [
+      "速度",
+      "练习",
+      "推进",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "急躁",
+      "重复消耗",
+      "节奏错乱"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_09",
+    "order": 72,
+    "name_cn": "星币九",
+    "name_en": "Nine of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 9,
+    "element": "土",
+    "upright_keywords": [
+      "积累",
+      "临界点",
+      "自我保护",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "倦怠",
+      "孤军奋战",
+      "过度警戒"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_10",
+    "order": 73,
+    "name_cn": "星币十",
+    "name_en": "Ten of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": 10,
+    "element": "土",
+    "upright_keywords": [
+      "完成",
+      "压力峰值",
+      "承担",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "卸责",
+      "释放负担",
+      "结构重分配"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_page",
+    "order": 74,
+    "name_cn": "星币侍从",
+    "name_en": "Page of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": "Page",
+    "element": "土",
+    "upright_keywords": [
+      "学习",
+      "消息",
+      "好奇",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "不成熟",
+      "消息延迟",
+      "三分钟热度"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_knight",
+    "order": 75,
+    "name_cn": "星币骑士",
+    "name_en": "Knight of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": "Knight",
+    "element": "土",
+    "upright_keywords": [
+      "推进",
+      "追求",
+      "动能",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "冲动",
+      "方向不稳",
+      "过快过猛"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_queen",
+    "order": 76,
+    "name_cn": "星币皇后",
+    "name_en": "Queen of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": "Queen",
+    "element": "土",
+    "upright_keywords": [
+      "成熟感受",
+      "内在掌控",
+      "滋养",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "情绪内耗",
+      "过度保护",
+      "表达失衡"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  },
+  {
+    "card_id": "pentacles_king",
+    "order": 77,
+    "name_cn": "星币国王",
+    "name_en": "King of Pentacles",
+    "arcana": "Minor",
+    "suit": "Pentacles",
+    "rank": "King",
+    "element": "土",
+    "upright_keywords": [
+      "掌控",
+      "成熟决策",
+      "外在领导",
+      "现实"
+    ],
+    "reversed_keywords": [
+      "控制欲",
+      "固执",
+      "高压"
+    ],
+    "core_theme": "现实、资源、金钱、身体与长期建设",
+    "source_refs": [
+      "S01",
+      "S03"
+    ],
+    "status": "generated_seed_needs_review"
+  }
+]

@@ -1,0 +1,237 @@
+{
+  "datasetId": "astrology_daily_guidance_seed_v0_1",
+  "language": "zh-CN",
+  "intendedUse": "用于“单张建议牌/今日抽牌”的轻量日签上下文：不要求用户输入问题或选择领域，按当天所处的太阳星座季节、星座元素/模式/守护星，以及抽到的塔罗牌生成娱乐性提醒。",
+  "productBoundary": [
+    "不作为个人本命盘、真实天象推运或确定性预测。",
+    "不抓取或复用每日星座运势网站的版权文案。",
+    "输出应保持轻量、温和、娱乐向，避免替用户做重大决定。"
+  ],
+  "sourceNotes": [
+    {
+      "id": "britannica_zodiac_2026",
+      "url": "https://www.britannica.com/topic/zodiac",
+      "usedFor": ["日期范围", "元素", "模式", "传统性格关键词"],
+      "policy": "facts_only_rewritten"
+    },
+    {
+      "id": "wikipedia_zodiac",
+      "url": "https://en.wikipedia.org/wiki/Zodiac",
+      "usedFor": ["十二星座为黄道十二等分", "每个星座约占30度黄经", "现代天文学与占星边界说明"],
+      "policy": "facts_only_rewritten"
+    },
+    {
+      "id": "wikipedia_classical_elements",
+      "url": "https://en.wikipedia.org/wiki/Astrology_and_the_classical_elements",
+      "usedFor": ["四元素分组"],
+      "policy": "facts_only_rewritten"
+    }
+  ],
+  "runtimeRecipe": {
+    "defaultQuestion": "今天有什么值得我轻轻留意？",
+    "defaultIntent": {
+      "domain": "self",
+      "goal": "advice"
+    },
+    "seasonMode": "根据当前日期匹配太阳星座季节；如果后续让用户选择生日或星座，可切换为用户太阳星座。",
+    "tarotBlendRule": [
+      "先用星座元素决定今日语气：火=行动，土=落实，风=沟通，水=感受。",
+      "再用模式决定建议形式：基本=启动，固定=稳定，可变=调整。",
+      "最后用抽到的牌给出具体提醒和一个小动作。"
+    ],
+    "suggestedOutputSections": [
+      "今日底色",
+      "这张牌提醒你",
+      "可以试试的小动作"
+    ]
+  },
+  "elementToneMap": {
+    "fire": {
+      "nameZh": "火象",
+      "tarotSuitAffinity": "wands",
+      "tone": "更适合主动一点、让事情动起来，但别急着证明自己。",
+      "dailyActionStyle": "先做一个小动作，再观察反馈。"
+    },
+    "earth": {
+      "nameZh": "土象",
+      "tarotSuitAffinity": "pentacles",
+      "tone": "更适合把注意力放回身体、节奏、资源和现实安排。",
+      "dailyActionStyle": "收拾一个具体环节，让今天更稳。"
+    },
+    "air": {
+      "nameZh": "风象",
+      "tarotSuitAffinity": "swords",
+      "tone": "更适合整理信息、说清边界、换一个角度看问题。",
+      "dailyActionStyle": "少猜一点，多确认一句。"
+    },
+    "water": {
+      "nameZh": "水象",
+      "tarotSuitAffinity": "cups",
+      "tone": "更适合照顾感受、修复关系里的细微波动，也给自己一点空间。",
+      "dailyActionStyle": "先承认感受，再决定要不要回应。"
+    }
+  },
+  "modalityToneMap": {
+    "cardinal": {
+      "nameZh": "基本宫",
+      "theme": "启动",
+      "adviceStyle": "今天适合开启一个小步骤，不必一次完成。"
+    },
+    "fixed": {
+      "nameZh": "固定宫",
+      "theme": "稳定",
+      "adviceStyle": "今天适合守住节奏，也看看哪里太紧了。"
+    },
+    "mutable": {
+      "nameZh": "变动宫",
+      "theme": "调整",
+      "adviceStyle": "今天适合微调路线，让自己更灵活一点。"
+    }
+  },
+  "signs": [
+    {
+      "id": "aries",
+      "nameZh": "白羊座",
+      "nameEn": "Aries",
+      "dateRange": { "start": "03-21", "end": "04-19" },
+      "element": "fire",
+      "modality": "cardinal",
+      "rulingPlanet": "Mars",
+      "dailyFocus": "把冲劲放到真正需要开始的地方。",
+      "watchPoint": "别把一时的急迫误认为必须马上赢。",
+      "microPrompt": "我今天最值得先迈出哪一步？"
+    },
+    {
+      "id": "taurus",
+      "nameZh": "金牛座",
+      "nameEn": "Taurus",
+      "dateRange": { "start": "04-20", "end": "05-20" },
+      "element": "earth",
+      "modality": "fixed",
+      "rulingPlanet": "Venus",
+      "dailyFocus": "让身体、财务、时间表或情绪节奏重新落地。",
+      "watchPoint": "别因为想要安全感，就把变化全部挡在门外。",
+      "microPrompt": "我今天可以稳稳照顾好的一个现实细节是什么？"
+    },
+    {
+      "id": "gemini",
+      "nameZh": "双子座",
+      "nameEn": "Gemini",
+      "dateRange": { "start": "05-21", "end": "06-21" },
+      "element": "air",
+      "modality": "mutable",
+      "rulingPlanet": "Mercury",
+      "dailyFocus": "整理信息、沟通误差和脑子里过多的选项。",
+      "watchPoint": "别让新鲜感把注意力切得太碎。",
+      "microPrompt": "我今天最需要说清楚或确认的一句话是什么？"
+    },
+    {
+      "id": "cancer",
+      "nameZh": "巨蟹座",
+      "nameEn": "Cancer",
+      "dateRange": { "start": "06-22", "end": "07-22" },
+      "element": "water",
+      "modality": "cardinal",
+      "rulingPlanet": "Moon",
+      "dailyFocus": "照顾感受，也为自己建立一点温柔边界。",
+      "watchPoint": "别把别人的情绪都收到自己身上。",
+      "microPrompt": "我今天需要给哪一种感受留一点位置？"
+    },
+    {
+      "id": "leo",
+      "nameZh": "狮子座",
+      "nameEn": "Leo",
+      "dateRange": { "start": "07-23", "end": "08-22" },
+      "element": "fire",
+      "modality": "fixed",
+      "rulingPlanet": "Sun",
+      "dailyFocus": "把表达欲变成有温度的创造或承担。",
+      "watchPoint": "别为了被看见而消耗真正的热情。",
+      "microPrompt": "我今天可以怎样更自然地发光？"
+    },
+    {
+      "id": "virgo",
+      "nameZh": "处女座",
+      "nameEn": "Virgo",
+      "dateRange": { "start": "08-23", "end": "09-22" },
+      "element": "earth",
+      "modality": "mutable",
+      "rulingPlanet": "Mercury",
+      "dailyFocus": "把复杂事情拆小，修正一个真正有用的细节。",
+      "watchPoint": "别把完善当成推迟开始的理由。",
+      "microPrompt": "我今天可以先优化哪一个最小环节？"
+    },
+    {
+      "id": "libra",
+      "nameZh": "天秤座",
+      "nameEn": "Libra",
+      "dateRange": { "start": "09-23", "end": "10-23" },
+      "element": "air",
+      "modality": "cardinal",
+      "rulingPlanet": "Venus",
+      "dailyFocus": "让关系、审美、选择和边界回到更平衡的位置。",
+      "watchPoint": "别为了维持表面和气而忽略自己的倾向。",
+      "microPrompt": "我今天需要在哪件事上更诚实地表达偏好？"
+    },
+    {
+      "id": "scorpio",
+      "nameZh": "天蝎座",
+      "nameEn": "Scorpio",
+      "dateRange": { "start": "10-24", "end": "11-21" },
+      "element": "water",
+      "modality": "fixed",
+      "rulingPlanet": "Mars / Pluto",
+      "dailyFocus": "看见深层动机，但不急着把一切推到极端。",
+      "watchPoint": "别把防备感误认为唯一的保护方式。",
+      "microPrompt": "我今天可以把哪一种紧绷稍微放松一点？"
+    },
+    {
+      "id": "sagittarius",
+      "nameZh": "射手座",
+      "nameEn": "Sagittarius",
+      "dateRange": { "start": "11-22", "end": "12-21" },
+      "element": "fire",
+      "modality": "mutable",
+      "rulingPlanet": "Jupiter",
+      "dailyFocus": "把视野打开，同时给自由感一个可执行方向。",
+      "watchPoint": "别用远方的可能性逃开眼前的承诺。",
+      "microPrompt": "我今天可以往哪个方向多走半步？"
+    },
+    {
+      "id": "capricorn",
+      "nameZh": "摩羯座",
+      "nameEn": "Capricorn",
+      "dateRange": { "start": "12-22", "end": "01-19" },
+      "element": "earth",
+      "modality": "cardinal",
+      "rulingPlanet": "Saturn",
+      "dailyFocus": "把目标拆成能承担的步骤，先稳住结构。",
+      "watchPoint": "别把责任感变成对自己的苛刻。",
+      "microPrompt": "我今天最值得认真完成的一件小事是什么？"
+    },
+    {
+      "id": "aquarius",
+      "nameZh": "水瓶座",
+      "nameEn": "Aquarius",
+      "dateRange": { "start": "01-20", "end": "02-18" },
+      "element": "air",
+      "modality": "fixed",
+      "rulingPlanet": "Saturn / Uranus",
+      "dailyFocus": "保留独立判断，也让想法有机会被别人理解。",
+      "watchPoint": "别把抽离感包装成绝对理性。",
+      "microPrompt": "我今天可以用什么方式更清楚地表达自己的想法？"
+    },
+    {
+      "id": "pisces",
+      "nameZh": "双鱼座",
+      "nameEn": "Pisces",
+      "dateRange": { "start": "02-19", "end": "03-20" },
+      "element": "water",
+      "modality": "mutable",
+      "rulingPlanet": "Jupiter / Neptune",
+      "dailyFocus": "让直觉、共情和想象力服务于一个温柔的小行动。",
+      "watchPoint": "别在模糊里替所有人承担太多。",
+      "microPrompt": "我今天需要温柔但清醒地回应什么？"
+    }
+  ]
+}

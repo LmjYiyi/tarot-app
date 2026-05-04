@@ -1,0 +1,50 @@
+[
+  {
+    "dataset": "question_taxonomy",
+    "requested_minimum": "200",
+    "real_status": "not included",
+    "reason": "Needs real user questions or licensed/user-consented collection; generating 200 questions would be synthetic, not real."
+  },
+  {
+    "dataset": "golden_cases",
+    "requested_minimum": "60",
+    "real_status": "not included",
+    "reason": "Needs expert-written or real evaluated cases; synthetic good/bad answers would not be real evaluation data."
+  },
+  {
+    "dataset": "style_samples",
+    "requested_minimum": "20",
+    "real_status": "not included",
+    "reason": "Needs licensed/commissioned style samples; copying tarot blogs is copyright risky."
+  },
+  {
+    "dataset": "followup_questions",
+    "requested_minimum": "100",
+    "real_status": "not included",
+    "reason": "Needs expert annotation or real dialogue analysis; generated followups are useful but synthetic."
+  },
+  {
+    "dataset": "card_context_meanings",
+    "requested_minimum": "100",
+    "real_status": "partially source-backed only through Waite meanings",
+    "reason": "Modern card × position × domain meanings require expert annotation or open licensed datasets."
+  },
+  {
+    "dataset": "card_visual_symbols",
+    "requested_minimum": "78",
+    "real_status": "not included",
+    "reason": "Needs image annotation against a specific public-domain RWS image set; not filled with generated observations."
+  },
+  {
+    "dataset": "card_combinations",
+    "requested_minimum": "50",
+    "real_status": "not included",
+    "reason": "Needs source-backed combination rules or expert annotation."
+  },
+  {
+    "dataset": "safety_rules",
+    "requested_minimum": "10",
+    "real_status": "not included as rules",
+    "reason": "Needs policy drafting from ATA/NIST/etc.; package currently registers sources but avoids generated policy rules."
+  }
+]

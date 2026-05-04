@@ -1,5 +1,5 @@
 import path from "path";
-import { readFile } from "fs/promises";
+import { access, readFile } from "fs/promises";
 
 import { buildTarotKbIndexes } from "./indexes";
 import type {
@@ -20,12 +20,49 @@ import type {
 } from "./types";
 import { validateTarotKb } from "./validate";
 
-const KB_ROOT = path.join(process.cwd(), "tarot-data", "tarot_ai_kb_v0_2");
+const KB_ROOT_CANDIDATES = [
+  path.join(
+    process.cwd(),
+    "tarot-data",
+    "tarot_real_data_v0_2_with_real_sources",
+    "tarot_ai_kb_v0_2",
+  ),
+  path.join(process.cwd(), "tarot-data", "tarot_ai_kb_v0_2"),
+];
 
 let kbCache: TarotKb | null = null;
+let kbRootCache: string | null = null;
+
+async function pathExists(fullPath: string) {
+  try {
+    await access(fullPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveKbRoot() {
+  if (kbRootCache) {
+    return kbRootCache;
+  }
+
+  for (const candidate of KB_ROOT_CANDIDATES) {
+    const resolved = candidate;
+    const manifestPath = path.join(resolved, "11_manifests", "kb_manifest_v0_2.json");
+
+    if (await pathExists(manifestPath)) {
+      kbRootCache = resolved;
+      return kbRootCache;
+    }
+  }
+
+  throw new Error(`Tarot KB root not found. Checked: ${KB_ROOT_CANDIDATES.join(", ")}`);
+}
 
 async function readJson<T>(relativePath: string): Promise<T> {
-  const fullPath = path.join(KB_ROOT, relativePath);
+  const kbRoot = await resolveKbRoot();
+  const fullPath = path.join(kbRoot, relativePath);
   const raw = await readFile(fullPath, "utf-8");
   return JSON.parse(raw) as T;
 }
@@ -88,8 +125,9 @@ export async function loadTarotKb(): Promise<TarotKb> {
     return kbCache;
   }
 
+  const kbRoot = await resolveKbRoot();
   const rawKb = await readRawTarotKb();
-  const kb = buildTarotKbIndexes(rawKb);
+  const kb = buildTarotKbIndexes(rawKb, kbRoot);
   validateTarotKb(kb);
   kbCache = kb;
 
@@ -98,4 +136,5 @@ export async function loadTarotKb(): Promise<TarotKb> {
 
 export function clearTarotKbCache() {
   kbCache = null;
+  kbRootCache = null;
 }
