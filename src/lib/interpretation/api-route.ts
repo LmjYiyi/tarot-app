@@ -156,6 +156,42 @@ async function runInterpretation(input: InterpretInput, mode: InterpretRouteMode
   });
 }
 
+async function readStreamAsText(stream: ReadableStream<Uint8Array>) {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let text = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      text += decoder.decode(value, { stream: true });
+    }
+
+    text += decoder.decode();
+    return text;
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+function isNetlifyFunctionRuntime() {
+  return Boolean(
+    process.env.NETLIFY ||
+      process.env.SITE_ID ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.LAMBDA_TASK_ROOT,
+  );
+}
+
+async function resolveResponseBody(stream: ReadableStream<Uint8Array>) {
+  if (isNetlifyFunctionRuntime()) {
+    return readStreamAsText(stream);
+  }
+
+  return stream;
+}
+
 export async function handleInterpretRoute(
   request: Request,
   options: { mode?: InterpretRouteMode } = {},
@@ -170,8 +206,9 @@ export async function handleInterpretRoute(
     const mode = options.mode ?? resolveSwitchMode(request);
     const result = await runInterpretation(input, mode);
     const engineHeaders = "headers" in result ? result.headers : undefined;
+    const body = await resolveResponseBody(result.stream);
 
-    return new Response(result.stream, {
+    return new Response(body, {
       headers: buildStreamHeaders({
         mode,
         model: result.model,

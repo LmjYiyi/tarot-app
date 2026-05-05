@@ -1,0 +1,2 @@
+/_next/image?url=:url&w=:width&q=:quality  /.netlify/images?url=:url&w=:width&q=:quality  200
+/_ipx/*  /.netlify/images?url=:url&w=:width&q=:quality  200

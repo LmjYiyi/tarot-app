@@ -22,12 +22,12 @@ import { validateTarotKb } from "./validate";
 
 const KB_ROOT_CANDIDATES = [
   path.join(
-    process.cwd(),
+    /*turbopackIgnore: true*/ process.cwd(),
     "tarot-data",
     "tarot_real_data_v0_2_with_real_sources",
     "tarot_ai_kb_v0_2",
   ),
-  path.join(process.cwd(), "tarot-data", "tarot_ai_kb_v0_2"),
+  path.join(/*turbopackIgnore: true*/ process.cwd(), "tarot-data", "tarot_ai_kb_v0_2"),
 ];
 
 let kbCache: TarotKb | null = null;
