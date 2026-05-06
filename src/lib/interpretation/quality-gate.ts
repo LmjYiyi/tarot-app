@@ -45,6 +45,8 @@ const impossibleSingleCardPattern =
   /(?:整组牌|牌与牌之间|从第一张牌到|四种花色全部缺席|没有明显的花色主导|没有抽到对应牌位)/;
 const rawMeaningCopyPattern =
   /(?:^|\n|\s)(?:感情|事业|學業|事業|財務|健康)[：:]|(?:在事業與工作層面|在感情占卜中|在職場環境中|當這張牌出現|錢幣八的深層意義|寶劍十正位通常|權杖六正位通常|聖杯四正位通常)/;
+const safetyHedgePattern =
+  /(?:不做绝对|不是绝对|只讨论趋势|只看趋势|不提供精确|不能保证|不是保证|并不保证|不等于必然)/;
 
 const safeAbsoluteSentence =
   "这次解读只讨论趋势、条件和可观察信号，不做绝对承诺，也不提供精确日期。";
@@ -320,10 +322,13 @@ function validateText(
     }
   });
 
-  if (absolutePredictionPattern.test(ruleText) || preciseDatePattern.test(ruleText)) {
+  if (
+    (absolutePredictionPattern.test(ruleText) || preciseDatePattern.test(ruleText)) &&
+    !safetyHedgePattern.test(ruleText)
+  ) {
     issues.push({
       id: "absolute-language",
-      severity: "retry",
+      severity: "repairable",
       message: "包含绝对预测或精确日期表达。",
     });
   }
@@ -416,7 +421,7 @@ function validateText(
 
   if (
     requirements.some((item) => item.id === "absolute-safety-sentence") &&
-    !/不做绝对|不是绝对|只讨论趋势|只看趋势|不提供精确/.test(text)
+    !safetyHedgePattern.test(text)
   ) {
     issues.push({
       id: "absolute-safety-sentence",
@@ -485,7 +490,11 @@ function repairText(text: string, input: QualityGateInput, issues: QualityIssue[
     );
   }
 
-  if (issues.some((issue) => issue.id === "absolute-safety-sentence")) {
+  if (
+    issues.some(
+      (issue) => issue.id === "absolute-safety-sentence" || issue.id === "absolute-language",
+    )
+  ) {
     repaired = insertAfterFirstHeading(repaired, input.template, safeAbsoluteSentence);
   }
 

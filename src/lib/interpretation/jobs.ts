@@ -1,14 +1,50 @@
-import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { z, ZodError } from "zod";
 
-import {
-  buildStreamHeaders,
-  parseInterpretInput,
-  readStreamAsText,
-  resolveSwitchMode,
-  runInterpretation,
-  type InterpretRequestInput,
-  type InterpretRouteMode,
-} from "./api-route";
+import { generateLegacyInterpretation } from "@/lib/ai/legacy-provider";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { getCardById, getSpreadBySlug } from "@/lib/tarot/catalog";
+
+export type InterpretRouteMode = "legacy" | "engine";
+
+const readingIntentSchema = z.object({
+  domain: z.enum(["career", "love", "study", "relationship", "self", "decision"]),
+  goal: z.enum(["trend", "obstacle", "advice", "decision", "other_view"]),
+});
+
+const userFeedbackSchema = z.object({
+  mostResonantCardId: z.string().optional(),
+  mostUncomfortableCardId: z.string().optional(),
+  overallFeeling: z.string().max(120).optional(),
+  overallFeelingNote: z.string().max(120).optional(),
+});
+
+const requestSchema = z.object({
+  question: z.string().max(500).default(""),
+  spreadSlug: z.string().min(1),
+  locale: z.string().default("zh-CN"),
+  readingIntent: readingIntentSchema.optional(),
+  drawLog: z
+    .object({
+      seed: z.string().min(1),
+      drawRule: z.string().min(1),
+      reversedRate: z.number().min(0).max(1),
+      createdAt: z.string().min(1),
+    })
+    .optional()
+    .nullable(),
+  userFeedback: userFeedbackSchema.optional(),
+  cards: z
+    .array(
+      z.object({
+        cardId: z.string(),
+        positionOrder: z.number().int().positive(),
+        reversed: z.boolean(),
+      }),
+    )
+    .min(1),
+});
+
+export type InterpretRequestInput = z.infer<typeof requestSchema>;
 
 export type InterpretationJobStatus = "pending" | "running" | "succeeded" | "failed";
 
@@ -29,6 +65,176 @@ export type InterpretationJobRow = {
 };
 
 const JOBS_TABLE = "interpretation_jobs";
+
+function validateInput(input: InterpretRequestInput) {
+  const spread = getSpreadBySlug(input.spreadSlug);
+
+  if (!spread) {
+    return Response.json(
+      { error: "Invalid spreadSlug.", spreadSlug: input.spreadSlug },
+      { status: 400 },
+    );
+  }
+
+  if (input.cards.length !== spread.cardCount) {
+    return Response.json(
+      {
+        error: "Card count does not match spread.",
+        expected: spread.cardCount,
+        received: input.cards.length,
+      },
+      { status: 400 },
+    );
+  }
+
+  const validPositionOrders = new Set(spread.positions.map((position) => position.order));
+  const invalidPosition = input.cards.find(
+    (card) => !validPositionOrders.has(card.positionOrder),
+  );
+
+  if (invalidPosition) {
+    return Response.json(
+      {
+        error: "Invalid positionOrder for spread.",
+        positionOrder: invalidPosition.positionOrder,
+        spreadSlug: spread.slug,
+      },
+      { status: 400 },
+    );
+  }
+
+  const missingCard = input.cards.find((card) => !getCardById(card.cardId));
+
+  if (missingCard) {
+    return Response.json(
+      { error: "Invalid cardId.", cardId: missingCard.cardId },
+      { status: 400 },
+    );
+  }
+
+  return null;
+}
+
+function parseInterpretInput(json: unknown):
+  | { ok: true; input: InterpretRequestInput }
+  | { ok: false; response: Response } {
+  try {
+    const input = requestSchema.parse(json);
+    const validationError = validateInput(input);
+    if (validationError) return { ok: false, response: validationError };
+    return { ok: true, input };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return {
+        ok: false,
+        response: Response.json(
+          { error: "Invalid request.", issues: error.issues },
+          { status: 400 },
+        ),
+      };
+    }
+
+    const message = error instanceof Error ? error.message : "Invalid request.";
+    return { ok: false, response: Response.json({ error: message }, { status: 400 }) };
+  }
+}
+
+function normalizeMode(value: string | null | undefined): InterpretRouteMode | null {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) return null;
+
+  if (["legacy", "old", "ai", "classic"].includes(normalized)) return "legacy";
+  if (["engine", "new", "kb", "tarot-engine"].includes(normalized)) return "engine";
+
+  return null;
+}
+
+function resolveSwitchMode(request: Request) {
+  const url = new URL(request.url);
+  return (
+    normalizeMode(url.searchParams.get("mode")) ??
+    normalizeMode(request.headers.get("x-tarot-interpret-mode")) ??
+    normalizeMode(process.env.TAROT_INTERPRET_API_MODE) ??
+    "legacy"
+  );
+}
+
+function buildStreamHeaders(input: {
+  mode: InterpretRouteMode;
+  model: string;
+  pipeline?: string;
+  generationMode?: string;
+  debug?: unknown;
+}) {
+  const debug = input.debug as Record<string, unknown> | undefined;
+  const safeIssueIds = (value: unknown) =>
+    Array.isArray(value)
+      ? value
+          .map((issueId) =>
+            String(issueId)
+              .split(":")[0]
+              .replace(/[^A-Za-z0-9_-]/g, "_"),
+          )
+          .filter(Boolean)
+      : [];
+  const qualityIssueIds = safeIssueIds(debug?.qualityIssueIds);
+  const rejectedQualityIssueIds = safeIssueIds(debug?.rejectedQualityIssueIds);
+  const safeHeaderValue = (value: unknown) =>
+    String(value ?? "none")
+      .replace(/[^\x20-\x7E]/g, "?")
+      .slice(0, 240);
+
+  return {
+    "Content-Type": "text/plain; charset=utf-8",
+    "Cache-Control": "no-store",
+    "x-interpretation-interface": input.mode,
+    "x-interpretation-mode": input.mode,
+    "x-model": input.model,
+    "x-interpretation-pipeline": input.pipeline ?? "unknown",
+    "x-interpretation-generation-mode":
+      input.generationMode ??
+      (typeof debug?.generationMode === "string" ? debug.generationMode : input.mode),
+    "x-interpretation-ms":
+      typeof debug?.total_ms === "number" ? String(debug.total_ms) : "unknown",
+    "x-interpretation-quality-retries":
+      typeof debug?.quality_retries === "number" ? String(debug.quality_retries) : "0",
+    "x-interpretation-fallback-reason":
+      typeof debug?.fallbackReason === "string" ? debug.fallbackReason : "none",
+    "x-interpretation-quality-issues":
+      qualityIssueIds.length > 0 ? qualityIssueIds.join(",") : "none",
+    "x-interpretation-rejected-quality-issues":
+      rejectedQualityIssueIds.length > 0 ? rejectedQualityIssueIds.join(",") : "none",
+    "x-interpretation-error":
+      typeof debug?.error === "string" ? safeHeaderValue(debug.error) : "none",
+  };
+}
+
+async function runJobInterpretation(input: InterpretRequestInput, mode: InterpretRouteMode) {
+  if (mode !== "legacy") {
+    throw new Error("Background interpretation jobs currently support legacy mode only.");
+  }
+
+  return generateLegacyInterpretation(input);
+}
+
+async function readStreamAsText(stream: ReadableStream<Uint8Array>) {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let text = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      text += decoder.decode(value, { stream: true });
+    }
+
+    text += decoder.decode();
+    return text;
+  } finally {
+    reader.releaseLock();
+  }
+}
 
 function resolveBackgroundFunctionUrl(request: Request, jobId: string) {
   const explicit = process.env.NETLIFY_BACKGROUND_FUNCTION_URL?.trim();
@@ -158,16 +364,23 @@ export async function processInterpretationJob(jobId: string) {
     .eq("id", jobId);
 
   try {
-    const result = await runInterpretation(job.payload, job.mode);
+    const result = await runJobInterpretation(job.payload, job.mode);
+    if (result.pipeline === "ai_failed_fallback") {
+      const debug = result.debug as Record<string, unknown> | undefined;
+      console.warn("[interpret-jobs] provider returned fallback", {
+        jobId,
+        model: result.model,
+        fallbackReason: debug?.fallbackReason,
+        error: debug?.error,
+      });
+    }
     const text = await readStreamAsText(result.stream);
-    const engineHeaders = "headers" in result ? result.headers : undefined;
     const headers = buildStreamHeaders({
       mode: job.mode,
       model: result.model,
       pipeline: result.pipeline,
       generationMode: result.generationMode,
       debug: result.debug,
-      engineHeaders,
     });
 
     await supabase

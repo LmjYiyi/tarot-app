@@ -84,7 +84,7 @@ describe("runQualityGate", () => {
     expect(result.text).toContain("路径 B 指「继续忍到找到下家」");
   });
 
-  it("requests retry for absolute promises", () => {
+  it("repairs absolute promises with a safety hedge", () => {
     const result = runQualityGate("1. 牌面先说\n你一定会成功。", {
       question: "我一定会成功吗？",
       template,
@@ -92,7 +92,8 @@ describe("runQualityGate", () => {
     });
 
     expect(result.needsRetry).toBe(true);
-    expect(result.issues.map((issue) => issue.id)).toContain("absolute-language");
+    expect(result.text).toContain("不做绝对");
+    expect(result.issues.map((issue) => issue.id)).not.toContain("absolute-language");
   });
 
   it("does not synthesize placeholder sections during repair", () => {

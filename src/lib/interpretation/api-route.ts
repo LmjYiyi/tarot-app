@@ -170,6 +170,10 @@ export function buildStreamHeaders(input: {
       : [];
   const qualityIssueIds = safeIssueIds(debug?.qualityIssueIds);
   const rejectedQualityIssueIds = safeIssueIds(debug?.rejectedQualityIssueIds);
+  const safeHeaderValue = (value: unknown) =>
+    String(value ?? "none")
+      .replace(/[^\x20-\x7E]/g, "?")
+      .slice(0, 240);
 
   return {
     "Content-Type": "text/plain; charset=utf-8",
@@ -184,12 +188,16 @@ export function buildStreamHeaders(input: {
       (typeof debug?.generationMode === "string" ? debug.generationMode : input.mode),
     "x-interpretation-ms":
       typeof debug?.total_ms === "number" ? String(debug.total_ms) : "unknown",
+    "x-interpretation-quality-retries":
+      typeof debug?.quality_retries === "number" ? String(debug.quality_retries) : "0",
     "x-interpretation-fallback-reason":
       typeof debug?.fallbackReason === "string" ? debug.fallbackReason : "none",
     "x-interpretation-quality-issues":
       qualityIssueIds.length > 0 ? qualityIssueIds.join(",") : "none",
     "x-interpretation-rejected-quality-issues":
       rejectedQualityIssueIds.length > 0 ? rejectedQualityIssueIds.join(",") : "none",
+    "x-interpretation-error":
+      typeof debug?.error === "string" ? safeHeaderValue(debug.error) : "none",
   };
 }
 

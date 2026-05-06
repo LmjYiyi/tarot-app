@@ -134,7 +134,10 @@ function getClient() {
   return new Anthropic({
     apiKey,
     baseURL: DEFAULT_BASE_URL,
-    timeout: Number.isFinite(DEFAULT_TIMEOUT_MS) ? DEFAULT_TIMEOUT_MS : 15000,
+    timeout: Math.max(
+      Number.isFinite(DEFAULT_TIMEOUT_MS) ? DEFAULT_TIMEOUT_MS : 15000,
+      Number.isFinite(INTERPRETATION_TIMEOUT_MS) ? INTERPRETATION_TIMEOUT_MS : 35000,
+    ),
     maxRetries: Number.isFinite(DEFAULT_MAX_RETRIES) ? DEFAULT_MAX_RETRIES : 0,
   });
 }
@@ -933,18 +936,10 @@ export async function createInterpretationStream(input: CreateInterpretationStre
       generationMode === "grounded_ai"
         ? usedQualityFallback
           ? "ai_grounded_quality_fallback"
-          : retryCount > 0
-            ? "ai_grounded_quality_gated_retry"
-            : quality.repaired
-              ? "ai_grounded_quality_gated"
-              : "ai_grounded_generated"
+          : "ai_grounded_generated"
         : usedQualityFallback
           ? "ai_quality_fallback"
-          : retryCount > 0
-            ? "ai_quality_gated_retry"
-            : quality.repaired
-              ? "ai_quality_gated"
-              : "ai_generated";
+          : "ai_generated";
     const shouldReportAiCompletion = !usedQualityFallback;
 
     return {

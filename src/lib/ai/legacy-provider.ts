@@ -23,6 +23,7 @@ const INTERPRETATION_TIMEOUT_MS = Number(process.env.MINIMAX_INTERPRETATION_TIME
 const INTERPRETATION_IDLE_TIMEOUT_MS = Number(
   process.env.MINIMAX_INTERPRETATION_IDLE_TIMEOUT_MS ?? 25000,
 );
+const USE_STREAMING_INTERPRETATION = process.env.MINIMAX_INTERPRETATION_STREAM === "true";
 
 type GenerateLegacyInput = {
   question: string;
@@ -46,7 +47,10 @@ function getClient() {
   return new Anthropic({
     apiKey,
     baseURL: DEFAULT_BASE_URL,
-    timeout: Number.isFinite(DEFAULT_TIMEOUT_MS) ? DEFAULT_TIMEOUT_MS : 15000,
+    timeout: Math.max(
+      Number.isFinite(DEFAULT_TIMEOUT_MS) ? DEFAULT_TIMEOUT_MS : 15000,
+      Number.isFinite(INTERPRETATION_TIMEOUT_MS) ? INTERPRETATION_TIMEOUT_MS : 35000,
+    ),
     maxRetries: Number.isFinite(DEFAULT_MAX_RETRIES) ? DEFAULT_MAX_RETRIES : 0,
   });
 }
@@ -161,6 +165,40 @@ function buildLegacyFallback(payload: LegacyPayload) {
       "",
       section(6, "7. 观察指标"),
       `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看：哪条路径让现实反馈更清楚，哪条路径的代价更可承受，以及${summary.position.name}的${cardLabel(summary)}是否对应到你接下来能持续执行的节奏。`,
+    ].join("\n");
+  }
+
+  if (payload.responseBlueprint.slug === "celtic-cross" && cards.length >= 10) {
+    const [current, challenge, past, conscious, root, nearFuture, attitude, environment, hopes, longTerm] =
+      cards;
+
+    return [
+      section(0, "1. 牌面先说"),
+      `这次凯尔特十字由${cards.map(cardLabel).join("、")}组成。它不适合被读成单一结论，而是要把核心张力、内外因素、短期变化和长期趋势分开看。`,
+      "",
+      section(1, "2. 核心张力"),
+      `${current.position.name}里的${cardLabel(current)}说明当前问题的中心在于${cardKeywords(current)}。${challenge.position.name}里的${cardLabel(challenge)}则指出真正产生压力的是${cardKeywords(challenge)}，这两张牌合在一起，是这次解读的主轴。`,
+      "",
+      section(2, "3. 内外因素"),
+      `${attitude.position.name}的${cardLabel(attitude)}代表你自己的姿态，重点是${cardKeywords(attitude)}；${environment.position.name}的${cardLabel(environment)}代表外部环境或他人条件，重点是${cardKeywords(environment)}。内外两侧需要一起看，不能只怪外部，也不能把所有压力都归到自己身上。`,
+      "",
+      section(3, "4. 过去如何影响现在"),
+      `${past.position.name}的${cardLabel(past)}显示近期背景，${root.position.name}的${cardLabel(root)}显示更深层的旧模式。它们提醒你：现在的卡点不是凭空出现，而是由过去的经验、惯性或未完成的整理一路推到眼前。`,
+      "",
+      section(4, "5. 短期变化"),
+      `${nearFuture.position.name}里的${cardLabel(nearFuture)}提示未来一段时间最容易出现的变化方向。这里看的是趋势和可观察信号，不是保证某个结果必然发生。`,
+      "",
+      section(5, "6. 希望与担心"),
+      `${hopes.position.name}里的${cardLabel(hopes)}同时承载期待和不安。它提示你辨认：哪些担心是真实风险，哪些只是旧经验投射出来的警报。`,
+      "",
+      section(6, "7. 长期趋势"),
+      `${longTerm.position.name}里的${cardLabel(longTerm)}给出更长线的走向。它不是最终判决，而是说明如果你继续沿当前模式前进，最可能被强化的主题会是${cardKeywords(longTerm)}。`,
+      "",
+      section(7, "8. 行动建议"),
+      `${conscious.position.name}的${cardLabel(conscious)}适合当作行动入口：先把目标、边界和下一步动作写清楚，再用一到两个现实反馈验证自己是否需要调整方向。`,
+      "",
+      section(8, "9. 观察指标"),
+      `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看：核心压力是否下降，外部反馈是否更清楚，以及你是否能把${longTerm.card.nameZh}代表的长期主题落到具体行动里。`,
     ].join("\n");
   }
 
@@ -315,6 +353,51 @@ export async function generateLegacyInterpretation(input: GenerateLegacyInput) {
 
     async function generateText(attempt: number) {
       const generationStart = Date.now();
+      const requestPayload = {
+        model: DEFAULT_MODEL,
+        max_tokens: resolveInterpretationMaxTokens(payload),
+        temperature: Number.isFinite(DEFAULT_TEMPERATURE) ? DEFAULT_TEMPERATURE : 0.8,
+        system: [
+          {
+            type: "text" as const,
+            text: payload.systemPrompt,
+          },
+          {
+            type: "text" as const,
+            text: payload.knowledgeText,
+            cache_control: { type: "ephemeral" as const },
+          },
+        ],
+        messages: [
+          {
+            role: "user" as const,
+            content: [
+              {
+                type: "text" as const,
+                text:
+                  attempt === 0
+                    ? `${payload.userPrompt}\n\n质量验收要求：\n${qualityRequirements}`
+                    : `${payload.userPrompt}\n\n上一次输出没有通过质量验收。请重新生成，必须满足：\n${qualityRequirements}`,
+              },
+            ],
+          },
+        ],
+      };
+
+      if (!USE_STREAMING_INTERPRETATION) {
+        const message = await withTimeout(
+          activeClient.messages.create(requestPayload, { signal: abortController.signal }),
+          Number.isFinite(INTERPRETATION_TIMEOUT_MS) ? INTERPRETATION_TIMEOUT_MS : 35000,
+          "legacy interpretation generation",
+        );
+        const fullText = message.content
+          .map((block) => (block.type === "text" ? block.text : ""))
+          .join("");
+
+        timings[`generation_${attempt + 1}_ms`] = Date.now() - generationStart;
+        return sanitizeInterpretationText(fullText, payload.responseBlueprint, sanitizeOptions);
+      }
+
       const messageStream = await withTimeout(
         activeClient.messages.create(
           {
@@ -423,13 +506,7 @@ export async function generateLegacyInterpretation(input: GenerateLegacyInput) {
       stream: createTextStream(text),
       citations: payload.citations,
       model: usedQualityFallback ? "local-interpretation-fallback" : DEFAULT_MODEL,
-      pipeline: usedQualityFallback
-        ? "ai_quality_fallback"
-        : retryCount > 0
-          ? "ai_quality_gated_retry"
-          : quality.repaired
-            ? "ai_quality_gated"
-            : "ai_generated",
+      pipeline: usedQualityFallback ? "ai_quality_fallback" : "ai_generated",
       generationMode: "legacy_ai",
       debug: {
         ...timings,
