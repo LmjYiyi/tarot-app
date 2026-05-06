@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { AnnotatedInterpretation } from "@/components/AnnotatedInterpretation";
@@ -53,7 +53,33 @@ export function StreamingInterpretation({
   const [mounted, setMounted] = useState(false);
   const [expandedCard, setExpandedCard] = useState<ResultCard | null>(null);
   const hasContent = Boolean(text.trim());
-  const progress = isStreaming ? Math.min(94, 18 + Math.floor(text.length / 42)) : 100;
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const streamingStartedAtRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!isStreaming) {
+      streamingStartedAtRef.current = null;
+      setElapsedMs(0);
+      return;
+    }
+
+    if (streamingStartedAtRef.current === null) {
+      streamingStartedAtRef.current = performance.now();
+      setElapsedMs(0);
+    }
+
+    const intervalId = window.setInterval(() => {
+      if (streamingStartedAtRef.current === null) return;
+      setElapsedMs(performance.now() - streamingStartedAtRef.current);
+    }, 250);
+
+    return () => window.clearInterval(intervalId);
+  }, [isStreaming]);
+
+  const textProgress = 18 + text.length / 42;
+  const timeProgress = estimateTimeBasedProgress(elapsedMs);
+  const progress = isStreaming ? Math.min(94, Math.max(textProgress, timeProgress)) : 100;
+  const progressLabel = progress.toFixed(2);
   const singleCard = cards.length === 1;
   const showQuestion = question.trim().length > 0;
   const isDailySingleReading = singleCard && !showQuestion;
@@ -181,7 +207,7 @@ export function StreamingInterpretation({
                 正在生成结果解读
               </p>
               <span className="font-mono text-[10.5px] tracking-[0.16em] text-[var(--coral-deep)]">
-                {progress}%
+                {progressLabel}%
               </span>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-[var(--line)]">
@@ -648,6 +674,13 @@ function buildPlainText({
   ]
     .filter((line): line is string => line !== null)
     .join("\n");
+}
+
+function estimateTimeBasedProgress(elapsedMs: number) {
+  const expectedDurationMs = 30_000;
+  const ratio = Math.min(1, elapsedMs / expectedDurationMs);
+  const curve = 1 - Math.pow(1 - ratio, 1.6);
+  return 5 + curve * 87;
 }
 
 async function copyText(text: string) {

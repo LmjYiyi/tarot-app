@@ -46,6 +46,39 @@ const requestSchema = z.object({
 });
 
 type InterpretInput = z.infer<typeof requestSchema>;
+export type InterpretRequestInput = InterpretInput;
+
+export function parseInterpretInput(json: unknown):
+  | { ok: true; input: InterpretInput }
+  | { ok: false; response: Response } {
+  try {
+    const input = requestSchema.parse(json);
+    const validationError = validateInput(input);
+    if (validationError) return { ok: false, response: validationError };
+    return { ok: true, input };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return {
+        ok: false,
+        response: Response.json(
+          { error: "Invalid request.", issues: error.issues },
+          { status: 400 },
+        ),
+      };
+    }
+    const message = error instanceof Error ? error.message : "Invalid request.";
+    return { ok: false, response: Response.json({ error: message }, { status: 400 }) };
+  }
+}
+
+export function isNetlifyFunctionRuntime() {
+  return Boolean(
+    process.env.NETLIFY ||
+      process.env.SITE_ID ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.LAMBDA_TASK_ROOT,
+  );
+}
 
 function normalizeMode(value: string | null | undefined): InterpretRouteMode | null {
   const normalized = value?.trim().toLowerCase();
@@ -57,7 +90,7 @@ function normalizeMode(value: string | null | undefined): InterpretRouteMode | n
   return null;
 }
 
-function resolveSwitchMode(request: Request) {
+export function resolveSwitchMode(request: Request) {
   const url = new URL(request.url);
   return (
     normalizeMode(url.searchParams.get("mode")) ??
@@ -116,7 +149,7 @@ function validateInput(input: InterpretInput) {
   return null;
 }
 
-function buildStreamHeaders(input: {
+export function buildStreamHeaders(input: {
   mode: InterpretRouteMode;
   model: string;
   pipeline?: string;
@@ -125,6 +158,18 @@ function buildStreamHeaders(input: {
   engineHeaders?: Record<string, string>;
 }) {
   const debug = input.debug as Record<string, unknown> | undefined;
+  const safeIssueIds = (value: unknown) =>
+    Array.isArray(value)
+      ? value
+        .map((issueId) =>
+          String(issueId)
+            .split(":")[0]
+            .replace(/[^A-Za-z0-9_-]/g, "_"),
+        )
+        .filter(Boolean)
+      : [];
+  const qualityIssueIds = safeIssueIds(debug?.qualityIssueIds);
+  const rejectedQualityIssueIds = safeIssueIds(debug?.rejectedQualityIssueIds);
 
   return {
     "Content-Type": "text/plain; charset=utf-8",
@@ -141,10 +186,14 @@ function buildStreamHeaders(input: {
       typeof debug?.total_ms === "number" ? String(debug.total_ms) : "unknown",
     "x-interpretation-fallback-reason":
       typeof debug?.fallbackReason === "string" ? debug.fallbackReason : "none",
+    "x-interpretation-quality-issues":
+      qualityIssueIds.length > 0 ? qualityIssueIds.join(",") : "none",
+    "x-interpretation-rejected-quality-issues":
+      rejectedQualityIssueIds.length > 0 ? rejectedQualityIssueIds.join(",") : "none",
   };
 }
 
-async function runInterpretation(input: InterpretInput, mode: InterpretRouteMode) {
+export async function runInterpretation(input: InterpretInput, mode: InterpretRouteMode) {
   if (mode === "legacy") {
     return generateLegacyInterpretation(input);
   }
@@ -156,7 +205,7 @@ async function runInterpretation(input: InterpretInput, mode: InterpretRouteMode
   });
 }
 
-async function readStreamAsText(stream: ReadableStream<Uint8Array>) {
+export async function readStreamAsText(stream: ReadableStream<Uint8Array>) {
   const reader = stream.getReader();
   const decoder = new TextDecoder();
   let text = "";
@@ -173,15 +222,6 @@ async function readStreamAsText(stream: ReadableStream<Uint8Array>) {
   } finally {
     reader.releaseLock();
   }
-}
-
-function isNetlifyFunctionRuntime() {
-  return Boolean(
-    process.env.NETLIFY ||
-      process.env.SITE_ID ||
-      process.env.AWS_LAMBDA_FUNCTION_NAME ||
-      process.env.LAMBDA_TASK_ROOT,
-  );
 }
 
 async function resolveResponseBody(stream: ReadableStream<Uint8Array>) {

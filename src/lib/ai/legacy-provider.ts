@@ -137,6 +137,33 @@ function buildLegacyFallback(payload: LegacyPayload) {
     ].join("\n");
   }
 
+  if (payload.responseBlueprint.slug === "path-of-choice" && cards.length >= 7) {
+    const [aNow, aResult, bNow, bResult, hidden, action, summary] = cards;
+
+    return [
+      section(0, "1. 牌面先说"),
+      `这组选择牌阵由${cards.map(cardLabel).join("、")}组成。它不替你拍板，而是把路径 A、路径 B、隐藏变量和决策前动作分开看清。`,
+      "",
+      section(1, "2. 两个选择的本质差异"),
+      `路径 A 从${cardLabel(aNow)}走向${cardLabel(aResult)}，重点是${cardKeywords(aNow, 2)}如何发展成${cardKeywords(aResult, 2)}。路径 B 从${cardLabel(bNow)}走向${cardLabel(bResult)}，重点是${cardKeywords(bNow, 2)}如何承接${cardKeywords(bResult, 2)}。`,
+      "",
+      section(2, "3. 路径 A 的机会与代价"),
+      `${aNow.position.name}里的${cardLabel(aNow)}提示路径 A 的机会在于${cardKeywords(aNow)}。代价则要看${aResult.position.name}里的${cardLabel(aResult)}：它提醒你确认后续是否能稳定承接，而不是只看开始时的吸引力。`,
+      "",
+      section(3, "4. 路径 B 的机会与代价"),
+      `${bNow.position.name}里的${cardLabel(bNow)}提示路径 B 的机会在于${cardKeywords(bNow)}。代价则落在${bResult.position.name}里的${cardLabel(bResult)}：它提醒你留意情绪、沟通或期待是否会让判断变得摇摆。`,
+      "",
+      section(4, "5. 隐藏变量"),
+      `${hidden.position.name}的${cardLabel(hidden)}说明真正容易被忽略的是${cardKeywords(hidden)}。先把这个变量说清楚，选择才不会变成情绪反射。`,
+      "",
+      section(5, "6. 决策前动作"),
+      `${action.position.name}的${cardLabel(action)}给出的动作是：先做一次小步验证，确认时间、资源、边界和对方反馈，再决定推进、暂停还是调整方案。`,
+      "",
+      section(6, "7. 观察指标"),
+      `观察窗口放在${payload.responseBlueprint.timeScope.observationWindow}。重点看：哪条路径让现实反馈更清楚，哪条路径的代价更可承受，以及${summary.position.name}的${cardLabel(summary)}是否对应到你接下来能持续执行的节奏。`,
+    ].join("\n");
+  }
+
   return [
     section(0, "1. 牌面先说"),
     `这次牌面由${cards.map(cardLabel).join("、")}组成。先看牌位的任务，再看它们之间如何支持或拉扯，而不是把每张牌孤立解释。`,
@@ -284,6 +311,7 @@ export async function generateLegacyInterpretation(input: GenerateLegacyInput) {
     let quality = runQualityGate("", qualityInput);
     let retryCount = 0;
     let usedQualityFallback = false;
+    let rejectedQualityIssueIds: string[] = [];
 
     async function generateText(attempt: number) {
       const generationStart = Date.now();
@@ -376,6 +404,7 @@ export async function generateLegacyInterpretation(input: GenerateLegacyInput) {
     }
 
     if (quality.needsRetry) {
+      rejectedQualityIssueIds = quality.issues.map((issue) => issue.id);
       text = sanitizeInterpretationText(
         buildLegacyFallback(payload),
         payload.responseBlueprint,
@@ -405,6 +434,7 @@ export async function generateLegacyInterpretation(input: GenerateLegacyInput) {
       debug: {
         ...timings,
         qualityIssueIds: quality.issues.map((issue) => issue.id),
+        rejectedQualityIssueIds,
       },
     };
   } catch (error) {

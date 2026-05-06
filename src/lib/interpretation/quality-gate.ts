@@ -63,9 +63,29 @@ function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function headingTitleAliases(title: string) {
+  const pathChoiceMatch = title.match(/^路径\s*([AB])\s*的机会与代价$/);
+  if (!pathChoiceMatch) return [title];
+
+  const label = pathChoiceMatch[1];
+  return [
+    `路径 ${label} 的机会与代价`,
+    `路径${label}的机会与代价`,
+    `路径 ${label}：机会与代价`,
+    `路径${label}：机会与代价`,
+    `路径 ${label}: 机会与代价`,
+    `路径${label}: 机会与代价`,
+    `路径 ${label} 机会与代价`,
+    `路径${label}机会与代价`,
+  ];
+}
+
 function headingPattern(section: string) {
   const title = stripSectionNumber(section);
-  return new RegExp(`^\\s*(?:\\d+\\.\\s*)?${escapeRegExp(title)}\\s*$`);
+  const flexibleTitles = headingTitleAliases(title).map((alias) =>
+    escapeRegExp(alias).replace(/\\ /g, "\\s*"),
+  );
+  return new RegExp(`^\\s*(?:\\d+\\.\\s*)?(?:${flexibleTitles.join("|")})\\s*$`);
 }
 
 function findSection(text: string, section: string) {

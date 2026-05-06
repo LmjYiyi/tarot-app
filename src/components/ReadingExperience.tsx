@@ -9,6 +9,10 @@ import { MobileStickyDeck } from "@/components/MobileStickyDeck";
 import { SpreadLayout } from "@/components/SpreadLayout";
 import { StreamingInterpretation } from "@/components/StreamingInterpretation";
 import { Button } from "@/components/ui/button";
+import {
+  subscribeInterpretationJob,
+  type InterpretationJobUpdate,
+} from "@/lib/interpretation/job-client";
 import { addLocalReading } from "@/lib/readings/local-history";
 import {
   getDefaultIntentForSpread,
@@ -252,6 +256,7 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
   const mainSpreadRef = useRef<HTMLDivElement | null>(null);
   const revealPauseTimeoutRef = useRef<number | null>(null);
   const interpretAbortControllerRef = useRef<AbortController | null>(null);
+  const interpretJobCleanupRef = useRef<(() => void) | null>(null);
   const cardPreviewAbortControllerRef = useRef<AbortController | null>(null);
   const cardPreviewTextRef = useRef("");
 
@@ -389,6 +394,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
       if (interpretAbortControllerRef.current) {
         interpretAbortControllerRef.current.abort();
       }
+      if (interpretJobCleanupRef.current) {
+        interpretJobCleanupRef.current();
+        interpretJobCleanupRef.current = null;
+      }
       if (cardPreviewAbortControllerRef.current) {
         cardPreviewAbortControllerRef.current.abort();
       }
@@ -433,6 +442,10 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
     if (interpretAbortControllerRef.current) {
       interpretAbortControllerRef.current.abort();
       interpretAbortControllerRef.current = null;
+    }
+    if (interpretJobCleanupRef.current) {
+      interpretJobCleanupRef.current();
+      interpretJobCleanupRef.current = null;
     }
     if (cardPreviewAbortControllerRef.current) {
       cardPreviewAbortControllerRef.current.abort();
@@ -624,23 +637,71 @@ export function ReadingExperience({ spread }: ReadingExperienceProps) {
         }),
       });
 
-      if (!response.ok || !response.body) {
+      if (!response.ok) {
         throw new Error("牌面暂时没有回应，请稍后再试。");
       }
 
-      model = response.headers.get("x-model") ?? "unknown";
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
+      const jobId = response.headers.get("x-interpretation-job-id");
+      const jobToken = response.headers.get("x-interpretation-job-token");
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        fullText += decoder.decode(value, { stream: true });
-        setInterpretation(fullText);
-      }
+      if (jobId) {
+        if (!jobToken) {
+          throw new Error("解读任务缺少访问凭证，请稍后再试。");
+        }
+        // Netlify 异步任务模式：等待 background function 完成后一次性渲染。
+        let latestUpdate: InterpretationJobUpdate | null = null;
+        const subscription = subscribeInterpretationJob(jobId, jobToken, (update) => {
+          latestUpdate = update;
+          if (update.status === "succeeded" && update.result) {
+            fullText = update.result;
+            setInterpretation(fullText);
+          }
+        });
+        interpretJobCleanupRef.current = subscription.cleanup;
 
-      if (!fullText.trim()) {
-        throw new Error("牌面暂时没有回应，请稍后再试。");
+        const onAbort = () => subscription.cleanup();
+        controller.signal.addEventListener("abort", onAbort);
+
+        try {
+          const final = await subscription.done;
+          latestUpdate = final;
+          if (final.status === "failed") {
+            throw new Error(final.error || "牌面暂时没有回应，请稍后再试。");
+          }
+          fullText = final.result ?? fullText;
+          if (final.model) model = final.model;
+          setInterpretation(fullText);
+        } finally {
+          controller.signal.removeEventListener("abort", onAbort);
+          if (interpretJobCleanupRef.current === subscription.cleanup) {
+            interpretJobCleanupRef.current = null;
+          }
+        }
+
+        if (controller.signal.aborted) return;
+        if (!fullText.trim()) {
+          throw new Error(latestUpdate?.error || "牌面暂时没有回应，请稍后再试。");
+        }
+      } else {
+        // 本地 dev 仍走流式响应。
+        if (!response.body) {
+          throw new Error("牌面暂时没有回应，请稍后再试。");
+        }
+
+        model = response.headers.get("x-model") ?? "unknown";
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          fullText += decoder.decode(value, { stream: true });
+          setInterpretation(fullText);
+        }
+
+        if (!fullText.trim()) {
+          throw new Error("牌面暂时没有回应，请稍后再试。");
+        }
       }
 
       if (controller.signal.aborted) return;
